@@ -1,9 +1,11 @@
 Package: IntegraTRN
 Type: Package
-Title: Integrated Omics For Inference Of Transcriptional Regulatory
-Network
+Title: Integrated Omics For Inference Of Transcriptional Regulatory Network
 Version: 0.1.0
-Author: Jielin Yang
+Authors@R: person("Jielin", "Yang",
+                  email = "jielin.yang@mail.utoronto.ca",
+                  role = c("aut", "cre"),
+                  comment = c(ORCID = "0000-0003-4207-828X"))
 Maintainer: Jielin Yang <jielin.yang@mail.utoronto.ca>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
