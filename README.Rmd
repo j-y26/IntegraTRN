@@ -34,7 +34,7 @@ The package is developed under the following environment:
 
 To install the latest developmental version of the package:
 
-```{r}
+```{r, eval=FALSE}
 require("devtools")
 devtools::install_github("j-y26/IntegraTRN", build_vignettes = TRUE)
 library("IntegraTRN")
@@ -44,7 +44,7 @@ To run the shinyApp: `Under construction`
 
 ## Overview
 
-```{r}
+```{r, eval=FALSE}
 ls("package:IntegraTRN")
 data(package = "IntegraTRN")
 browseVignettes("IntegraTRN")

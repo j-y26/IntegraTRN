@@ -44,21 +44,7 @@ To install the latest developmental version of the package:
 
 ``` r
 require("devtools")
-#> Loading required package: devtools
-#> Loading required package: usethis
 devtools::install_github("j-y26/IntegraTRN", build_vignettes = TRUE)
-#> Downloading GitHub repo j-y26/IntegraTRN@HEAD
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>          checking for file 'C:\Users\kirin\AppData\Local\Temp\Rtmp8Ctz4z\remotes6c686932563d\j-y26-IntegraTRN-e2ad6f2/DESCRIPTION' ...     checking for file 'C:\Users\kirin\AppData\Local\Temp\Rtmp8Ctz4z\remotes6c686932563d\j-y26-IntegraTRN-e2ad6f2/DESCRIPTION' ...   ✔  checking for file 'C:\Users\kirin\AppData\Local\Temp\Rtmp8Ctz4z\remotes6c686932563d\j-y26-IntegraTRN-e2ad6f2/DESCRIPTION' (567ms)
-#>       ─  preparing 'IntegraTRN':
-#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
-#>       ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>       ─  building 'IntegraTRN_0.1.0.tar.gz'
-#>      
-#> 
-#> Installing package into 'C:/Users/kirin/AppData/Local/Temp/RtmpGspdhQ/temp_libpath57106e6b626b'
-#> (as 'lib' is unspecified)
 library("IntegraTRN")
 ```
 
@@ -68,12 +54,8 @@ To run the shinyApp: `Under construction`
 
 ``` r
 ls("package:IntegraTRN")
-#> [1] "protein_heart"             "protein_heart_samples"    
-#> [3] "RNAseq_heart"              "RNAseq_heart_samples"     
-#> [5] "smallRNAseq_heart"         "smallRNAseq_heart_samples"
 data(package = "IntegraTRN")
 browseVignettes("IntegraTRN")
-#> No vignettes found by browseVignettes("IntegraTRN")
 ```
 
 ## Contributions
