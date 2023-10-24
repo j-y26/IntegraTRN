@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# IntegraTRN: Integrated omics for the inference of Transcriptional Regulatory Network
+![](./inst/extdata/IntegraTRN_header.png)
+
+------------------------------------------------------------------------
 
 <!-- badges: start -->
 

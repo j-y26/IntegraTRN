@@ -13,7 +13,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# IntegraTRN: Integrated omics for the inference of Transcriptional Regulatory Network
+![](./inst/extdata/IntegraTRN_header.png)
+
+---
 
 <!-- badges: start -->
 [![License: GPL (>= 3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
