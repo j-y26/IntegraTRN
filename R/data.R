@@ -6,7 +6,15 @@
 #' @format A data frame with 13043 rows (genes) and 54 columns (field, samples)
 #' \describe{
 #'  \item{gene}{Gene name}
-#'  \item{sample_1, ..., sample_53}{Gene expression values for each sample}
+#'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
+#'  sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
+#'  sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,
+#'  sample_22, sample_23, sample_24, sample_25, sample_26, sample_27, sample_28,
+#'  sample_29, sample_30, sample_31, sample_32, sample_33, sample_34, sample_35,
+#'  sample_36, sample_37, sample_38, sample_39, sample_40, sample_41, sample_42,
+#'  sample_43, sample_44, sample_45, sample_46, sample_47, sample_48, sample_49,
+#'  sample_50, sample_51, sample_52, sample_53}{Gene expression values for each
+#'  sample}
 #' }
 #' 
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
@@ -65,8 +73,12 @@
 #' (field, samples)
 #' \describe{
 #'  \item{transcript}{Transcript name}
-#'  \item{sample_1, ..., sample_37}{Transcript expression values for each
-#'  sample}
+#'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
+#'  sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
+#'  sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,
+#'  sample_22, sample_23, sample_24, sample_25, sample_26, sample_27, sample_28,
+#'  sample_29, sample_30, sample_31, sample_32, sample_33, sample_34, sample_35,
+#'  sample_36, sample_37}{Transcript expression values for each sample}
 #' }
 #' 
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
@@ -85,10 +97,10 @@
 #' 
 #' @format A data frame with 37 rows (samples) and 3 columns (fields)
 #' \describe{
-#' \item{Sample}{Sample name corresponding to the small RNAseq gene expression
-#' dataset}
-#' \item{Age}{Age of the fetus in gestational weeks}
-#' \item{Sex}{Sex of the fetus}
+#'  \item{Sample}{Sample name corresponding to the small RNAseq gene expression
+#'  dataset}
+#'  \item{Age}{Age of the fetus in gestational weeks}
+#'  \item{Sex}{Sex of the fetus}
 #' }
 #' 
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
@@ -108,8 +120,9 @@
 #' 
 #' @format A data frame with 497 rows (proteins) and 7 columns (field, samples)
 #' \describe{
-#' \item{gene}{Protein name}
-#' \item{sample_1, ..., sample_6}{Protein abundance values for each sample}
+#'  \item{gene}{Protein name}
+#'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein 
+#'  abundance values for each sample}
 #' }
 #' 
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,

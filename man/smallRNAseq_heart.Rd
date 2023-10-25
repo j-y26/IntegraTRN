@@ -9,8 +9,12 @@ A data frame with 14801 rows (small RNA transcripts) and 38 columns
 (field, samples)
 \describe{
  \item{transcript}{Transcript name}
- \item{sample_1, ..., sample_37}{Transcript expression values for each
- sample}
+ \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
+ sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
+ sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,
+ sample_22, sample_23, sample_24, sample_25, sample_26, sample_27, sample_28,
+ sample_29, sample_30, sample_31, sample_32, sample_33, sample_34, sample_35,
+ sample_36, sample_37}{Transcript expression values for each sample}
 }
 }
 \source{
