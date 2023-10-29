@@ -59,8 +59,8 @@ validateMatrix <- function(matrix, groupBy) {
   if (any(is.na(matrix))) {
     stop("The sequencing data contains NA values. Please check the validity of
     your data.")
-  } else if (is.na(groupBy)) {
-    stop("Please provide grouping information for the sequencing data.")
+  } else if (any(is.na(groupBy))) {
+    stop("Please provide correct grouping information for the sequencing data.")
   } else if (!is.numeric(matrix) || !is.matrix(matrix)) {
     stop("The sequencing data must be a numeric matrix.")
   } else if (ncol(matrix) != length(groupBy)) {
@@ -69,6 +69,7 @@ validateMatrix <- function(matrix, groupBy) {
   } else {
     # Do nothing
   }
+  return(invisible(NULL))
 }
 
 
@@ -93,32 +94,43 @@ validateMOInputs <- function(RNAseq,
                              peakCond1,
                              peakCond2) {
   # Validate the RNAseq data
-  validateMatrix(RNAseq, RNAGroupBy)
+  if(!is.null(RNAseq)) {
+    validateMatrix(RNAseq, RNAGroupBy)
+  } else {
+    # Do nothing
+  }
   # Validate the smallRNAseq data
-  if (!is.na(smallRNAseq)) {
+  if (!is.null(smallRNAseq)) {
     validateMatrix(smallRNAseq, smallRNAGroupBy)
   } else {
     # Do nothing
   }
   # Validate the proteomics data
-  if (!is.na(proteomics)) {
+  if (!is.null(proteomics)) {
     validateMatrix(proteomics, proteomicsGroupBy)
   } else {
     # Do nothing
   }
   # Replicates are required for the sequencing data
-  if (ncol(RNAseq) < 2 || ncol(smallRNAseq) < 2 || ncol(proteomics) < 2) {
+  if ((is.matrix(RNAseq) && ncol(RNAseq) < 2) || 
+      (is.matrix(smallRNAseq) && ncol(smallRNAseq) < 2) || 
+      (is.matrix(proteomics) && ncol(proteomics) < 2)) {
     stop("At least two replicates are required for each sequencing data.")
   } else {
     # Do nothing
   }
   # Check for missing values in the chromosome information in the ATAC peaks
-  if (any(is.na(peakCond1[, CHROMINFO])) ||
-    any(is.na(peakCond2[, CHROMINFO]))) {
-    stop("Missing values in the chromosome information in the ATAC peaks.")
+  if (!is.null(peakCond1) && !is.null(peakCond2)) {
+    if (any(is.na(peakCond1[, CHROMINFO])) ||
+          any(is.na(peakCond2[, CHROMINFO]))) {
+      stop("Missing values in the chromosome information in the ATAC peaks.")
+    } else {
+    # Do nothing
+    }
   } else {
     # Do nothing
   }
+  return(invisible(NULL))
 }
 
 
@@ -141,8 +153,21 @@ newMOList <- function(RNAseq,
                       smallRNAGroupBy,
                       proteomics,
                       proteomicsGroupBy,
-                      peakCond1 = NA,
-                      peakCond2 = NA) {
+                      peakCond1,
+                      peakCond2) {
+  # Define the default slot values based on the inputs
+  ifelse(is.null(smallRNAseq), smallRNAseq <- NA_real_, 
+         smallRNAseq <- smallRNAseq)
+  ifelse(is.null(smallRNAGroupBy), smallRNAGroupBy <- NA,
+          smallRNAGroupBy <- smallRNAGroupBy)
+  ifelse(is.null(proteomics), proteomics <- NA_real_,
+          proteomics <- proteomics)
+  ifelse(is.null(proteomicsGroupBy), proteomicsGroupBy <- NA,
+          proteomicsGroupBy <- proteomicsGroupBy)
+  ifelse(is.null(peakCond1), peakCond1 <- NA, peakCond1 <- peakCond1)
+  ifelse(is.null(peakCond2), peakCond2 <- NA, peakCond2 <- peakCond2)
+
+  # Construct the MOList object
   objMOList <- new("MOList",
     RNAseq = RNAseq,
     RNAseqSamples = list(
@@ -189,30 +214,30 @@ modifyMOList <- function(objMOList,
                          smallRNAGroupBy,
                          proteomics,
                          proteomicsGroupBy,
-                         peakCond1 = NA,
-                         peakCond2 = NA) {
-  if (!is.na(RNAseq)) {
+                         peakCond1,
+                         peakCond2) {
+  if (!is.null(RNAseq)) {
     objMOList@RNAseq <- RNAseq
     objMOList@RNAseqSamples$samples <- colnames(RNAseq)
     objMOList@RNAseqSamples$groupBy <- RNAGroupBy
   } else {
     # Do nothing
   }
-  if (!is.na(smallRNAseq)) {
+  if (!is.null(smallRNAseq)) {
     objMOList@smallRNAseq <- smallRNAseq
     objMOList@smallRNAseqSamples$samples <- colnames(smallRNAseq)
     objMOList@smallRNAseqSamples$groupBy <- smallRNAGroupBy
   } else {
     # Do nothing
   }
-  if (!is.na(proteomics)) {
+  if (!is.null(proteomics)) {
     objMOList@proteomics <- proteomics
     objMOList@proteomicsSamples$samples <- colnames(proteomics)
     objMOList@proteomicsSamples$groupBy <- proteomicsGroupBy
   } else {
     # Do nothing
   }
-  if (!is.na(peakCond1) && !is.na(peakCond2)) {
+  if (!is.null(peakCond1) && !is.null(peakCond2)) {
     objMOList@ATACpeaks$peaksCond1 <- peakCond1
     objMOList@ATACpeaks$peaksCond2 <- peakCond2
   } else {
@@ -220,18 +245,6 @@ modifyMOList <- function(objMOList,
   }
   return(objMOList)
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #' Constructor for the MOList object
@@ -267,30 +280,32 @@ modifyMOList <- function(objMOList,
 #' @export MOList
 #'
 #'
-MOList <- function(objMOList = NA,
-                   RNAseq = NA_real_,
-                   RNAGroupBy = NA,
-                   smallRNAseq = NA_real_,
-                   smallRNAGroupBy = NA,
-                   proteomics = NA_real_,
-                   proteomicsGroupBy = NA,
-                   pathATACpeak1 = NA,
-                   pathATACpeak2 = NA) {
+MOList <- function(objMOList = NULL,
+                   RNAseq = NULL,
+                   RNAGroupBy = NULL,
+                   smallRNAseq = NULL,
+                   smallRNAGroupBy = NULL,
+                   proteomics = NULL,
+                   proteomicsGroupBy = NULL,
+                   pathATACpeak1 = NULL,
+                   pathATACpeak2 = NULL) {
   # One of objMOList and RNAseq must be given, which dictates whether the
   # constructor creates a new object or appends/exchanges omics data
-  if (is.na(objMOList) && is.na(RNAseq)) {
+  if (is.null(objMOList) && is.null(RNAseq)) {
     stop("Please provide either an object of class MOList or the RNAseq data.")
   } else {
     # Do nothing
   }
 
   # Read the ATAC peaks data if provided
-  if (!is.na(pathATACpeak1) && !is.na(pathATACpeak2)) {
+  if (!is.null(pathATACpeak1) && !is.null(pathATACpeak2)) {
     peakCond1 <- GenomicTools.fileHandler::importBed(pathATACpeak1)
     peakCond2 <- GenomicTools.fileHandler::importBed(pathATACpeak2)
-  } else if (xor(is.na(pathATACpeak1), is.na(pathATACpeak2))) {
+  } else if (xor(is.null(pathATACpeak1), is.null(pathATACpeak2))) {
     stop("Please provide both ATAC peaks files.")
   } else {
+    peakCond1 <- NULL
+    peakCond2 <- NULL
   }
 
   # Input validation
@@ -300,7 +315,7 @@ MOList <- function(objMOList = NA,
   )
 
   # Construct or modify the MOList object
-  if (is.na(objMOList)) {
+  if (is.null(objMOList)) {
     # Construct a new MOList object
     newObjMOList <- newMOList(
       RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
@@ -316,8 +331,5 @@ MOList <- function(objMOList = NA,
   }
   return(newObjMOList)
 }
-
-
-
 
 # [END]
