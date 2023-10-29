@@ -26,7 +26,7 @@ conducted on fetal ventricular heart tissues from 37 individuals
 }
 \examples{
 \dontrun{
- smallRNA_heart_samples
+smallRNA_heart_samples
 }
 }
 \keyword{datasets}

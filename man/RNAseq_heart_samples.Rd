@@ -7,7 +7,7 @@
 \format{
 A data frame with 53 rows (samples) and 4 columns (fields)
 \describe{
- \item{Sample}{Sample name corresponding to the RNAseq gene expression 
+ \item{Sample}{Sample name corresponding to the RNAseq gene expression
  dataset}
  \item{Age}{Age of the fetus in gestational weeks}
  \item{Sex}{Sex of the fetus}
@@ -28,7 +28,7 @@ fetal ventricular heart tissues from 53 individuals
 }
 \examples{
 \dontrun{
- RNAseq_heart_samples
+RNAseq_heart_samples
 }
 
 }

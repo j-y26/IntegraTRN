@@ -8,7 +8,7 @@
 A data frame with 497 rows (proteins) and 7 columns (field, samples)
 \describe{
  \item{gene}{Protein name}
- \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein 
+ \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein
  abundance values for each sample}
 }
 }
@@ -26,7 +26,7 @@ in the same conditions are included.
 }
 \examples{
 \dontrun{
- protein_heart
+protein_heart
 }
 }
 \keyword{datasets}
