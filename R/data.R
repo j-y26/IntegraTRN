@@ -1,8 +1,8 @@
 #' Gene expression of fetal heart tissues
-#' 
-#' An RNAseq experiment conducted on fetal ventricular heart tissues from 53 
+#'
+#' An RNAseq experiment conducted on fetal ventricular heart tissues from 53
 #' individuals
-#' 
+#'
 #' @format A data frame with 13043 rows (genes) and 54 columns (field, samples)
 #' \describe{
 #'  \item{gene}{Gene name}
@@ -16,46 +16,46 @@
 #'  sample_50, sample_51, sample_52, sample_53}{Gene expression values for each
 #'  sample}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
-#'  RNAseq_heart
+#' RNAseq_heart
 #' }
-#' 
-#' @references 
-#' Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., & 
-#' Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac 
-#' progenitor gene expression and programs adult-onset heart disease 
-#' susceptibility. Molecular Metabolism, 43. 
+#'
+#' @references
+#' Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., &
+#' Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac
+#' progenitor gene expression and programs adult-onset heart disease
+#' susceptibility. Molecular Metabolism, 43.
 #' https://doi.org/10.1016/j.molmet.2020.101116
 "RNAseq_heart"
 
 #' Sample information for RNAseq of heart tissues
-#' 
+#'
 #' A selected set of sample information for the RNA-seq experiment conducted on
 #' fetal ventricular heart tissues from 53 individuals
-#' 
+#'
 #' @format A data frame with 53 rows (samples) and 4 columns (fields)
 #' \describe{
-#'  \item{Sample}{Sample name corresponding to the RNAseq gene expression 
+#'  \item{Sample}{Sample name corresponding to the RNAseq gene expression
 #'  dataset}
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #'  \item{Sex}{Sex of the fetus}
 #'  \item{Batch}{Batch number of the RNAseq experiment, represented from
 #'  A to F}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
-#'  RNAseq_heart_samples
+#' RNAseq_heart_samples
 #' }
-#' 
+#'
 #' @references
 #' Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., &
 #' Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac
@@ -65,11 +65,11 @@
 "RNAseq_heart_samples"
 
 #' Expression of small RNA in fetal heart tissues
-#' 
+#'
 #' A small RNAseq experiment conducted on fetal ventricular heart tissues from
 #' 37 individuals
-#' 
-#' @format A data frame with 14801 rows (small RNA transcripts) and 38 columns 
+#'
+#' @format A data frame with 14801 rows (small RNA transcripts) and 38 columns
 #' (field, samples)
 #' \describe{
 #'  \item{transcript}{Transcript name}
@@ -80,10 +80,10 @@
 #'  sample_29, sample_30, sample_31, sample_32, sample_33, sample_34, sample_35,
 #'  sample_36, sample_37}{Transcript expression values for each sample}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' smallRNA_heart
@@ -91,10 +91,10 @@
 "smallRNAseq_heart"
 
 #' Sample information for small RNAseq of heart tissues
-#' 
+#'
 #' A selected set of sample information for the small RNA-seq experiment
 #' conducted on fetal ventricular heart tissues from 37 individuals
-#' 
+#'
 #' @format A data frame with 37 rows (samples) and 3 columns (fields)
 #' \describe{
 #'  \item{Sample}{Sample name corresponding to the small RNAseq gene expression
@@ -102,53 +102,53 @@
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #'  \item{Sex}{Sex of the fetus}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
-#'  smallRNA_heart_samples
+#' smallRNA_heart_samples
 #' }
 "smallRNAseq_heart_samples"
 
 #' Protein abundance in fetal heart tissues
-#' 
+#'
 #' A proteomics experiment conducted on fetal ventricular heart tissues from
 #' 6 individuals, using LC-MS/MS. Only concensus proteins found in all samples
 #' in the same conditions are included.
-#' 
+#'
 #' @format A data frame with 497 rows (proteins) and 7 columns (field, samples)
 #' \describe{
 #'  \item{gene}{Protein name}
-#'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein 
+#'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein
 #'  abundance values for each sample}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
-#'  protein_heart
+#' protein_heart
 #' }
 "protein_heart"
 
 #' Sample information for proteomics of heart tissues
-#' 
+#'
 #' A selected set of sample information for the proteomics experiment conducted
 #' on fetal ventricular heart tissues from 6 individuals
-#' 
+#'
 #' @format A data frame with 6 rows (samples) and 3 columns (fields)
 #' \describe{
 #'  \item{Sample}{Sample name corresponding to the proteomics gene expression
 #'  dataset}
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #' }
-#' 
+#'
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' protein_heart_samples
