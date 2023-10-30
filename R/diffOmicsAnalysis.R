@@ -5,11 +5,52 @@
 # Bugs and Issues: None
 
 
-# Validate the input data and annotations on the samples
-# Level: private
-# @param objMOList A MOList object containing the omics data
-# @param annoList A list containing the annotations on the samples of the omics
-#                 data, must in the order of RNAseq, small RNAseq, and protein
+# Define a global variable for the count-based omics data
+COUNT_OMICS <- c("RNAseq", "smallRNAseq", "proteomics")
+
+
+#' Validate the input data and annotations on the samples
+#'
+#' @keywords internal
+#'
+#' @description This function validates the input data and annotations on the
+#'             samples. The input data must be a MOList object, and the
+#'            annotations on the samples must be a list containing the
+#'           annotations on the RNAseq, small RNAseq, and protein data, in the
+#'         order of RNAseq, small RNAseq, and protein.
+#'
+#' @param objMOList A MOList object containing the omics data
+#' @param annoList A list containing the annotations on the samples of the omics
+#'                 data, must contain fields RNAseq, smallRNAseq, and proteomics
+#' \itemize{
+#'  \item RNAseq: A character/numeric vector for annotating each sample in the
+#'                RNAseq data, must be the same length as the number of samples
+#'                in the RNAseq data
+#' \item smallRNAseq: A character/numeric vector for annotating each sample in
+#'                    the small RNAseq data, must be the same length as the
+#'                    number of samples in the small RNAseq data
+#' \item proteomics: A character/numeric vector for annotating each sample in
+#'                   the protein data, must be the same length as the number of
+#'                   samples in the protein data
+#' }
+#'
+#' @return NULL
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming myMOList is a MOList object
+#'
+#' # Create an example annotation list for batch correction
+#' annoList <- list(
+#'   RNAseq = rep(c("A", "B"), each = 5),
+#'   smallRNAseq = rep(c("A", "B"), each = 3),
+#'   proteomics = rep(c("A", "B"), each = 3)
+#' )
+#'
+#' # Validate the input data and annotations
+#' validateDataAnno(myMOList, annoList)
+#' }
+#'
 validateDataAnno <- function(objMOList, annoList) {
   # Validate the correctness of the MOList object
   validateMOList(objMOList)
@@ -21,11 +62,11 @@ validateDataAnno <- function(objMOList, annoList) {
   } else {
     # Do nothing
   }
+  return(invisible(NULL))
 }
 
 
 #' Filter the gene counts for the count-based omics data
-#' Level: private
 #'
 #' @description Filtering is based on the design of the experiment. If the
 #'              samples are only grouped into 2 conditions, then the genes with
@@ -34,12 +75,21 @@ validateDataAnno <- function(objMOList, annoList) {
 #'              are kept. If the samples are grouped by a continuous variable,
 #'              then the genes with counts in more than 1 CPM in at least
 #'              30% of the samples are kept.
+#'
 #' @param objMOList A MOList object containing the omics data
-#' @param omics A character string specifying the omics data to be filtered
+#' @param omic A character string specifying the omics data to be filtered
 #'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
+#'
 #' @return An MOList object containing the filtered omics data
+#'
 #' @export
 #' @importFrom edgeR cpm
+#'
+#' @references
+#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+#' differential expression analysis of digital gene expression data.
+#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
 #'
 #' @examples
 #' # Create example RNAseq data
@@ -60,6 +110,10 @@ validateDataAnno <- function(objMOList, annoList) {
 #' dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
 #'
 filterGeneCounts <- function(objMOList, omic) {
+  if (!omics %in% COUNT_OMICS) {
+    stop("The input omics data is not supported for filtering")
+  }
+
   omicData <- getCounts(objMOList, omic)
   if (is.null(omicData)) {
     # Nothing to do, return the original object
@@ -141,7 +195,7 @@ diffOmics <- function(objMOList,
   ))
 
   # Data filtering for count-based omics data
-  for (omics in c("RNAseq", "smallRNAseq", "proteomics")) {
-    objMOList <- filterMOList(objMOList, omics)
+  for (omics in COUNT_OMICS) {
+    objMOList <- filterGeneCounts(objMOList, omics)
   }
 }

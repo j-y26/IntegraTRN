@@ -2,15 +2,14 @@
 % Please edit documentation in R/diffOmicsAnalysis.R
 \name{filterGeneCounts}
 \alias{filterGeneCounts}
-\title{Filter the gene counts for the count-based omics data
-Level: private}
+\title{Filter the gene counts for the count-based omics data}
 \usage{
 filterGeneCounts(objMOList, omic)
 }
 \arguments{
 \item{objMOList}{A MOList object containing the omics data}
 
-\item{omics}{A character string specifying the omics data to be filtered
+\item{omic}{A character string specifying the omics data to be filtered
 must be one of "RNAseq", "smallRNAseq", and "proteomics"}
 }
 \value{
@@ -43,4 +42,10 @@ objMOList <- filterGeneCounts(objMOList, "RNAseq")
 # After filtering, check the dimensions of the RNAseq data
 dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
 
+}
+\references{
+Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+differential expression analysis of digital gene expression data.
+Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
 }
