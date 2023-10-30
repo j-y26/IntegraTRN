@@ -14,13 +14,13 @@ diffOmicsAnalysis(
 \arguments{
 \item{objMOList}{A MOList object containing the omics data}
 
-\item{rnaseqBatch}{A character vector specifying the batch information for 
+\item{rnaseqBatch}{A character vector specifying the batch information for
 the RNA-seq data, must be the same length as the number
 of samples in the RNA-seq data, used for batch correction}
 
 \item{smallRnaBatch}{A character vector specifying the batch information for
 the small RNA data, must be the same length as the
-number of samples in the small RNAseq data, used for 
+number of samples in the small RNAseq data, used for
 batch correction}
 
 \item{proteinBatch}{A character vector specifying the batch information for

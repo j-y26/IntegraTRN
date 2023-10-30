@@ -17,15 +17,9 @@ A numeric matrix containing the RNAseq data
 Getter for the RNAseq data from the MOList object
 }
 \examples{
-# Generating some example data
-# Note that the exact value could differ based on the random seed
-RNAseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
-RNAGroupBy <- rep(c("A", "B"), each = 5)
-
-# Constructing the MOList object
-objMOList <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
-
-# Retrieving the RNAseq data
-dataRNAseq <- RNAseq(objMOList)
+\dontrun{
+# Using the example MOList object
+dataRNAseq <- RNAseq(myMOList)
+}
 
 }

@@ -17,20 +17,9 @@ A numeric matrix containing the proteomics data
 Getter for the proteomics data from the MOList object
 }
 \examples{
-# Generating some example data
-# Note that the exact value could differ based on the random seed
-RNAseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
-RNAGroupBy <- rep(c("A", "B"), each = 5)
-proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
-proteomicsGroupBy <- rep(c("A", "B"), each = 3)
-
-# Constructing the MOList object
-objMOList <- MOList(RNAseq = RNAseq,
-                    RNAGroupBy = RNAGroupBy,
-                    proteomics = proteomics,
-                    proteomicsGroupBy = proteomicsGroupBy)
-
-# Retrieving the proteomics data
-dataProteomics <- proteomics(objMOList)
+\dontrun{
+# Using the example MOList object
+dataProteomics <- proteomics(myMOList)
+}
 
 }

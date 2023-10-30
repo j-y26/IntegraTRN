@@ -72,20 +72,24 @@ proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
 proteomicsGroupBy <- rep(c("A", "B"), each = 3)
 
 # Constructing the MOList object at once
-objMOList1 <- MOList(RNAseq = RNAseq,
-                     RNAGroupBy = RNAGroupBy,
-                     smallRNAseq = smallRNAseq,
-                     smallRNAGroupBy = smallRNAGroupBy,
-                     proteomics = proteomics,
-                     proteomicsGroupBy = proteomicsGroupBy)
+objMOList1 <- MOList(
+  RNAseq = RNAseq,
+  RNAGroupBy = RNAGroupBy,
+  smallRNAseq = smallRNAseq,
+  smallRNAGroupBy = smallRNAGroupBy,
+  proteomics = proteomics,
+  proteomicsGroupBy = proteomicsGroupBy
+)
 
 # Or the MOList object can be constructed minimally with the RNAseq data
 # Further omics data can be appended/exchanged later
 objMOList2 <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 RNAseq2 <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+colnames(RNAseq2) <- paste0("sample_", seq_len(ncol(RNAseq2)))
 objMOList2 <- MOList(objMOList2, RNAseq = RNAseq2, RNAGroupBy = RNAGroupBy)
 objMOList2 <- MOList(objMOList2,
-                     proteomics = proteomics,
-                     proteomicsGroupBy = proteomicsGroupBy)
+  proteomics = proteomics,
+  proteomicsGroupBy = proteomicsGroupBy
+)
 
 }

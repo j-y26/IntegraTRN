@@ -251,7 +251,7 @@ modifyMOList <- function(objMOList,
                          peakCond2) {
   if (!is.null(RNAseq)) {
     objMOList@RNAseq <- RNAseq
-    objMOList@RNAseqSamples$samples <- colnames(RNAseq)
+    objMOList@RNAseqSamples$samples <- getSampleNames(RNAseq)
     objMOList@RNAseqSamples$groupBy <- RNAGroupBy
   } else {
     # Do nothing
@@ -386,6 +386,7 @@ validateMOList <- function(objMOList) {
 #' # Further omics data can be appended/exchanged later
 #' objMOList2 <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 #' RNAseq2 <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+#' colnames(RNAseq2) <- paste0("sample_", seq_len(ncol(RNAseq2)))
 #' objMOList2 <- MOList(objMOList2, RNAseq = RNAseq2, RNAGroupBy = RNAGroupBy)
 #' objMOList2 <- MOList(objMOList2,
 #'   proteomics = proteomics,
@@ -593,5 +594,12 @@ methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
 methods::setMethod("ATACpeaks", "MOList", function(x) {
   return(x@ATACpeaks)
 })
+
+# References:
+# Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+# R packages (2e) by Hadley Wickham and Jennifer Bryan. Access: 
+# https://r-pkgs.org/index.html
+# Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data 
+# analysis.
 
 # [END]

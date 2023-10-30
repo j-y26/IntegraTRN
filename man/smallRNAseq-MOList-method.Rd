@@ -17,20 +17,9 @@ A numeric matrix containing the smallRNAseq data
 Getter for the smallRNAseq data from the MOList object
 }
 \examples{
-# Generating some example data
-# Note that the exact value could differ based on the random seed
-RNAseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
-RNAGroupBy <- rep(c("A", "B"), each = 5)
-smallRNAseq <- matrix(sample(1:100, 20, replace = TRUE), ncol = 4)
-smallRNAGroupBy <- rep(c("A", "B"), each = 2)
-
-# Constructing the MOList object
-objMOList <- MOList(RNAseq = RNAseq,
-                    RNAGroupBy = RNAGroupBy,
-                    smallRNAseq = smallRNAseq,
-                    smallRNAGroupBy = smallRNAGroupBy)
-
-# Retrieving the smallRNAseq data
-dataSmallRNAseq <- smallRNAseq(objMOList)
+\dontrun{
+# Using the example MOList object
+dataSmallRNAseq <- smallRNAseq(myMOList)
+}
 
 }

@@ -16,3 +16,9 @@ A list containing the ATAC peaks for condition 1 and condition 2
 \description{
 Getter for the ATAC peaks data from the MOList object
 }
+\examples{
+\dontrun{
+# Using the example MOList object
+dataATACpeaks <- ATACpeaks(myMOList)
+}
+}
