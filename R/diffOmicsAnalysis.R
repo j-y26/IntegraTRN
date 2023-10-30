@@ -127,7 +127,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' @return An MOList object containing the differential analysis results
 #' @export
 #' 
-diffOmicsAnalysis <- function(objMOList,
+diffOmics <- function(objMOList,
                               rnaseqBatch = NULL,
                               smallRnaBatch = NULL,
                               proteinBatch = NULL) {
