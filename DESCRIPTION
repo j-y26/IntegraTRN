@@ -7,8 +7,7 @@ Authors@R: person("Jielin", "Yang",
                   role = c("aut", "cre"),
                   comment = c(ORCID = "0000-0003-4207-828X"))
 Maintainer: Jielin Yang <jielin.yang@mail.utoronto.ca>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: The R package IntegraTRN integrates transcriptomic, small RNAomic, proteomic, and epigenomic data to construct a transcriptional regulatory network (TRN) underlying the gene expression changes in a developmental or disease (or any continuous/binary) biological context. In particular, the TRN is a network of interacting factors, in which one element can exert a regulatory effect (activating or inhibitory) on the expression of one or more elements. Given the complex nature of transcriptional regulation, the package reveals the key players of such regulation, including transcriptional factors (TFs) and small RNAs. Since gene/protein expression changes are usually the most direct molecular cause of observed phenotypic alterations, the core TRN deciphers changes between two or more conditions and infers the upstream regulatory factors that mediate such changes. The analysis pipeline provided by this package is primarily composed of a two-step process: (1) elucidating the transcriptional and regulatory changes that take place during a biological process, such as development or disease; and (2) performing correlational analysis with rigorous filtering based on biological data to identify the regulatory interactions that are responsible for the observed changes.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -19,4 +18,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
-    GenomicTools.fileHandler
+    GenomicTools.fileHandler,
+    methods

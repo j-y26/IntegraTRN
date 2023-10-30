@@ -216,9 +216,7 @@ test_that("MOList object creation with additional data", {
   myMOList <- MOList(
     RNAseq = testMatrix, RNAGroupBy = testGroupBy,
     smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
-    proteomics = testMatrix, proteomicsGroupBy = testGroupBy,
-    pathATACpeak1 = "./inst/extdata/bed3.bed",
-    pathATACpeak2 = "./inst/extdata/bedpeaks.narrowPeak"
+    proteomics = testMatrix, proteomicsGroupBy = testGroupBy
   )
   expect_equal(myMOList@RNAseq, testMatrix)
   expect_equal(myMOList@RNAseqSamples$groupBy, testGroupBy)
@@ -235,8 +233,6 @@ test_that("MOList object creation with additional data", {
     length(myMOList@proteomicsSamples$samples),
     ncol(myMOList@proteomics)
   )
-  expect_true(is.data.frame(myMOList@ATACpeaks$peaksCond1))
-  expect_true(is.data.frame(myMOList@ATACpeaks$peaksCond2))
 })
 
 test_that("Appending data to MOList object", {
@@ -268,10 +264,28 @@ test_that("Appending data to MOList object", {
   )
   expect_false(is.data.frame(myMOList@ATACpeaks$peaksCond1))
   expect_false(is.data.frame(myMOList@ATACpeaks$peaksCond2))
-  myMOList <- MOList(myMOList,
-    pathATACpeak1 = "./inst/extdata/bed3.bed",
-    pathATACpeak2 = "./inst/extdata/bedpeaks.narrowPeak"
+})
+
+# Testing MOList object validation functions
+test_that("MOList object validation functions", {
+  myMOList <- MOList(RNAseq = testMatrix, RNAGroupBy = testGroupBy,
+                     smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
+                     proteomics = testMatrix, proteomicsGroupBy = testGroupBy
   )
-  expect_true(is.data.frame(myMOList@ATACpeaks$peaksCond1))
-  expect_true(is.data.frame(myMOList@ATACpeaks$peaksCond2))
+  # Temper the object illegally
+  testMOList <- myMOList
+  testMOList@RNAseq[1, 1] <- NA
+  expect_error(validateMOList(testMOList), "NA")
+  testMOList <- myMOList
+  testMOList@RNAseq[1, 1] <- "A"
+  expect_error(validateMOList(testMOList), "numeric")
+  testMOList <- myMOList
+  testMOList@RNAseq <- testMatrix[, 1:2]
+  expect_error(validateMOList(testMOList), "match")
+  testMOList <- myMOList
+  testMOList@RNAseqSamples$groupBy[1] <- NA
+  expect_error(validateMOList(testMOList), "provide")
+  testMOList <- myMOList
+  testMOList@RNAseqSamples$groupBy <- testMOList@RNAseqSamples$groupBy[-1]
+  expect_error(validateMOList(testMOList), "correct")
 })

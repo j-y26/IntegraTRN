@@ -12,21 +12,23 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #' Multi-Omics List (MOList) S4 class
 #'
 #' @description This class is used to store the multi-omics data, including
-#'             RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+#'              RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
 #' @slot RNAseq A numeric matrix containing the RNAseq data
 #' @slot RNAseqSamples A list containing the sample names and grouping
-#'                    information for the RNAseq data
+#'                     information for the RNAseq data
 #' @slot smallRNAseq A numeric matrix containing the smallRNAseq data
 #' @slot smallRNAseqSamples A list containing the sample names and grouping
-#'                         information for the smallRNAseq data
+#'                          information for the smallRNAseq data
 #' @slot proteomics A numeric matrix containing the proteomics data
 #' @slot proteomicsSamples A list containing the sample names and grouping
-#'                        information for the proteomics data
+#'                         information for the proteomics data
 #' @slot ATACpeaks A list containing the ATAC peaks for condition 1 and
-#'                condition 2
+#'                 condition 2
+#' @slot .Data A list containing differential expression analysis data, used
+#'             in the same way as a list
 #' @exportClass MOList
 #'
-setClass("MOList",
+methods::setClass("MOList",
   # Inheritance
   contains = "list",
   # Slots
@@ -208,7 +210,7 @@ newMOList <- function(RNAseq,
                       peakCond1,
                       peakCond2) {
   # Construct the MOList object
-  objMOList <- new("MOList",
+  objMOList <- methods::new("MOList",
     RNAseq = RNAseq,
     RNAseqSamples = list(
       samples = getSampleNames(RNAseq),
@@ -404,6 +406,8 @@ MOList <- function(objMOList = NULL,
       peakCond1, peakCond2
     )
   }
+  # Final validation of the MOList object
+  validateMOList(newObjMOList)
   return(newObjMOList)
 }
 
