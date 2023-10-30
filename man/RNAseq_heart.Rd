@@ -5,9 +5,8 @@
 \alias{RNAseq_heart}
 \title{Gene expression of fetal heart tissues}
 \format{
-A data frame with 13043 rows (genes) and 54 columns (field, samples)
+A matrix with 13043 rows (genes) and 53 columns (samples)
 \describe{
- \item{gene}{Gene name}
  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
  sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
  sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,

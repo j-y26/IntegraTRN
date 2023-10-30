@@ -3,9 +3,8 @@
 #' An RNAseq experiment conducted on fetal ventricular heart tissues from 53
 #' individuals
 #'
-#' @format A data frame with 13043 rows (genes) and 54 columns (field, samples)
+#' @format A matrix with 13043 rows (genes) and 53 columns (samples)
 #' \describe{
-#'  \item{gene}{Gene name}
 #'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
 #'  sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
 #'  sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,
@@ -69,10 +68,9 @@
 #' A small RNAseq experiment conducted on fetal ventricular heart tissues from
 #' 37 individuals
 #'
-#' @format A data frame with 14801 rows (small RNA transcripts) and 38 columns
-#' (field, samples)
+#' @format A data frame with 14801 rows (small RNA transcripts) and 37 columns
+#' (samples)
 #' \describe{
-#'  \item{transcript}{Transcript name}
 #'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,
 #'  sample_8, sample_9, sample_10, sample_11, sample_12, sample_13, sample_14,
 #'  sample_15, sample_16, sample_17, sample_18, sample_19, sample_20, sample_21,
@@ -118,9 +116,8 @@
 #' 6 individuals, using LC-MS/MS. Only concensus proteins found in all samples
 #' in the same conditions are included.
 #'
-#' @format A data frame with 497 rows (proteins) and 7 columns (field, samples)
+#' @format A data frame with 489 rows (proteins) and 6 columns (samples)
 #' \describe{
-#'  \item{gene}{Protein name}
 #'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein
 #'  abundance values for each sample}
 #' }

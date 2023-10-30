@@ -6,7 +6,7 @@
 \title{Multi-Omics List (MOList) S4 class}
 \description{
 This class is used to store the multi-omics data, including
-            RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+             RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
 }
 \section{Slots}{
 
@@ -28,5 +28,8 @@ information for the proteomics data}
 
 \item{\code{ATACpeaks}}{A list containing the ATAC peaks for condition 1 and
 condition 2}
+
+\item{\code{.Data}}{A list containing differential expression analysis data, used
+in the same way as a list}
 }}
 
