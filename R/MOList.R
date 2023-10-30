@@ -263,6 +263,64 @@ modifyMOList <- function(objMOList,
 }
 
 
+# Validate omics raw data with sample information
+# Level: Private
+# @param dataMatrix A numeric matrix containing the omics data
+# @param sampleInfo A list containing the sample names and grouping information
+#                   for the omics data
+validateOmics <- function(dataMatrix, sampleInfo) {
+  if (xor(is.null(dataMatrix), is.null(sampleInfo))) {
+    stop("Both the omics data and sample information must be provided.")
+  } else if (is.null(dataMatrix) && is.null(sampleInfo)) {
+    # Allowed, do nothing
+  } else if (!is.numeric(dataMatrix)) {
+    stop("The omics data must be a numeric matrix.")
+  } else if (ncol(dataMatrix) != length(sampleInfo$samples)) {
+    stop("The number of samples in the omics data must match the length of the
+    sample information.")
+  } else if (any(is.na(dataMatrix))) {
+    stop("The omics data contains NA values. Please check the validity of your
+    data.")
+  } else if (any(is.na(sampleInfo$groupBy)) || 
+             ncol(dataMatrix) != length(sampleInfo$groupBy)) {
+    stop("Please provide correct grouping information for the omics data.")
+  } else {
+    # Pass the test, do nothing
+  }
+  return(invisible(NULL))
+}
+
+
+# Validate the MOList S4 object
+# Level: Private
+# @param objMOList An object of class MOList for appending/exchanging omics data
+validateMOList <- function(objMOList) {
+  if (class(objMOList)[1] != "MOList") {
+    stop("Error validating the MOList class.")
+  } else if (is.null(objMOList@RNAseq)) {
+    stop("The RNAseq data must be provided.")
+  } else {
+    # Do nothing
+  }
+  validateOmics(objMOList@RNAseq, objMOList@RNAseqSamples)
+  validateOmics(objMOList@smallRNAseq, objMOList@smallRNAseqSamples)
+  validateOmics(objMOList@proteomics, objMOList@proteomicsSamples)
+  if (xor(is.null(objMOList@ATACpeaks$peaksCond1), 
+          is.null(objMOList@ATACpeaks$peaksCond2))) {
+    stop("Both ATAC peaks files must be provided.")
+  } else if (is.null(objMOList@ATACpeaks$peaksCond1) && 
+             is.null(objMOList@ATACpeaks$peaksCond2)) {
+    # Allowed, do nothing
+  } else if (any(is.na(objMOList@ATACpeaks$peaksCond1[, CHROMINFO])) ||
+             any(is.na(objMOList@ATACpeaks$peaksCond2[, CHROMINFO]))) {
+    stop("Missing values in the chromosome information in the ATAC peaks.")
+  } else {
+    # Pass the test, do nothing
+  }
+  return(invisible(NULL))
+}
+
+
 #' Constructor for the MOList object
 #'
 #' @description This function is a constructor of the MOList object, which is
