@@ -1,3 +1,10 @@
+# Purpose: Testing MOList related functions
+# Author: Jielin Yang
+# Date: 2023-10-29
+# Version: 1.0
+# Bugs and Issues: None
+
+
 # Generate a 4x3 matrix with random integers between 1 and 10
 testMatrix <- matrix(sample(1:10, 4 * 3, replace = TRUE), nrow = 4)
 colnames(testMatrix) <- c("sample1", "sample2", "sample3")
@@ -268,9 +275,10 @@ test_that("Appending data to MOList object", {
 
 # Testing MOList object validation functions
 test_that("MOList object validation functions", {
-  myMOList <- MOList(RNAseq = testMatrix, RNAGroupBy = testGroupBy,
-                     smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
-                     proteomics = testMatrix, proteomicsGroupBy = testGroupBy
+  myMOList <- MOList(
+    RNAseq = testMatrix, RNAGroupBy = testGroupBy,
+    smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
+    proteomics = testMatrix, proteomicsGroupBy = testGroupBy
   )
   # Temper the object illegally
   testMOList <- myMOList
@@ -289,3 +297,69 @@ test_that("MOList object validation functions", {
   testMOList@RNAseqSamples$groupBy <- testMOList@RNAseqSamples$groupBy[-1]
   expect_error(validateMOList(testMOList), "correct")
 })
+
+# Testing setter functions
+test_that("Setting RNAseq", {
+  myMOList <- MOList(
+    RNAseq = testMatrix, RNAGroupBy = testGroupBy,
+    smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
+    proteomics = testMatrix, proteomicsGroupBy = testGroupBy
+  )
+  expect_equal(myMOList@RNAseq, testMatrix)
+  expect_equal(myMOList@RNAseqSamples$groupBy, testGroupBy)
+  expect_equal(length(myMOList@RNAseqSamples$samples), ncol(myMOList@RNAseq))
+  testMatrix2 <- testMatrix
+  testMatrix2[1, ] <- 20
+  RNAseq(myMOList) <- testMatrix2
+  expect_equal(myMOList@RNAseq, testMatrix2)
+  expect_equal(myMOList@RNAseqSamples$groupBy, testGroupBy)
+  expect_equal(length(myMOList@RNAseqSamples$samples), ncol(myMOList@RNAseq))
+})
+
+test_that("Setting smallRNAseq", {
+  myMOList <- MOList(
+    RNAseq = testMatrix, RNAGroupBy = testGroupBy,
+    smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
+    proteomics = testMatrix, proteomicsGroupBy = testGroupBy
+  )
+  expect_equal(myMOList@smallRNAseq, testMatrix)
+  expect_equal(myMOList@smallRNAseqSamples$groupBy, testGroupBy)
+  expect_equal(
+    length(myMOList@smallRNAseqSamples$samples),
+    ncol(myMOList@smallRNAseq)
+  )
+  testMatrix2 <- testMatrix
+  testMatrix2[1, ] <- 20
+  smallRNAseq(myMOList) <- testMatrix2
+  expect_equal(myMOList@smallRNAseq, testMatrix2)
+  expect_equal(myMOList@smallRNAseqSamples$groupBy, testGroupBy)
+  expect_equal(
+    length(myMOList@smallRNAseqSamples$samples),
+    ncol(myMOList@smallRNAseq)
+  )
+})
+
+test_that("Setting proteomics", {
+  myMOList <- MOList(
+    RNAseq = testMatrix, RNAGroupBy = testGroupBy,
+    smallRNAseq = testMatrix, smallRNAGroupBy = testGroupBy,
+    proteomics = testMatrix, proteomicsGroupBy = testGroupBy
+  )
+  expect_equal(myMOList@proteomics, testMatrix)
+  expect_equal(myMOList@proteomicsSamples$groupBy, testGroupBy)
+  expect_equal(
+    length(myMOList@proteomicsSamples$samples),
+    ncol(myMOList@proteomics)
+  )
+  testMatrix2 <- testMatrix
+  testMatrix2[1, ] <- 20
+  proteomics(myMOList) <- testMatrix2
+  expect_equal(myMOList@proteomics, testMatrix2)
+  expect_equal(myMOList@proteomicsSamples$groupBy, testGroupBy)
+  expect_equal(
+    length(myMOList@proteomicsSamples$samples),
+    ncol(myMOList@proteomics)
+  )
+})
+
+# [END]

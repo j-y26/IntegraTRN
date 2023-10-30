@@ -151,3 +151,25 @@
 #' protein_heart_samples
 #' }
 "protein_heart_samples"
+
+#' Example MOList S4 object
+#'
+#' An example MOList S4 object containing the RNAseq, small RNAseq, proteomics,
+#' and ATACseq peaks
+#'
+#' @format An S4 object of class MOList
+#' \describe{
+#' \item{RNAseq}{A matrix of RNAseq gene expression values}
+#' \item{smallRNAseq}{A matrix of small RNAseq gene expression values}
+#' \item{protein}{A matrix of proteomics gene expression values}
+#' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
+#' }
+#'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @examples
+#' \dontrun{
+#' myMOList
+#' }
+"myMOList"

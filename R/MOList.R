@@ -283,8 +283,8 @@ validateOmics <- function(dataMatrix, sampleInfo) {
   } else if (any(is.na(dataMatrix))) {
     stop("The omics data contains NA values. Please check the validity of your
     data.")
-  } else if (any(is.na(sampleInfo$groupBy)) || 
-             ncol(dataMatrix) != length(sampleInfo$groupBy)) {
+  } else if (any(is.na(sampleInfo$groupBy)) ||
+    ncol(dataMatrix) != length(sampleInfo$groupBy)) {
     stop("Please provide correct grouping information for the omics data.")
   } else {
     # Pass the test, do nothing
@@ -307,14 +307,16 @@ validateMOList <- function(objMOList) {
   validateOmics(objMOList@RNAseq, objMOList@RNAseqSamples)
   validateOmics(objMOList@smallRNAseq, objMOList@smallRNAseqSamples)
   validateOmics(objMOList@proteomics, objMOList@proteomicsSamples)
-  if (xor(is.null(objMOList@ATACpeaks$peaksCond1), 
-          is.null(objMOList@ATACpeaks$peaksCond2))) {
+  if (xor(
+    is.null(objMOList@ATACpeaks$peaksCond1),
+    is.null(objMOList@ATACpeaks$peaksCond2)
+  )) {
     stop("Both ATAC peaks files must be provided.")
-  } else if (is.null(objMOList@ATACpeaks$peaksCond1) && 
-             is.null(objMOList@ATACpeaks$peaksCond2)) {
+  } else if (is.null(objMOList@ATACpeaks$peaksCond1) &&
+    is.null(objMOList@ATACpeaks$peaksCond2)) {
     # Allowed, do nothing
   } else if (any(is.na(objMOList@ATACpeaks$peaksCond1[, CHROMINFO])) ||
-             any(is.na(objMOList@ATACpeaks$peaksCond2[, CHROMINFO]))) {
+    any(is.na(objMOList@ATACpeaks$peaksCond2[, CHROMINFO]))) {
     stop("Missing values in the chromosome information in the ATAC peaks.")
   } else {
     # Pass the test, do nothing
@@ -356,6 +358,39 @@ validateMOList <- function(objMOList) {
 #' @export MOList
 #' @importFrom GenomicTools.fileHandler importBed
 #'
+#' @examples
+#' # Generating some example data
+#' # Note that the exact value could differ based on the random seed
+#' RNAseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+#' colnames(RNAseq) <- paste0("sample_", seq_len(ncol(RNAseq)))
+#' rownames(RNAseq) <- paste0("gene_", seq_len(nrow(RNAseq)))
+#' RNAGroupBy <- rep(c("A", "B"), each = 5)
+#'
+#' smallRNAseq <- matrix(sample(1:100, 20, replace = TRUE), ncol = 4)
+#' smallRNAGroupBy <- rep(c("A", "B"), each = 2)
+#'
+#' proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
+#' proteomicsGroupBy <- rep(c("A", "B"), each = 3)
+#'
+#' # Constructing the MOList object at once
+#' objMOList1 <- MOList(
+#'   RNAseq = RNAseq,
+#'   RNAGroupBy = RNAGroupBy,
+#'   smallRNAseq = smallRNAseq,
+#'   smallRNAGroupBy = smallRNAGroupBy,
+#'   proteomics = proteomics,
+#'   proteomicsGroupBy = proteomicsGroupBy
+#' )
+#'
+#' # Or the MOList object can be constructed minimally with the RNAseq data
+#' # Further omics data can be appended/exchanged later
+#' objMOList2 <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
+#' RNAseq2 <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+#' objMOList2 <- MOList(objMOList2, RNAseq = RNAseq2, RNAGroupBy = RNAGroupBy)
+#' objMOList2 <- MOList(objMOList2,
+#'   proteomics = proteomics,
+#'   proteomicsGroupBy = proteomicsGroupBy
+#' )
 #'
 MOList <- function(objMOList = NULL,
                    RNAseq = NULL,
@@ -410,5 +445,153 @@ MOList <- function(objMOList = NULL,
   validateMOList(newObjMOList)
   return(newObjMOList)
 }
+
+
+# Define a set of setters for the data slots of the MOList object
+# Must be used in caution, the user should not have access to these functions
+
+# RNAseq slot
+# Level: Private
+# @param x An object of class MOList for appending/exchanging omics data
+# @param value A numeric matrix containing the RNAseq data
+methods::setGeneric("RNAseq<-", function(x, value) standardGeneric("RNAseq<-"))
+methods::setMethod("RNAseq<-", "MOList", function(x, value) {
+  if (is.null(value) || any(colnames(value) != x@RNAseqSamples$samples)) {
+    stop("The sample names of the smallRNAseq data must match the RNAseq data.")
+  } else {
+    x@RNAseq <- value
+    validateMOList(x)
+    return(x)
+  }
+})
+
+# smallRNAseq slot
+# Level: Private
+# @param x An object of class MOList for appending/exchanging omics data
+# @param value A numeric matrix containing the smallRNAseq data
+methods::setGeneric(
+  "smallRNAseq<-",
+  function(x, value) standardGeneric("smallRNAseq<-")
+)
+methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
+  if (is.null(value) || any(colnames(value) != x@smallRNAseqSamples$samples)) {
+    stop("The sample names of the smallRNAseq data must match the RNAseq data.")
+  } else {
+    x@smallRNAseq <- value
+    validateMOList(x)
+    return(x)
+  }
+})
+
+# proteomics slot
+# Level: Private
+# @param x An object of class MOList for appending/exchanging omics data
+# @param value A numeric matrix containing the proteomics data
+methods::setGeneric(
+  "proteomics<-",
+  function(x, value) standardGeneric("proteomics<-")
+)
+methods::setMethod("proteomics<-", "MOList", function(x, value) {
+  if (is.null(value) || any(colnames(value) != x@proteomicsSamples$samples)) {
+    stop("The sample names of the proteomics data must match the RNAseq data.")
+  } else {
+    x@proteomics <- value
+    validateMOList(x)
+    return(x)
+  }
+})
+
+# ATACpeaks slot
+# Level: Private
+# @param x An object of class MOList for appending/exchanging omics data
+# @param value A list containing the ATAC peaks for condition 1 and condition 2
+methods::setGeneric(
+  "ATACpeaks<-",
+  function(x, value) standardGeneric("ATACpeaks<-")
+)
+methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
+  if (is.null(value)) {
+    stop("Invalid ATAC peak list.")
+  } else {
+    x@ATACpeaks <- value
+    validateMOList(x)
+    return(x)
+  }
+})
+
+
+# Define a set of getters for the data slots of the MOList object, allowing
+# the user to retrieve information from the MOList object
+
+# RNAseq slot
+methods::setGeneric("RNAseq", function(x) standardGeneric("RNAseq"))
+
+#' Getter for the RNAseq data from the MOList object
+#' @aliases RNAseq
+#' @param x An object of class MOList for retrieving omics data
+#' @return A numeric matrix containing the RNAseq data
+#' @export
+#' @examples
+#' \dontrun{
+#' # Using the example MOList object
+#' dataRNAseq <- RNAseq(myMOList)
+#' }
+#'
+methods::setMethod("RNAseq", "MOList", function(x) {
+  return(x@RNAseq)
+})
+
+# Small RNAseq slot
+methods::setGeneric("smallRNAseq", function(x) standardGeneric("smallRNAseq"))
+
+#' Getter for the smallRNAseq data from the MOList object
+#' @aliases smallRNAseq
+#' @param x An object of class MOList for retrieving omics data
+#' @return A numeric matrix containing the smallRNAseq data
+#' @export
+#' @examples
+#' \dontrun{
+#' # Using the example MOList object
+#' dataSmallRNAseq <- smallRNAseq(myMOList)
+#' }
+#'
+methods::setMethod("smallRNAseq", "MOList", function(x) {
+  return(x@smallRNAseq)
+})
+
+# Proteomics slot
+methods::setGeneric("proteomics", function(x) standardGeneric("proteomics"))
+
+#' Getter for the proteomics data from the MOList object
+#' @aliases proteomics
+#' @param x An object of class MOList for retrieving omics data
+#' @return A numeric matrix containing the proteomics data
+#' @export
+#' @examples
+#' \dontrun{
+#' # Using the example MOList object
+#' dataProteomics <- proteomics(myMOList)
+#' }
+#'
+methods::setMethod("proteomics", "MOList", function(x) {
+  return(x@proteomics)
+})
+
+# ATACpeaks slot
+methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
+
+#' Getter for the ATAC peaks data from the MOList object
+#' @aliases ATACpeaks
+#' @param x An object of class MOList for retrieving omics data
+#' @return A list containing the ATAC peaks for condition 1 and condition 2
+#' @export
+#' @examples
+#' \dontrun{
+#' # Using the example MOList object
+#' dataATACpeaks <- ATACpeaks(myMOList)
+#' }
+methods::setMethod("ATACpeaks", "MOList", function(x) {
+  return(x@ATACpeaks)
+})
 
 # [END]
