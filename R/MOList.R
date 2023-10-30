@@ -9,43 +9,53 @@
 CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 
 
-# Define the MOList S4 class
-# Slots: RNAseq, RNAseqSamples, smallRNAseq, smallRNAseqSamples, proteomics,
-#        proteomicsSamples, ATACpeaks
-# Inheritance: list
+#' Multi-Omics List (MOList) S4 class
+#'
+#' @description This class is used to store the multi-omics data, including
+#'             RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+#' @slot RNAseq A numeric matrix containing the RNAseq data
+#' @slot RNAseqSamples A list containing the sample names and grouping
+#'                    information for the RNAseq data
+#' @slot smallRNAseq A numeric matrix containing the smallRNAseq data
+#' @slot smallRNAseqSamples A list containing the sample names and grouping
+#'                         information for the smallRNAseq data
+#' @slot proteomics A numeric matrix containing the proteomics data
+#' @slot proteomicsSamples A list containing the sample names and grouping
+#'                        information for the proteomics data
+#' @slot ATACpeaks A list containing the ATAC peaks for condition 1 and
+#'                condition 2
+#' @exportClass MOList
+#'
 setClass("MOList",
   # Inheritance
   contains = "list",
   # Slots
   slots = list(
-    RNAseq = "numeric",
+    RNAseq = "matrix",
     RNAseqSamples = "list",
-    smallRNAseq = "numeric",
+    smallRNAseq = "matrix",
     smallRNAseqSamples = "list",
-    proteomics = "numeric",
+    proteomics = "matrix",
     proteomicsSamples = "list",
     ATACpeaks = "list"
   ),
   # Prototypes
   prototype = prototype(
-    RNAseq = NA_real_,
     RNAseqSamples = list(
-      samples = NA,
-      groupBy = NA
+      samples = NULL,
+      groupBy = NULL
     ),
-    smallRNAseq = NA_real_,
     smallRNAseqSamples = list(
-      samples = NA,
-      groupBy = NA
+      samples = NULL,
+      groupBy = NULL
     ),
-    proteomics = NA_real_,
     proteomicsSamples = list(
-      samples = NA,
-      groupBy = NA
+      samples = NULL,
+      groupBy = NULL
     ),
     ATACpeaks = list(
-      peaksCond1 = NA,
-      peaksCond2 = NA
+      peaksCond1 = NULL,
+      peaksCond2 = NULL
     )
   )
 )
@@ -94,7 +104,7 @@ validateMOInputs <- function(RNAseq,
                              peakCond1,
                              peakCond2) {
   # Validate the RNAseq data
-  if(!is.null(RNAseq)) {
+  if (!is.null(RNAseq)) {
     validateMatrix(RNAseq, RNAGroupBy)
   } else {
     # Do nothing
@@ -112,9 +122,9 @@ validateMOInputs <- function(RNAseq,
     # Do nothing
   }
   # Replicates are required for the sequencing data
-  if ((is.matrix(RNAseq) && ncol(RNAseq) < 2) || 
-      (is.matrix(smallRNAseq) && ncol(smallRNAseq) < 2) || 
-      (is.matrix(proteomics) && ncol(proteomics) < 2)) {
+  if ((is.matrix(RNAseq) && ncol(RNAseq) < 2) ||
+    (is.matrix(smallRNAseq) && ncol(smallRNAseq) < 2) ||
+    (is.matrix(proteomics) && ncol(proteomics) < 2)) {
     stop("At least two replicates are required for each sequencing data.")
   } else {
     # Do nothing
@@ -122,15 +132,57 @@ validateMOInputs <- function(RNAseq,
   # Check for missing values in the chromosome information in the ATAC peaks
   if (!is.null(peakCond1) && !is.null(peakCond2)) {
     if (any(is.na(peakCond1[, CHROMINFO])) ||
-          any(is.na(peakCond2[, CHROMINFO]))) {
+      any(is.na(peakCond2[, CHROMINFO]))) {
       stop("Missing values in the chromosome information in the ATAC peaks.")
     } else {
-    # Do nothing
+      # Do nothing
     }
   } else {
     # Do nothing
   }
   return(invisible(NULL))
+}
+
+# Setting non-mRNA omics data to MOList object
+# Level: Private
+# @param objMOList An object of class MOList for appending/exchanging omics data
+# @param smallRNAseq A numeric matrix containing the smallRNAseq data
+# @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
+#                        data
+# @param proteomics A numeric matrix containing the proteomics data
+# @param proteomicsGroupBy A vector of grouping information for the proteomics
+#                          data
+# @param peakCond1 A data frame containing the ATAC peaks for condition 1
+# @param peakCond2 A data frame containing the ATAC peaks for condition 2
+# @return An object of class MOList
+setOmics <- function(objMOList,
+                     smallRNAseq,
+                     smallRNAGroupBy,
+                     proteomics,
+                     proteomicsGroupBy,
+                     peakCond1,
+                     peakCond2) {
+  if (!is.null(smallRNAseq)) {
+    objMOList@smallRNAseq <- smallRNAseq
+    objMOList@smallRNAseqSamples$samples <- getSampleNames(smallRNAseq)
+    objMOList@smallRNAseqSamples$groupBy <- smallRNAGroupBy
+  } else {
+    # Do nothing
+  }
+  if (!is.null(proteomics)) {
+    objMOList@proteomics <- proteomics
+    objMOList@proteomicsSamples$samples <- getSampleNames(proteomics)
+    objMOList@proteomicsSamples$groupBy <- proteomicsGroupBy
+  } else {
+    # Do nothing
+  }
+  if (!is.null(peakCond1) && !is.null(peakCond2)) {
+    objMOList@ATACpeaks$peaksCond1 <- peakCond1
+    objMOList@ATACpeaks$peaksCond2 <- peakCond2
+  } else {
+    # Do nothing
+  }
+  return(objMOList)
 }
 
 
@@ -155,39 +207,18 @@ newMOList <- function(RNAseq,
                       proteomicsGroupBy,
                       peakCond1,
                       peakCond2) {
-  # Define the default slot values based on the inputs
-  ifelse(is.null(smallRNAseq), smallRNAseq <- NA_real_, 
-         smallRNAseq <- smallRNAseq)
-  ifelse(is.null(smallRNAGroupBy), smallRNAGroupBy <- NA,
-          smallRNAGroupBy <- smallRNAGroupBy)
-  ifelse(is.null(proteomics), proteomics <- NA_real_,
-          proteomics <- proteomics)
-  ifelse(is.null(proteomicsGroupBy), proteomicsGroupBy <- NA,
-          proteomicsGroupBy <- proteomicsGroupBy)
-  ifelse(is.null(peakCond1), peakCond1 <- NA, peakCond1 <- peakCond1)
-  ifelse(is.null(peakCond2), peakCond2 <- NA, peakCond2 <- peakCond2)
-
   # Construct the MOList object
   objMOList <- new("MOList",
     RNAseq = RNAseq,
     RNAseqSamples = list(
-      samples = colnames(RNAseq),
+      samples = getSampleNames(RNAseq),
       groupBy = RNAGroupBy
-    ),
-    smallRNAseq = smallRNAseq,
-    smallRNAseqSamples = list(
-      samples = colnames(smallRNAseq),
-      groupBy = smallRNAGroupBy
-    ),
-    proteomics = proteomics,
-    proteomicsSamples = list(
-      samples = colnames(proteomics),
-      groupBy = proteomicsGroupBy
-    ),
-    ATACpeaks = list(
-      peaksCond1 = peakCond1,
-      peaksCond2 = peakCond2
     )
+  )
+  # Set the non-mRNA omics data
+  objMOList <- setOmics(
+    objMOList, smallRNAseq, smallRNAGroupBy,
+    proteomics, proteomicsGroupBy, peakCond1, peakCond2
   )
   return(objMOList)
 }
@@ -223,26 +254,11 @@ modifyMOList <- function(objMOList,
   } else {
     # Do nothing
   }
-  if (!is.null(smallRNAseq)) {
-    objMOList@smallRNAseq <- smallRNAseq
-    objMOList@smallRNAseqSamples$samples <- colnames(smallRNAseq)
-    objMOList@smallRNAseqSamples$groupBy <- smallRNAGroupBy
-  } else {
-    # Do nothing
-  }
-  if (!is.null(proteomics)) {
-    objMOList@proteomics <- proteomics
-    objMOList@proteomicsSamples$samples <- colnames(proteomics)
-    objMOList@proteomicsSamples$groupBy <- proteomicsGroupBy
-  } else {
-    # Do nothing
-  }
-  if (!is.null(peakCond1) && !is.null(peakCond2)) {
-    objMOList@ATACpeaks$peaksCond1 <- peakCond1
-    objMOList@ATACpeaks$peaksCond2 <- peakCond2
-  } else {
-    # Do nothing
-  }
+  # Set the non-mRNA omics data
+  objMOList <- setOmics(
+    objMOList, smallRNAseq, smallRNAGroupBy,
+    proteomics, proteomicsGroupBy, peakCond1, peakCond2
+  )
   return(objMOList)
 }
 
@@ -278,6 +294,7 @@ modifyMOList <- function(objMOList,
 #'
 #' @return An object of class MOList
 #' @export MOList
+#' @importFrom GenomicTools.fileHandler importBed
 #'
 #'
 MOList <- function(objMOList = NULL,

@@ -5,15 +5,15 @@
 \title{Constructor for the MOList object}
 \usage{
 MOList(
-  objMOList = NA,
-  RNAseq = NA_real_,
-  RNAGroupBy = NA,
-  smallRNAseq = NA_real_,
-  smallRNAGroupBy = NA,
-  proteomics = NA_real_,
-  proteomicsGroupBy = NA,
-  pathATACpeak1 = NA,
-  pathATACpeak2 = NA
+  objMOList = NULL,
+  RNAseq = NULL,
+  RNAGroupBy = NULL,
+  smallRNAseq = NULL,
+  smallRNAGroupBy = NULL,
+  proteomics = NULL,
+  proteomicsGroupBy = NULL,
+  pathATACpeak1 = NULL,
+  pathATACpeak2 = NULL
 )
 }
 \arguments{
