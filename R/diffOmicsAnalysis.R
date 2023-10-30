@@ -29,7 +29,7 @@ validateDataAnno <- function(objMOList, annoList) {
 #'
 #' @description Filtering is based on the design of the experiment. If the
 #'              samples are only grouped into 2 conditions, then the genes with
-#'              counts in more than 1 counts per million (CPM) in at least 
+#'              counts in more than 1 counts per million (CPM) in at least
 #'              min(#samples in condition 1, #samples in condition 2) samples
 #'              are kept. If the samples are grouped by a continuous variable,
 #'              then the genes with counts in more than 1 CPM in at least
@@ -38,27 +38,27 @@ validateDataAnno <- function(objMOList, annoList) {
 #' @param omics A character string specifying the omics data to be filtered
 #'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
 #' @return An MOList object containing the filtered omics data
-#' @export 
+#' @export
 #' @importFrom edgeR cpm
-#' 
+#'
 #' @examples
 #' # Create example RNAseq data
 #' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
 #' rnaseq[1:20, 1:8] <- 0
 #' group <- rep(c("A", "B"), each = 5)
-#' 
+#'
 #' # Create example MOList object
 #' objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group)
-#' 
+#'
 #' # Before filtering, check the dimensions of the RNAseq data
 #' dim(getCounts(objMOList, "RNAseq"))
-#' 
+#'
 #' # Filter the RNAseq data
 #' objMOList <- filterGeneCounts(objMOList, "RNAseq")
-#' 
+#'
 #' # After filtering, check the dimensions of the RNAseq data
-#' dim(getCounts(objMOList, "RNAseq"))  # should be lower than the original
-#' 
+#' dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
+#'
 filterGeneCounts <- function(objMOList, omic) {
   omicData <- getCounts(objMOList, omic)
   if (is.null(omicData)) {
@@ -71,14 +71,15 @@ filterGeneCounts <- function(objMOList, omic) {
 
     # Use the grouping information to determine the filtering threshold
     groupBy <- switch(omic,
-                      RNAseq = objMOList@RNAseqSamples$groupBy,
-                      smallRNAseq = objMOList@smallRNAseqSamples$groupBy,
-                      proteomics = objMOList@proteomicsSamples$groupBy)
-    if (length(unique(groupBy)) == 2) {    # Two level
+      RNAseq = objMOList@RNAseqSamples$groupBy,
+      smallRNAseq = objMOList@smallRNAseqSamples$groupBy,
+      proteomics = objMOList@proteomicsSamples$groupBy
+    )
+    if (length(unique(groupBy)) == 2) { # Two level
       minSamples <- min(table(groupBy))
       sel <- rowSums(cpmData > 1) >= minSamples
       omicData <- omicData[sel, ]
-    } else {    # Continuous variable
+    } else { # Continuous variable
       sel <- rowSums(cpmData > 1) >= 0.3 * ncol(omicData)
       omicData <- omicData[sel, ]
     }
@@ -88,9 +89,10 @@ filterGeneCounts <- function(objMOList, omic) {
 
     # Update the MOList object
     switch(omic,
-           RNAseq = RNAseq(objMOList) <- omicData,
-           smallRNAseq = smallRNAseq(objMOList) <- omicData,
-           proteomics = protein(objMOList) <- omicData)
+      RNAseq = RNAseq(objMOList) <- omicData,
+      smallRNAseq = smallRNAseq(objMOList) <- omicData,
+      proteomics = protein(objMOList) <- omicData
+    )
     return(objMOList)
   }
 }
@@ -126,11 +128,11 @@ filterGeneCounts <- function(objMOList, omic) {
 #'                     of samples in the protein data, used for batch correction
 #' @return An MOList object containing the differential analysis results
 #' @export
-#' 
+#'
 diffOmics <- function(objMOList,
-                              rnaseqBatch = NULL,
-                              smallRnaBatch = NULL,
-                              proteinBatch = NULL) {
+                      rnaseqBatch = NULL,
+                      smallRnaBatch = NULL,
+                      proteinBatch = NULL) {
   # Validating inputs
   validateDataAnno(objMOList, list(
     RNAseq = rnaseqBatch,
@@ -142,7 +144,4 @@ diffOmics <- function(objMOList,
   for (omics in c("RNAseq", "smallRNAseq", "proteomics")) {
     objMOList <- filterMOList(objMOList, omics)
   }
-
 }
-
-

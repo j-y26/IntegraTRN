@@ -18,7 +18,7 @@ A numeric matrix containing the omics data
 }
 \description{
 This function is a getter for the count-based omics data from
-             the MOList object. The user can retrieve the RNAseq, 
+             the MOList object. The user can retrieve the RNAseq,
              smallRNAseq, and proteomics data from the MOList object.
 }
 \examples{
@@ -28,4 +28,5 @@ dataRNAseq <- getCounts(myMOList, "RNAseq")
 dataSmallRNAseq <- getCounts(myMOList, "smallRNAseq")
 dataProteomics <- getCounts(myMOList, "proteomics")
 }
+
 }

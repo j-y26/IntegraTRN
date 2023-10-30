@@ -28,6 +28,9 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #'             in the same way as a list
 #' @exportClass MOList
 #'
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#'
 methods::setClass("MOList",
   # Inheritance
   contains = "list",
@@ -63,10 +66,37 @@ methods::setClass("MOList",
 )
 
 
-# Validate matrix and grouping information
-# Level: Private
-# @param matrix A numeric matrix containing the sequencing data
-# @param groupBy A vector of grouping information for the sequencing data
+#' Validate matrix and grouping information
+#'
+#' @keywords internal
+#'
+#' @description This function validates the matrix and grouping information for
+#'              the sequencing data. The matrix must be a numeric matrix, and
+#'              the grouping information must be a vector of the same length as
+#'              the number of samples in the sequencing data.
+#' @param matrix A numeric matrix containing the sequencing data
+#' @param groupBy A vector of grouping information for the sequencing data
+#'
+#' @return NULL
+#'
+#' @references
+#' Yang Liao, Gordon K. Smyth, Wei Shi, featureCounts: an efficient general
+#' purpose program for assigning sequence reads to genomic features,
+#' Bioinformatics, Volume 30, Issue 7, April 2014, Pages 923–930,
+#' https://doi.org/10.1093/bioinformatics/btt656
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
+#'
+#' # Validating the RNAseq data
+#' validateMatrix(RNAseq, RNAGroupBy)
+#' # Validating the smallRNAseq data
+#' validateMatrix(smallRNAseq, smallRNAGroupBy)
+#' # Validating the proteomics data
+#' validateMatrix(proteomics, proteomicsGroupBy)
+#' }
+#'
 validateMatrix <- function(matrix, groupBy) {
   if (any(is.na(matrix))) {
     stop("The sequencing data contains NA values. Please check the validity of
@@ -85,18 +115,41 @@ validateMatrix <- function(matrix, groupBy) {
 }
 
 
-# Validate the inputs for the MOList constructor
-# Level: Private
-# @param RNAseq A numeric matrix containing the RNAseq data
-# @param RNAGroupBy A vector of grouping information for the RNAseq data
-# @param smallRNAseq A numeric matrix containing the smallRNAseq data
-# @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#                        data
-# @param proteomics A numeric matrix containing the proteomics data
-# @param proteomicsGroupBy A vector of grouping information for the proteomics
-#                          data
-# @param peakCond1 A data frame containing the ATAC peaks for condition 1
-# @param peakCond2 A data frame containing the ATAC peaks for condition 2
+#' Validate the inputs for the MOList constructor
+#'
+#' @keywords internal
+#'
+#' @description This function validates the inputs for the MOList constructor.
+#'              It uses the validateMatrix function to validate the sequencing
+#'              data, and checks for missing values in the chromosome
+#'              information in the ATAC peaks.
+#' @param RNAseq A numeric matrix containing the RNAseq data
+#' @param RNAGroupBy A vector of grouping information for the RNAseq data
+#' @param smallRNAseq A numeric matrix containing the smallRNAseq data
+#' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
+#'                        data
+#' @param proteomics A numeric matrix containing the proteomics data
+#' @param proteomicsGroupBy A vector of grouping information for the proteomics
+#'                          data
+#' @param peakCond1 A data frame containing the ATAC peaks for condition 1
+#' @param peakCond2 A data frame containing the ATAC peaks for condition 2
+#'
+#' @return NULL
+#'
+#' @references
+#' Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
+#' analysis.
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
+#'
+#' # Validating the inputs for the MOList constructor
+#' validateMOInputs(
+#'   RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
+#'   proteomics, proteomicsGroupBy, peakCond1, peakCond2
+#' )
+#' }
 validateMOInputs <- function(RNAseq,
                              RNAGroupBy,
                              smallRNAseq,
@@ -145,18 +198,49 @@ validateMOInputs <- function(RNAseq,
   return(invisible(NULL))
 }
 
-# Setting non-mRNA omics data to MOList object
-# Level: Private
-# @param objMOList An object of class MOList for appending/exchanging omics data
-# @param smallRNAseq A numeric matrix containing the smallRNAseq data
-# @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#                        data
-# @param proteomics A numeric matrix containing the proteomics data
-# @param proteomicsGroupBy A vector of grouping information for the proteomics
-#                          data
-# @param peakCond1 A data frame containing the ATAC peaks for condition 1
-# @param peakCond2 A data frame containing the ATAC peaks for condition 2
-# @return An object of class MOList
+#' Setting non-mRNA omics data to MOList object
+#'
+#' @keywords internal
+#'
+#' @description This function sets the non-mRNA omics data to the MOList object.
+#'
+#' @param objMOList An object of class MOList for appending/exchanging omics
+#'                  data
+#' @param smallRNAseq A numeric matrix containing the smallRNAseq data
+#' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
+#'                        data
+#' @param proteomics A numeric matrix containing the proteomics data
+#' @param proteomicsGroupBy A vector of grouping information for the proteomics
+#'                          data
+#' @param peakCond1 A data frame containing the ATAC peaks for condition 1
+#' @param peakCond2 A data frame containing the ATAC peaks for condition 2
+#'
+#' @return An object of class MOList
+#' \itemize{
+#'  \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#'  \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                            information for the RNAseq data
+#'  \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                               grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                             grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                      condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
+#'
+#' # Setting the omics data to their respective slot in the MOList object
+#' objMOList <- setOmics(
+#'   objMOList, smallRNAseq, smallRNAGroupBy,
+#'   proteomics, proteomicsGroupBy, peakCond1, peakCond2
+#' )
+#' }
+#'
 setOmics <- function(objMOList,
                      smallRNAseq,
                      smallRNAGroupBy,
@@ -188,19 +272,52 @@ setOmics <- function(objMOList,
 }
 
 
-# Construct a new MOList object
-# Level: Private
-# @param RNAseq A numeric matrix containing the RNAseq data
-# @param RNAGroupBy A vector of grouping information for the RNAseq data
-# @param smallRNAseq A numeric matrix containing the smallRNAseq data
-# @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#                        data
-# @param proteomics A numeric matrix containing the proteomics data
-# @param proteomicsGroupBy A vector of grouping information for the proteomics
-#                          data
-# @param peakCond1 A data frame containing the ATAC peaks for condition 1
-# @param peakCond2 A data frame containing the ATAC peaks for condition 2
-# @return An object of class MOList
+#' Construct a new MOList object
+#'
+#' @keywords internal
+#'
+#' @param RNAseq A numeric matrix containing the RNAseq data
+#' @param RNAGroupBy A vector of grouping information for the RNAseq data
+#' @param smallRNAseq A numeric matrix containing the smallRNAseq data
+#' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
+#'                        data
+#' @param proteomics A numeric matrix containing the proteomics data
+#' @param proteomicsGroupBy A vector of grouping information for the proteomics
+#'                          data
+#' @param peakCond1 A data frame containing the ATAC peaks for condition 1
+#' @param peakCond2 A data frame containing the ATAC peaks for condition 2
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                           information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                             grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                            grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                     condition 2
+#' }
+#'
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
+#' # and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
+#' # grouping information for the sequencing data
+#'
+#' # Constructing a new MOList object
+#' objMOList <- newMOList(
+#'   RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
+#'   proteomics, proteomicsGroupBy, peakCond1, peakCond2
+#' )
+#' }
+#'
 newMOList <- function(RNAseq,
                       RNAGroupBy,
                       smallRNAseq,
@@ -226,20 +343,51 @@ newMOList <- function(RNAseq,
 }
 
 
-# Append/exchange omics data for the existing MOList object
-# Level: Private
-# @param objMOList An object of class MOList for appending/exchanging omics data
-# @param RNAseq A numeric matrix containing the RNAseq data
-# @param RNAGroupBy A vector of grouping information for the RNAseq data
-# @param smallRNAseq A numeric matrix containing the smallRNAseq data
-# @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#                        data
-# @param proteomics A numeric matrix containing the proteomics data
-# @param proteomicsGroupBy A vector of grouping information for the proteomics
-#                          data
-# @param peakCond1 A data frame containing the ATAC peaks for condition 1
-# @param peakCond2 A data frame containing the ATAC peaks for condition 2
-# @return An object of class MOList
+#' Append/exchange omics data for the existing MOList object
+#'
+#' @keywords internal
+#'
+#' @param objMOList An object of class MOList for appending/exchanging omics data
+#' @param RNAseq A numeric matrix containing the RNAseq data
+#' @param RNAGroupBy A vector of grouping information for the RNAseq data
+#' @param smallRNAseq A numeric matrix containing the smallRNAseq data
+#' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
+#'                        data
+#' @param proteomics A numeric matrix containing the proteomics data
+#' @param proteomicsGroupBy A vector of grouping information for the proteomics
+#'                          data
+#' @param peakCond1 A data frame containing the ATAC peaks for condition 1
+#' @param peakCond2 A data frame containing the ATAC peaks for condition 2
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                          information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                            grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                    condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
+#' # and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
+#' # grouping information for the sequencing data
+#'
+#' # Modifying an existing MOList object
+#' objMOList <- modifyMOList(
+#'   objMOList, RNAseq, RNAGroupBy, smallRNAseq,
+#'   smallRNAGroupBy, proteomics, proteomicsGroupBy,
+#'   peakCond1, peakCond2
+#' )
+#' }
+#'
 modifyMOList <- function(objMOList,
                          RNAseq,
                          RNAGroupBy,
@@ -265,11 +413,25 @@ modifyMOList <- function(objMOList,
 }
 
 
-# Validate omics raw data with sample information
-# Level: Private
-# @param dataMatrix A numeric matrix containing the omics data
-# @param sampleInfo A list containing the sample names and grouping information
-#                   for the omics data
+#' Validate omics raw data with sample information
+#'
+#' @keywords internal
+#'
+#' @param dataMatrix A numeric matrix containing the omics data
+#' @param sampleInfo A list containing the sample names and grouping information
+#'                   for the omics data
+#'
+#' @return NULL
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq is a matrix of count data and RNASamples is a list of
+#' # sample names and grouping information for the RNAseq data
+#'
+#' # Validating the input data
+#' validateOmics(RNAseq, RNAsamples)
+#' }
+#'
 validateOmics <- function(dataMatrix, sampleInfo) {
   if (xor(is.null(dataMatrix), is.null(sampleInfo))) {
     stop("Both the omics data and sample information must be provided.")
@@ -293,9 +455,22 @@ validateOmics <- function(dataMatrix, sampleInfo) {
 }
 
 
-# Validate the MOList S4 object
-# Level: Private
-# @param objMOList An object of class MOList for appending/exchanging omics data
+#' Validator of the MOList S4 object
+#'
+#' @keywords internal
+#'
+#' @param objMOList An object of class MOList for appending/exchanging omics data
+#'
+#' @return NULL
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming objMOList is an object of class MOList
+#'
+#' # Validating the MOList object
+#' validateMOList(objMOList)
+#' }
+#'
 validateMOList <- function(objMOList) {
   if (class(objMOList)[1] != "MOList") {
     stop("Error validating the MOList class.")
@@ -358,6 +533,10 @@ validateMOList <- function(objMOList) {
 #' @export MOList
 #' @importFrom GenomicTools.fileHandler importBed
 #'
+#' @references
+#' Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
+#' analysis.
+#'
 #' @examples
 #' # Generating some example data
 #' # Note that the exact value could differ based on the random seed
@@ -372,6 +551,8 @@ validateMOList <- function(objMOList) {
 #' proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
 #' proteomicsGroupBy <- rep(c("A", "B"), each = 3)
 #'
+#' # Example 1: Constructing the MOList object at once
+#'
 #' # Constructing the MOList object at once
 #' objMOList1 <- MOList(
 #'   RNAseq = RNAseq,
@@ -382,7 +563,9 @@ validateMOList <- function(objMOList) {
 #'   proteomicsGroupBy = proteomicsGroupBy
 #' )
 #'
-#' # Or the MOList object can be constructed minimally with the RNAseq data
+#' # Example 2: Constructing the MOList object step by step
+#'
+#' # The MOList object can be constructed minimally with the RNAseq data
 #' # Further omics data can be appended/exchanged later
 #' objMOList2 <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 #' RNAseq2 <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
@@ -392,6 +575,14 @@ validateMOList <- function(objMOList) {
 #'   proteomics = proteomics,
 #'   proteomicsGroupBy = proteomicsGroupBy
 #' )
+#'
+#' # Example 3: Exchanging some inputs for the MOList object
+#'
+#' # The MOList object can be modified by exchanging some inputs
+#' objMOList3 <- objMOList2
+#' RNAseq3 <- RNAseq
+#' RNAseq3[1:10, 1:5] <- 0
+#' objMOList3 <- MOList(objMOList3, RNAseq = RNAseq3, RNAGroupBy = RNAGroupBy)
 #'
 MOList <- function(objMOList = NULL,
                    RNAseq = NULL,
@@ -451,10 +642,40 @@ MOList <- function(objMOList = NULL,
 # Define a set of setters for the data slots of the MOList object
 # Must be used in caution, the user should not have access to these functions
 
-# RNAseq slot
-# Level: Private
-# @param x An object of class MOList for appending/exchanging omics data
-# @param value A numeric matrix containing the RNAseq data
+#' Setter for the RNAseq slot
+#'
+#' @keywords internal
+#'
+#' @description This function is a setter for the RNAseq slot of the MOList.
+#'              The user are NOT allowed to use this function directly, since
+#'              use without caution may cause the MOList object to be invalid.
+#'
+#' @param x An object of class MOList for appending/exchanging omics data
+#' @param value A numeric matrix containing the RNAseq data
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming RNAseq is a matrix of count data
+#'
+#' # Setting the RNAseq data to the MOList object
+#' RNAseq(myMOList) <- RNAseq
+#' }
+#'
 methods::setGeneric("RNAseq<-", function(x, value) standardGeneric("RNAseq<-"))
 methods::setMethod("RNAseq<-", "MOList", function(x, value) {
   if (is.null(value) || any(colnames(value) != x@RNAseqSamples$samples)) {
@@ -466,10 +687,36 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
   }
 })
 
-# smallRNAseq slot
-# Level: Private
-# @param x An object of class MOList for appending/exchanging omics data
-# @param value A numeric matrix containing the smallRNAseq data
+#' Setter for the smallRNAseq slot
+#'
+#' @keywords internal
+#'
+#' @param x An object of class MOList for appending/exchanging omics data
+#' @param value A numeric matrix containing the smallRNAseq data
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming smallRNAseq is a matrix of count data
+#'
+#' # Setting the smallRNAseq data to the MOList object
+#' smallRNAseq(myMOList) <- smallRNAseq
+#' }
+#'
 methods::setGeneric(
   "smallRNAseq<-",
   function(x, value) standardGeneric("smallRNAseq<-")
@@ -484,10 +731,36 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
   }
 })
 
-# proteomics slot
-# Level: Private
-# @param x An object of class MOList for appending/exchanging omics data
-# @param value A numeric matrix containing the proteomics data
+#' Setter for the proteomics slot
+#'
+#' @keywords internal
+#'
+#' @param x An object of class MOList for appending/exchanging omics data
+#' @param value A numeric matrix containing the proteomics data
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming proteomics is a matrix of count data
+#'
+#' # Setting the proteomics data to the MOList object
+#' proteomics(myMOList) <- proteomics
+#' }
+#'
 methods::setGeneric(
   "proteomics<-",
   function(x, value) standardGeneric("proteomics<-")
@@ -502,10 +775,37 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
   }
 })
 
-# ATACpeaks slot
-# Level: Private
-# @param x An object of class MOList for appending/exchanging omics data
-# @param value A list containing the ATAC peaks for condition 1 and condition 2
+#' Setter for the ATACpeaks slot
+#'
+#' @keywords internal
+#'
+#' @param x An object of class MOList for appending/exchanging omics data
+#' @param value A list containing the ATAC peaks for condition 1 and condition 2
+#'
+#' @return An object of class MOList
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming peakCond1 and peakCond2 are data frames containing the ATAC peaks
+#' # for condition 1 and condition 2, respectively
+#'
+#' # Setting the ATAC peaks data to the MOList object
+#' ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)
+#' }
+#'
 methods::setGeneric(
   "ATACpeaks<-",
   function(x, value) standardGeneric("ATACpeaks<-")
@@ -530,7 +830,7 @@ methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts")
 #' Getter for the count-based omics data from the MOList object
 #' @aliases getCounts
 #' @description This function is a getter for the count-based omics data from
-#'              the MOList object. The user can retrieve the RNAseq, 
+#'              the MOList object. The user can retrieve the RNAseq,
 #'              smallRNAseq, and proteomics data from the MOList object.
 #' @param x An object of class MOList for retrieving omics data
 #' @param omics A character string specifying the omics data to be retrieved
@@ -544,11 +844,13 @@ methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts")
 #' dataSmallRNAseq <- getCounts(myMOList, "smallRNAseq")
 #' dataProteomics <- getCounts(myMOList, "proteomics")
 #' }
+#'
 methods::setMethod("getCounts", "MOList", function(x, omics) {
   switch(omics,
-         RNAseq = x@RNAseq,
-         smallRNAseq = x@smallRNAseq,
-         proteomics = x@proteomics)
+    RNAseq = x@RNAseq,
+    smallRNAseq = x@smallRNAseq,
+    proteomics = x@proteomics
+  )
 })
 
 
@@ -565,16 +867,9 @@ methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
 #' # Using the example MOList object
 #' dataATACpeaks <- ATACpeaks(myMOList)
 #' }
+#'
 methods::setMethod("ATACpeaks", "MOList", function(x) {
   return(x@ATACpeaks)
 })
-
-
-# References:
-# Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-# R packages (2e) by Hadley Wickham and Jennifer Bryan. Access: 
-# https://r-pkgs.org/index.html
-# Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data 
-# analysis.
 
 # [END]

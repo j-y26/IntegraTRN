@@ -71,6 +71,8 @@ smallRNAGroupBy <- rep(c("A", "B"), each = 2)
 proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
 proteomicsGroupBy <- rep(c("A", "B"), each = 3)
 
+# Example 1: Constructing the MOList object at once
+
 # Constructing the MOList object at once
 objMOList1 <- MOList(
   RNAseq = RNAseq,
@@ -81,7 +83,9 @@ objMOList1 <- MOList(
   proteomicsGroupBy = proteomicsGroupBy
 )
 
-# Or the MOList object can be constructed minimally with the RNAseq data
+# Example 2: Constructing the MOList object step by step
+
+# The MOList object can be constructed minimally with the RNAseq data
 # Further omics data can be appended/exchanged later
 objMOList2 <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 RNAseq2 <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
@@ -92,4 +96,16 @@ objMOList2 <- MOList(objMOList2,
   proteomicsGroupBy = proteomicsGroupBy
 )
 
+# Example 3: Exchanging some inputs for the MOList object
+
+# The MOList object can be modified by exchanging some inputs
+objMOList3 <- objMOList2
+RNAseq3 <- RNAseq
+RNAseq3[1:10, 1:5] <- 0
+objMOList3 <- MOList(objMOList3, RNAseq = RNAseq3, RNAGroupBy = RNAGroupBy)
+
+}
+\references{
+Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
+analysis.
 }

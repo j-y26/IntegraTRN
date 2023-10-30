@@ -46,8 +46,8 @@ matchVecToMatrix <- function(vec, mat) {
 # @return A vector of grouping information
 getGroupingInfo <- function(objMOList, experiment) {
   switch(experiment,
-         RNAseq = objMOList@RNAseq$group,
-         smallRNAseq = objMOList@smallRNAseq$group,
-         proteomics = objMOList@protein$group)
-         
+    RNAseq = objMOList@RNAseq$group,
+    smallRNAseq = objMOList@smallRNAseq$group,
+    proteomics = objMOList@protein$group
+  )
 }

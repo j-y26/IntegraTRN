@@ -21,4 +21,5 @@ Getter for the ATAC peaks data from the MOList object
 # Using the example MOList object
 dataATACpeaks <- ATACpeaks(myMOList)
 }
+
 }

@@ -19,7 +19,7 @@ An MOList object containing the filtered omics data
 \description{
 Filtering is based on the design of the experiment. If the
              samples are only grouped into 2 conditions, then the genes with
-             counts in more than 1 counts per million (CPM) in at least 
+             counts in more than 1 counts per million (CPM) in at least
              min(#samples in condition 1, #samples in condition 2) samples
              are kept. If the samples are grouped by a continuous variable,
              then the genes with counts in more than 1 CPM in at least
@@ -41,6 +41,6 @@ dim(getCounts(objMOList, "RNAseq"))
 objMOList <- filterGeneCounts(objMOList, "RNAseq")
 
 # After filtering, check the dimensions of the RNAseq data
-dim(getCounts(objMOList, "RNAseq"))  # should be lower than the original
+dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
 
 }
