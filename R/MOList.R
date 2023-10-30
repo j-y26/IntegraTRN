@@ -643,6 +643,8 @@ MOList <- function(objMOList = NULL,
 # Must be used in caution, the user should not have access to these functions
 
 #' Setter for the RNAseq slot
+#' 
+#' @aliases RNAseq<-
 #'
 #' @keywords internal
 #'
@@ -688,6 +690,8 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 })
 
 #' Setter for the smallRNAseq slot
+#' 
+#' @aliases smallRNAseq<-
 #'
 #' @keywords internal
 #'
@@ -732,6 +736,8 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 })
 
 #' Setter for the proteomics slot
+#' 
+#' @aliases proteomics<-
 #'
 #' @keywords internal
 #'
@@ -776,6 +782,8 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 })
 
 #' Setter for the ATACpeaks slot
+#' 
+#' @aliases ATACpeaks<-
 #'
 #' @keywords internal
 #'
@@ -828,15 +836,21 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts"))
 
 #' Getter for the count-based omics data from the MOList object
+#' 
 #' @aliases getCounts
+#' 
 #' @description This function is a getter for the count-based omics data from
 #'              the MOList object. The user can retrieve the RNAseq,
 #'              smallRNAseq, and proteomics data from the MOList object.
+#' 
 #' @param x An object of class MOList for retrieving omics data
 #' @param omics A character string specifying the omics data to be retrieved
 #'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
+#' 
 #' @return A numeric matrix containing the omics data
+#' 
 #' @export
+#' 
 #' @examples
 #' \dontrun{
 #' # Using the example MOList object
@@ -858,10 +872,15 @@ methods::setMethod("getCounts", "MOList", function(x, omics) {
 methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
 
 #' Getter for the ATAC peaks data from the MOList object
+#' 
 #' @aliases ATACpeaks
+#' 
 #' @param x An object of class MOList for retrieving omics data
+#' 
 #' @return A list containing the ATAC peaks for condition 1 and condition 2
+#' 
 #' @export
+#' 
 #' @examples
 #' \dontrun{
 #' # Using the example MOList object
