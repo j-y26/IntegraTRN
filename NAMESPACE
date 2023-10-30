@@ -2,7 +2,9 @@
 
 export(MOList)
 export(diffOmicsAnalysis)
+export(filterGeneCounts)
 exportClasses(MOList)
 exportMethods(ATACpeaks)
 exportMethods(getCounts)
 importFrom(GenomicTools.fileHandler,importBed)
+importFrom(edgeR,cpm)
