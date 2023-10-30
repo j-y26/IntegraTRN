@@ -37,3 +37,17 @@ matchVecToMatrix <- function(vec, mat) {
   }
   return(TRUE)
 }
+
+# Retrieving the grouping information for a specific omics data
+# Level: private
+# @param objMOList A MOList object containing the omics data
+# @param experiment A character string specifying the experiment type, must
+#                   be one of "RNAseq", "smallRNAseq", and "proteomics"
+# @return A vector of grouping information
+getGroupingInfo <- function(objMOList, experiment) {
+  switch(experiment,
+         RNAseq = objMOList@RNAseq$group,
+         smallRNAseq = objMOList@smallRNAseq$group,
+         proteomics = objMOList@protein$group)
+         
+}

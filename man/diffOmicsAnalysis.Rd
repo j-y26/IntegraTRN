@@ -36,4 +36,10 @@ This function performs data filtering, normalization, batch
              RNAseq, small RNAseq, and protein data are supported for
              differential expression analysis. The ATACseq data are used
              used to calculate the differential accessible regions.
+             While performing the differential analysis, the original count
+             data for the RNAseq, small RNAseq, and protein data are
+             filtered and subsequently normalized by library size. After
+             calling diffOmicsAnalysis, the users can use the S4 methods
+             of the MOList class to extract filtered and normalized read
+             counts for each of the omics data.
 }

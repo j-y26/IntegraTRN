@@ -524,59 +524,33 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 # Define a set of getters for the data slots of the MOList object, allowing
 # the user to retrieve information from the MOList object
 
-# RNAseq slot
-methods::setGeneric("RNAseq", function(x) standardGeneric("RNAseq"))
+# Getter for count-based omics data
+methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts"))
 
-#' Getter for the RNAseq data from the MOList object
-#' @aliases RNAseq
+#' Getter for the count-based omics data from the MOList object
+#' @aliases getCounts
+#' @description This function is a getter for the count-based omics data from
+#'              the MOList object. The user can retrieve the RNAseq, 
+#'              smallRNAseq, and proteomics data from the MOList object.
 #' @param x An object of class MOList for retrieving omics data
-#' @return A numeric matrix containing the RNAseq data
+#' @param omics A character string specifying the omics data to be retrieved
+#'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
+#' @return A numeric matrix containing the omics data
 #' @export
 #' @examples
 #' \dontrun{
 #' # Using the example MOList object
-#' dataRNAseq <- RNAseq(myMOList)
+#' dataRNAseq <- getCounts(myMOList, "RNAseq")
+#' dataSmallRNAseq <- getCounts(myMOList, "smallRNAseq")
+#' dataProteomics <- getCounts(myMOList, "proteomics")
 #' }
-#'
-methods::setMethod("RNAseq", "MOList", function(x) {
-  return(x@RNAseq)
+methods::setMethod("getCounts", "MOList", function(x, omics) {
+  switch(omics,
+         RNAseq = x@RNAseq,
+         smallRNAseq = x@smallRNAseq,
+         proteomics = x@proteomics)
 })
 
-# Small RNAseq slot
-methods::setGeneric("smallRNAseq", function(x) standardGeneric("smallRNAseq"))
-
-#' Getter for the smallRNAseq data from the MOList object
-#' @aliases smallRNAseq
-#' @param x An object of class MOList for retrieving omics data
-#' @return A numeric matrix containing the smallRNAseq data
-#' @export
-#' @examples
-#' \dontrun{
-#' # Using the example MOList object
-#' dataSmallRNAseq <- smallRNAseq(myMOList)
-#' }
-#'
-methods::setMethod("smallRNAseq", "MOList", function(x) {
-  return(x@smallRNAseq)
-})
-
-# Proteomics slot
-methods::setGeneric("proteomics", function(x) standardGeneric("proteomics"))
-
-#' Getter for the proteomics data from the MOList object
-#' @aliases proteomics
-#' @param x An object of class MOList for retrieving omics data
-#' @return A numeric matrix containing the proteomics data
-#' @export
-#' @examples
-#' \dontrun{
-#' # Using the example MOList object
-#' dataProteomics <- proteomics(myMOList)
-#' }
-#'
-methods::setMethod("proteomics", "MOList", function(x) {
-  return(x@proteomics)
-})
 
 # ATACpeaks slot
 methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
@@ -594,6 +568,7 @@ methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
 methods::setMethod("ATACpeaks", "MOList", function(x) {
   return(x@ATACpeaks)
 })
+
 
 # References:
 # Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
