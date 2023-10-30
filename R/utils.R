@@ -1,3 +1,10 @@
+# Purpose: Utility functions more streamlined code
+# Author: Jielin Yang
+# Date: 2023-10-29
+# Version: 1.0
+# Bugs and Issues: None
+
+
 # Identify the sample names from a count matrix
 # Level: private
 # @param countMatrix A count matrix with samples as columns and features as rows
@@ -10,6 +17,7 @@ getSampleNames <- function(countMatrix) {
   }
   return(sampleNames)
 }
+
 
 # Match vector length to matrix column length
 # Level: private
