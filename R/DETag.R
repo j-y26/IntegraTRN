@@ -154,12 +154,11 @@ DETag <- function(DEResult, method) {
 #'
 #' @description This function prints the DETag object
 #'
-#' @param x An object of the DETag class
-#' @param ... Other arguments passed to the function
+#' @param object An object of the DETag class
 #'
 #' @return NULL
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @export
 #'
@@ -180,14 +179,14 @@ DETag <- function(DEResult, method) {
 #' # Print the object
 #' print(deTag)
 #'
-print.DETag <- function(x, ...) {
-  # Print the object
-  cat("DETag object\n")
-  cat("Method: ", x@method, "\n")
-  cat("Differential analysis results:\n")
-  print(exportDE(x))
-  return(invisible(NULL))
-}
+methods::setMethod("show", "DETag", function(object) {
+  cat("A DETag S4 object\n")
+  cat("Method for differential analysis: ", object@method, "\n")
+  cat("A snap shot for differential analysis results:\n")
+  head(object@DEResult, 10)
+  cat("To access the full results, use the exportDE S4 method\n")
+  invisible(object)
+})
 
 
 # Generic function for extracting the differential analysis results
@@ -195,9 +194,7 @@ methods::setGeneric("exportDE", function(x, original = FALSE) {
   standardGeneric("exportDE")
 })
 
-#' @rdname DETag-class
-#'
-#' @method exportDE DETag
+#' Export the differential analysis results from a DETag object
 #'
 #' @description This function extracts the differential analysis results from
 #'              the DETag object
@@ -217,7 +214,7 @@ methods::setGeneric("exportDE", function(x, original = FALSE) {
 #' \item \code{padj}: A numeric vector containing the adjusted p-values
 #' }
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @export
 #'

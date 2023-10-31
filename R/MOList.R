@@ -675,7 +675,7 @@ MOList <- function(objMOList = NULL,
 #'                   condition 2
 #' }
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -720,7 +720,7 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 #'                   condition 2
 #' }
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -768,7 +768,7 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #'                   condition 2
 #' }
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -816,7 +816,7 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #'                   condition 2
 #' }
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -860,7 +860,7 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 #' @return Raw data of the specified omics type: a numeric matrix for
 #'         count-based omics data, and a list of data frames for ATAC peaks
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @export
 #'
@@ -898,7 +898,7 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 #'
 #' @return A vector of grouping information
 #'
-#' @importFrom methods standardGeneric setGeneric setMethod
+#' @importFrom methods setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
