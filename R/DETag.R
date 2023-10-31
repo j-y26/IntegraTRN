@@ -10,8 +10,9 @@ DESEQ2 <- "DESeq2"
 EDGER <- "edgeR"
 ATAC_GRANGE <- "GRangesATAC"
 METHODS <- c(DESEQ2, EDGER, ATAC_GRANGE)
-edgeR_fields <- c("logFC", "logCPM", "PValue", "FDR", "Gene", "Annotation")
-DESeq2_fields <- c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj", "GeneID", "Annotation")
+COUNT_DEFIELDS <- c("logFC", "pvalue", "padj")
+EDGER_FIELDS <- c("logFC", "PValue", "FDR")
+DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 
 
 #' @name DETag-class
@@ -181,9 +182,22 @@ DETag <- function(DEResult, method) {
 #'
 methods::setMethod("show", "DETag", function(object) {
   cat("A DETag S4 object\n")
-  cat("Method for differential analysis: ", object@method, "\n")
+  cat("Method for differential analysis: ", object@method, "\n\n")
+  # Some more DE details for count-based DE
+  if (object@method == DESEQ2) {
+    cat("Number of genes: ", nrow(object@DEResult), "\n")
+    cat("Number of genes with adjusted p-value < 0.05: ",
+        sum(object@DEResult$padj < 0.05), "\n\n")
+  } else if (object@method == EDGER) {
+    cat("Number of genes: ", nrow(object@DEResult), "\n")
+    cat("Number of genes with FDR < 0.05: ",
+        sum(object@DEResult$FDR < 0.05), "\n\n")
+  } else {
+    # Do nothing
+  }
   cat("A snap shot for differential analysis results:\n")
-  head(object@DEResult, 10)
+  print(head(object@DEResult))
+  cat("\n")
   cat("To access the full results, use the exportDE S4 method\n")
   invisible(object)
 })
@@ -254,36 +268,21 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
     # Do nothing
   }
   # Extract the results
-  if (original) {
+  if (original || x@method == ATAC_GRANGE) {
+    # Differential accessibility analysis only results in a single format
+    # so the original argument is ignored
     return(x@DEResult)
   } else {
-    # Based on the type of the method, extract the results
-    if (x@method %in% c(DESEQ2, EDGER)) {
-      # DESeq2 or edgeR
-      # Extract the results
-      if (x@method == DESEQ2) {
-        # DESeq2
-        # Extract the results
-        deResult <- x@DEResult[, DESeq2_fields]
-        # Rename the columns
-        colnames(deResult) <- c("logFC", "pvalue", "padj")
-      } else {
-        # edgeR
-        # Extract the results
-        deResult <- x@DEResult[, edgeR_fields]
-        # Rename the columns
-        colnames(deResult) <- c("logFC", "logCPM", "pvalue", "padj")
-      }
-      # Return the results
-      return(deResult)
+    # Based on the type of the method, extract the results of count-based DE
+    deResult <- x@DEResult
+    if (x@method == DESEQ2) {
+      deResult <- deResult %>% dplyr::select(DESEQ2_FIELDS)
+    } else if (x@method == EDGER) {
+      deResult <- deResult %>% dplyr::select(EDGER_FIELDS)
     } else {
-      # ATAC-GRanges
-      # Extract the results
-      deResult <- x@DEResult
-      # Rename the columns
-      colnames(deResult) <- c("logFC", "pvalue", "padj")
-      # Return the results
-      return(deResult)
+      stop("The method is not supported")
     }
+    # Rename the columns
+    colnames(deResult) <- COUNT_DEFIELDS
   }
 })
