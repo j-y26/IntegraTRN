@@ -14,6 +14,16 @@ must be one of "RNAseq", "smallRNAseq", and "proteomics"}
 }
 \value{
 An MOList object containing the filtered omics data
+\itemize{
+\item code(RNAseq): The RNAseq data in the MOList object is filtered and 
+                    updated, if omic = "RNAseq"
+\item code(smallRNAseq): The small RNAseq data in the MOList object is 
+                          filtered and updated, if omic = "smallRNAseq"
+\item code(proteomics): The protein data in the MOList object is filtered and
+                        updated, if omic = "proteomics"
+\item code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+                       condition 2, kept unchanged
+}
 }
 \description{
 Filtering is based on the design of the experiment. If the
@@ -25,6 +35,8 @@ Filtering is based on the design of the experiment. If the
              30% of the samples are kept.
 }
 \examples{
+# Example 1: Filtering the RNAseq data
+
 # Create example RNAseq data
 rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
 rnaseq[1:20, 1:8] <- 0
@@ -41,6 +53,27 @@ objMOList <- filterGeneCounts(objMOList, "RNAseq")
 
 # After filtering, check the dimensions of the RNAseq data
 dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
+
+# Example 2: Filtering the small RNAseq data
+
+# Create example small RNAseq data
+smallRna <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
+smallRna[1:20, 1:3] <- 0
+group <- paste0(rep("A", 3), rep("B", 2))
+
+# Create example MOList object
+objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group,
+                    smallRNAseq = smallRna, smallRNAGroupBy = group)
+
+# Before filtering, check the dimensions of the small RNAseq data
+dim(getCounts(objMOList, "smallRNAseq"))
+
+# Filter the small RNAseq data
+objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
+
+# After filtering, check the dimensions of the small RNAseq data
+dim(getCounts(objMOList, "smallRNAseq")) # should be lower than the original
+
 
 }
 \references{

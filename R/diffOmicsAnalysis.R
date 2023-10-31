@@ -2,11 +2,13 @@
 # Author: Jielin Yang
 # Date: 2023-10-29
 # Version: 1.0
-# Bugs and Issues: None
+# Bugs and Issues: Currently, only DESeq2 is supported for differential analysis
 
 
 # Define a global variable for the count-based omics data
 COUNT_OMICS <- c("RNAseq", "smallRNAseq", "proteomics")
+DESEQ2 <- "DESeq2"
+EDGER <- "edgeR"
 
 
 #' Validate the input data and annotations on the samples
@@ -81,6 +83,16 @@ validateDataAnno <- function(objMOList, annoList) {
 #'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
 #'
 #' @return An MOList object containing the filtered omics data
+#' \itemize{
+#' \item code(RNAseq): The RNAseq data in the MOList object is filtered and 
+#'                     updated, if omic = "RNAseq"
+#' \item code(smallRNAseq): The small RNAseq data in the MOList object is 
+#'                           filtered and updated, if omic = "smallRNAseq"
+#' \item code(proteomics): The protein data in the MOList object is filtered and
+#'                         updated, if omic = "proteomics"
+#' \item code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                        condition 2, kept unchanged
+#' }
 #'
 #' @export
 #' @importFrom edgeR cpm
@@ -92,6 +104,8 @@ validateDataAnno <- function(objMOList, annoList) {
 #' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
 #'
 #' @examples
+#' # Example 1: Filtering the RNAseq data
+#' 
 #' # Create example RNAseq data
 #' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
 #' rnaseq[1:20, 1:8] <- 0
@@ -101,20 +115,41 @@ validateDataAnno <- function(objMOList, annoList) {
 #' objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group)
 #'
 #' # Before filtering, check the dimensions of the RNAseq data
-#' dim(getCounts(objMOList, "RNAseq"))
+#' dim(getRawData(objMOList, "RNAseq"))
 #'
 #' # Filter the RNAseq data
 #' objMOList <- filterGeneCounts(objMOList, "RNAseq")
 #'
 #' # After filtering, check the dimensions of the RNAseq data
-#' dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
+#' dim(getRawData(objMOList, "RNAseq")) # should be lower than the original
+#' 
+#' # Example 2: Filtering the small RNAseq data
+#' 
+#' # Create example small RNAseq data
+#' smallRna <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
+#' smallRna[1:20, 1:3] <- 0
+#' group <- paste0(rep("A", 3), rep("B", 2))
+#' 
+#' # Create example MOList object
+#' objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group,
+#'                     smallRNAseq = smallRna, smallRNAGroupBy = group)
+#' 
+#' # Before filtering, check the dimensions of the small RNAseq data
+#' dim(getRawData(objMOList, "smallRNAseq"))
+#' 
+#' # Filter the small RNAseq data
+#' objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
+#' 
+#' # After filtering, check the dimensions of the small RNAseq data
+#' dim(getRawData(objMOList, "smallRNAseq")) # should be lower than the original
+#' 
 #'
 filterGeneCounts <- function(objMOList, omic) {
-  if (!omics %in% COUNT_OMICS) {
+  if (!(omic %in% COUNT_OMICS)) {
     stop("The input omics data is not supported for filtering")
   }
 
-  omicData <- getCounts(objMOList, omic)
+  omicData <- getRawData(objMOList, omic)
   if (is.null(omicData)) {
     # Nothing to do, return the original object
     return(objMOList)
@@ -152,6 +187,66 @@ filterGeneCounts <- function(objMOList, omic) {
 }
 
 
+#' Differential expression analysis of count-based omics data
+#' 
+#' @description This function performs differential expression analysis on the
+#'              count-based omics data. The RNAseq, small RNAseq, and protein
+#'              data are supported for differential expression analysis.
+#'              Calling this function again on the same omics data will
+#'              overwrite the previous results.
+#' 
+#' @note Preconditions:
+#' \itemize{
+#' \item The input omics data must be a MOList object
+#' \item The input omics data must be filtered by filterGeneCounts
+#' \item The batch information must have the same length as the number of
+#'       samples in the omics data
+#' }
+#' 
+#' @param objMOList A MOList object containing the omics data
+#' @param omic A character string specifying the omics data to be analyzed
+#'             must be one of "RNAseq", "smallRNAseq", and "proteomics"
+#' @param batch A character vector specifying the batch information for the
+#'              omics data, must be the same length as the number of samples in
+#'              the omics data, used for batch correction. Can be NULL if no
+#'              batch correction is needed.
+#' @param program A character string specifying the program used for the
+#'               analysis, currently only DESEQ2 is supported
+#' 
+#' @return An MOList object containing the differential expression analysis
+#'         results. Results are appended to the original MOList object as
+#'         list elements named "DERNAseq", "DEsmallRNAseq", and "DEProteomics"
+#'         for RNAseq, small RNAseq, and protein data, respectively.
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' \item \code{DERNAseq}: A DETag object containing the differential
+#'                        expression analysis results for the RNAseq data
+#' \item \code{DEsmallRNAseq}: A DETag object containing the differential
+#'                             expression analysis results for the smallRNAseq
+#'                             data
+#' \item \code{DEProteomics}: A DETag object containing the differential
+#'                            expression analysis results for the proteomics
+#'                            data
+#' }
+#' 
+#' 
+#' 
+#' 
+#' 
+countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
+  
+}
+  
 
 
 
@@ -180,13 +275,17 @@ filterGeneCounts <- function(objMOList, omic) {
 #' @param proteinBatch A character vector specifying the batch information for
 #'                     the protein data, must be the same length as the number
 #'                     of samples in the protein data, used for batch correction
+#' @param program A character string specifying the program used for the
+#'                analysis, currently only DESEQ2 is supported
+#' 
 #' @return An MOList object containing the differential analysis results
 #' @export
 #'
 diffOmics <- function(objMOList,
                       rnaseqBatch = NULL,
                       smallRnaBatch = NULL,
-                      proteinBatch = NULL) {
+                      proteinBatch = NULL,
+                      program = "DESeq2") {
   # Validating inputs
   validateDataAnno(objMOList, list(
     RNAseq = rnaseqBatch,
@@ -194,8 +293,17 @@ diffOmics <- function(objMOList,
     proteomics = proteinBatch
   ))
 
-  # Data filtering for count-based omics data
-  for (omics in COUNT_OMICS) {
-    objMOList <- filterGeneCounts(objMOList, omics)
+  # Data processing and differential expression of count-based omics data
+  # Here filterGeneCounts and diffExprCount are called on all types of
+  # count-based omics data, even if they could be NULL
+  for (omic in COUNT_OMICS) {
+    objMOList <- filterGeneCounts(objMOList, omic)
+    objMOList <- countDiffExpr(objMOList = objMOList,
+                               omic = omic,
+                               batch = switch(omic,
+                                 RNAseq = rnaseqBatch,
+                                 smallRNAseq = smallRnaBatch,
+                                 proteomics = proteinBatch
+                               ))
   }
 }

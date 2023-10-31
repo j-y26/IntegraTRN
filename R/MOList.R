@@ -833,11 +833,12 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 # the user to retrieve information from the MOList object
 
 # Getter for count-based omics data
-methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts"))
+methods::setGeneric("getRawData",
+                    function(x, omics) standardGeneric("getRawData"))
 
 #' Getter for the count-based omics data from the MOList object
 #' 
-#' @aliases getCounts
+#' @aliases getRawData
 #' 
 #' @description This function is a getter for the count-based omics data from
 #'              the MOList object. The user can retrieve the RNAseq,
@@ -845,9 +846,10 @@ methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts")
 #' 
 #' @param x An object of class MOList for retrieving omics data
 #' @param omics A character string specifying the omics data to be retrieved
-#'        must be one of "RNAseq", "smallRNAseq", and "proteomics"
+#'        must be one of "RNAseq", "smallRNAseq", "proteomics", or "ATAC"
 #' 
-#' @return A numeric matrix containing the omics data
+#' @return Raw data of the specified omics type: a numeric matrix for 
+#'         count-based omics data, and a list of data frames for ATAC peaks
 #' 
 #' @export
 #' 
@@ -857,38 +859,14 @@ methods::setGeneric("getCounts", function(x, omics) standardGeneric("getCounts")
 #' dataRNAseq <- getCounts(myMOList, "RNAseq")
 #' dataSmallRNAseq <- getCounts(myMOList, "smallRNAseq")
 #' dataProteomics <- getCounts(myMOList, "proteomics")
+#' dataATAC <- getCounts(myMOList, "ATAC")
 #' }
 #'
-methods::setMethod("getCounts", "MOList", function(x, omics) {
+methods::setMethod("getRawData", "MOList", function(x, omics) {
   switch(omics,
     RNAseq = x@RNAseq,
     smallRNAseq = x@smallRNAseq,
-    proteomics = x@proteomics
+    proteomics = x@proteomics,
+    ATAC = x@ATACpeaks
   )
 })
-
-
-# ATACpeaks slot
-methods::setGeneric("ATACpeaks", function(x) standardGeneric("ATACpeaks"))
-
-#' Getter for the ATAC peaks data from the MOList object
-#' 
-#' @aliases ATACpeaks
-#' 
-#' @param x An object of class MOList for retrieving omics data
-#' 
-#' @return A list containing the ATAC peaks for condition 1 and condition 2
-#' 
-#' @export
-#' 
-#' @examples
-#' \dontrun{
-#' # Using the example MOList object
-#' dataATACpeaks <- ATACpeaks(myMOList)
-#' }
-#'
-methods::setMethod("ATACpeaks", "MOList", function(x) {
-  return(x@ATACpeaks)
-})
-
-# [END]
