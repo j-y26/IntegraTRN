@@ -292,6 +292,111 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
 
 #' Perform differential expression analysis on the count-based omics data using
 #' EdgeR
+#'
+#' @keywords internal
+#'
+#' @description This function performs differential expression analysis on the
+#'              count-based omics data using EdgeR. The RNAseq, small RNAseq,
+#'              and protein data are supported for differential expression
+#'              analysis.
+#'
+#' @param filteredCounts A numeric matrix containing the filtered count-based
+#'                     omics data
+#' @param groupBy A vector specifying the grouping information for the omics
+#'                data, must be the same length as the number of samples in the
+#'                omics data
+#' @param batch A character vector specifying the batch information for the
+#'              omics data, must be the same length as the number of samples in
+#'              the omics data, used for batch correction. Can be NULL if no
+#'              batch correction is needed.
+#'
+#' @return A DETag object containing the differential expression analysis
+#'         results, and the method DESeq2
+#' \itemize{
+#' \item \code{DEResult}: A data frame containing the differential expression
+#'                        analysis results
+#' \item \code{method}: The character string "EdgeR"
+#' }
+#'
+#' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
+#' @importFrom dplyr %>%
+#'
+#' @references
+#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+#' differential expression analysis of digital gene expression data.
+#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#'
+#' @examples
+#' # Example 1: Differential expression analysis of RNAseq data without batch
+#' #            correction
+#'
+#' # Create example count matrix
+#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
+#'   nrow = 100, ncol = 10
+#' )
+#'
+#' # Create example grouping information
+#' group <- rep(c("A", "B"), each = 5)
+#'
+#' # Perform differential expression analysis
+#' deTag <- diffExprEdgeR(countMatrix, group)
+#'
+#' # Check the results
+#' head(exportDE(deTag))
+#'
+#' # Example 2: Differential expression analysis of RNAseq data with batch
+#' #            correction
+#'
+#' # Create example count matrix
+#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
+#'   nrow = 100, ncol = 10
+#' )
+#'
+#' # Create example grouping information
+#' group <- seq_len(10)
+#'
+#' # Create example batch information
+#' batch <- rep(c("batch1", "batch2"), each = 5)
+#'
+#' # Perform differential expression analysis
+#' deTag <- diffExprEdgeR(
+#'   filteredCounts = countMatrix,
+#'   groupBy = group,
+#'   batch = batch
+#' )
+#'
+#' # Check the results
+#' head(exportDE(deTag))
+#'
+diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
+  # Generate DGEList as the base object
+  dge <- edgeR::DGEList(counts = filteredCounts, group = groupBy)
+
+  # Construct GLM model
+  if (!is.null(batch)) {
+    design <- model.matrix(~ batch + groupBy)
+  } else {
+    design <- model.matrix(~groupBy)
+  }
+
+  # Estimate dispersion
+  dge <- edgeR::estimateDisp(dge, design = design)
+
+  # Perform differential expression analysis and obtain results
+  fit <- edgeR::glmQLFit(dge, design = design)
+  qlf <- edgeR::glmQLFTest(fit, coef = ncol(design))
+  DEResult <- edgeR::topTags(qlf, n = nrow(filteredCounts)) %>% as.data.frame()
+
+  # Create the DETag object
+  deTag <- DETag(
+    DEResult = DEResult,
+    method = EDGER
+  )
+
+  # Return the results
+  return(deTag)
+}
 
 
 

@@ -2,9 +2,7 @@
 % Please edit documentation in R/diffOmicsAnalysis.R
 \name{countDiffExpr}
 \alias{countDiffExpr}
-\title{Perform differential expression analysis on the count-based omics data using
-EdgeR
-Differential expression analysis of count-based omics data}
+\title{Differential expression analysis of count-based omics data}
 \usage{
 countDiffExpr(objMOList, omic, batch, program = DESEQ2)
 }
