@@ -1,14 +1,12 @@
 # Purpose: Performing differential analysis on the omics data
 # Author: Jielin Yang
-# Date: 2023-10-29
+# Date: 2023-10-30
 # Version: 1.0
 # Bugs and Issues: Currently, only DESeq2 is supported for differential analysis
 
 
 # Define a global variable for the count-based omics data
 COUNT_OMICS <- c("RNAseq", "smallRNAseq", "proteomics")
-DESEQ2 <- "DESeq2"
-EDGER <- "edgeR"
 
 
 #' Validate the input data and annotations on the samples
@@ -188,6 +186,46 @@ filterGeneCounts <- function(objMOList, omic) {
 }
 
 
+#' Perform differential expression analysis on the count-based omics data using
+#' DESeq2
+#'
+#' @keywords internal
+#'
+#' @description This function performs differential expression analysis on the
+#'              count-based omics data using DESeq2. The RNAseq, small RNAseq,
+#'              and protein data are supported for differential expression
+#'              analysis.
+#'
+#' @param filtedCounts A numeric matrix containing the filtered count-based
+#'                     omics data
+#' @param batch A character vector specifying the batch information for the
+#'              omics data, must be the same length as the number of samples in
+#'              the omics data, used for batch correction. Can be NULL if no
+#'              batch correction is needed.
+#'
+#' @return A DETag object containing the differential expression analysis
+#'         results, and the method DESeq2
+#' \itemize{
+#' \item \code{DEResult}: A data frame containing the differential expression
+#'                        analysis results
+#' \item \code{method}: The character string "DESeq2"
+#' }
+#'
+#' @references
+#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
+#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#'
+#' @examples
+#' # Example 1: Differential expression analysis of RNAseq data without batch
+#' #            correction
+#'
+#' # Create example count matrix
+#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
+#'   nrow = 100, ncol = 10
+#' )
+#'
+#' #
+
 #' Differential expression analysis of count-based omics data
 #'
 #' @description This function performs differential expression analysis on the
@@ -235,7 +273,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' \item \code{DEsmallRNAseq}: A DETag object containing the differential
 #'                             expression analysis results for the smallRNAseq
 #'                             data
-#' \item \code{DEProteomics}: A DETag object containing the differential
+#' \item \code{DEproteomics}: A DETag object containing the differential
 #'                            expression analysis results for the proteomics
 #'                            data
 #' }
@@ -245,11 +283,30 @@ filterGeneCounts <- function(objMOList, omic) {
 #'
 #'
 countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
+  if (!(omic %in% COUNT_OMICS)) {
+    stop("The input omics data is not supported for differential analysis")
+  } else if (is.null(getRawData(objMOList, omic))) {
+    # Nothing to do, return the original object
+    return(objMOList)
+  } else {
+    # Do nothing
+  }
 
+  # Differential analysis based on selected program
+  # Currently only DESEQ2 is supported
+  filtedCounts <- getRawData(objMOList, omic)
+  DEResult <- switch(omic,
+    DESEQ2 = diffExprDESeq2(
+      filtedCounts = filtedCounts,
+      batch = batch,
+      groupBy = getSampleInfo(objMOList, omic)$groupBy
+      )
+  )
+
+  # Update the MOList object
+  objMOList[[paste0("DE", omic)]] <- DEResult
+  return(objMOList)
 }
-
-
-
 
 
 #' Perform differential analysis on the omics data
@@ -280,6 +337,31 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                analysis, currently only DESEQ2 is supported
 #'
 #' @return An MOList object containing the differential analysis results
+#' \itemize{
+#' \item \code{RNAseq}: A numeric matrix containing the RNAseq data
+#' \item \code{RNAseqSamples}: A list containing the sample names and grouping
+#'                         information for the RNAseq data
+#' \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'                              grouping information for the smallRNAseq data
+#' \item \code{proteomics}: A numeric matrix containing the proteomics data
+#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'                           grouping information for the proteomics data
+#' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+#'                   condition 2
+#' \item \code{DERNAseq}: A DETag object containing the differential
+#'                        expression analysis results for the RNAseq data
+#' \item \code{DEsmallRNAseq}: A DETag object containing the differential
+#'                             expression analysis results for the smallRNAseq
+#'                             data
+#' \item \code{DEproteomics}: A DETag object containing the differential
+#'                            expression analysis results for the proteomics
+#'                            data
+#' \item \code{DEATAC}: A DETag object object containing the differential accessible
+#'                      accessible regions for the ATACseq data
+#' }
+#'
+#'
 #' @export
 #'
 diffOmics <- function(objMOList,
@@ -298,7 +380,9 @@ diffOmics <- function(objMOList,
   # Here filterGeneCounts and diffExprCount are called on all types of
   # count-based omics data, even if they could be NULL
   for (omic in COUNT_OMICS) {
+    # Filter raw counts
     objMOList <- filterGeneCounts(objMOList, omic)
+    # Differential expression
     objMOList <- countDiffExpr(
       objMOList = objMOList,
       omic = omic,
@@ -306,7 +390,16 @@ diffOmics <- function(objMOList,
         RNAseq = rnaseqBatch,
         smallRNAseq = smallRnaBatch,
         proteomics = proteinBatch
-      )
+      ),
+      program = program
     )
   }
+
+  # Differential analysis of ATACseq data
+
+
+
+
+  # Finished, return the object
+  return(objMOList)
 }

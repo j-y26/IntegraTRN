@@ -33,6 +33,29 @@ analysis, currently only DESEQ2 is supported}
 }
 \value{
 An MOList object containing the differential analysis results
+\itemize{
+\item \code{RNAseq}: A numeric matrix containing the RNAseq data
+\item \code{RNAseqSamples}: A list containing the sample names and grouping
+                        information for the RNAseq data
+\item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
+\item \code{smallRNAseqSamples}: A list containing the sample names and
+                             grouping information for the smallRNAseq data
+\item \code{proteomics}: A numeric matrix containing the proteomics data
+\item \code{proteomicsSamples}: A list containing the sample names and
+                          grouping information for the proteomics data
+\item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
+                  condition 2
+\item \code{DERNAseq}: A DETag object containing the differential
+                       expression analysis results for the RNAseq data
+\item \code{DEsmallRNAseq}: A DETag object containing the differential
+                            expression analysis results for the smallRNAseq
+                            data
+\item \code{DEproteomics}: A DETag object containing the differential
+                           expression analysis results for the proteomics
+                           data
+\item \code{DEATAC}: A DETag object object containing the differential accessible
+                     accessible regions for the ATACseq data
+}
 }
 \description{
 This function performs data filtering, normalization, batch

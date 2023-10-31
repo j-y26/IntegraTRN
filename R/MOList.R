@@ -865,10 +865,51 @@ methods::setGeneric(
 #' }
 #'
 methods::setMethod("getRawData", "MOList", function(x, omics) {
-  switch(omics,
+  omicData <- switch(omics,
     RNAseq = x@RNAseq,
     smallRNAseq = x@smallRNAseq,
     proteomics = x@proteomics,
     ATAC = x@ATACpeaks
   )
+  return(omicData)
+})
+
+
+# Retrieving the sample information for a specific omics data
+methods::setGeneric(
+  "getSampleInfo",
+  function(x, experiment) standardGeneric("getSampleInfo")
+)
+
+#' Retrieving the grouping information for a specific omics data
+#'
+#' @keywords internal
+#'
+#' @param x A MOList object containing the omics data
+#' @param experiment A character string specifying the experiment type, must
+#'                   be one of "RNAseq", "smallRNAseq", and "proteomics"
+#'
+#' @return A vector of grouping information
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming myMOList is a MOList object
+#'
+#' # Get the grouping information for the RNAseq data
+#' getSampleInfo(myMOList, "RNAseq")
+#'
+#' # Get the grouping information for the smallRNAseq data
+#' getSampleInfo(myMOList, "smallRNAseq")
+#'
+#' # Get the grouping information for the proteomics data
+#' getSampleInfo(myMOList, "proteomics")
+#' }
+#'
+methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
+  sampleInfo <- switch(experiment,
+    RNAseq = x@RNAseqSamples$groupBy,
+    smallRNAseq = x@smallRNAseqSamples$groupBy,
+    proteomics = x@proteomicsSamples$groupBy
+  )
+  return(sampleInfo)
 })

@@ -15,9 +15,9 @@ must be one of "RNAseq", "smallRNAseq", and "proteomics"}
 \value{
 An MOList object containing the filtered omics data
 \itemize{
-\item code(RNAseq): The RNAseq data in the MOList object is filtered and 
+\item code(RNAseq): The RNAseq data in the MOList object is filtered and
                     updated, if omic = "RNAseq"
-\item code(smallRNAseq): The small RNAseq data in the MOList object is 
+\item code(smallRNAseq): The small RNAseq data in the MOList object is
                           filtered and updated, if omic = "smallRNAseq"
 \item code(proteomics): The protein data in the MOList object is filtered and
                         updated, if omic = "proteomics"
@@ -46,13 +46,13 @@ group <- rep(c("A", "B"), each = 5)
 objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group)
 
 # Before filtering, check the dimensions of the RNAseq data
-dim(getCounts(objMOList, "RNAseq"))
+dim(getRawData(objMOList, "RNAseq"))
 
 # Filter the RNAseq data
 objMOList <- filterGeneCounts(objMOList, "RNAseq")
 
 # After filtering, check the dimensions of the RNAseq data
-dim(getCounts(objMOList, "RNAseq")) # should be lower than the original
+dim(getRawData(objMOList, "RNAseq")) # should be lower than the original
 
 # Example 2: Filtering the small RNAseq data
 
@@ -62,18 +62,19 @@ smallRna[1:20, 1:3] <- 0
 group <- paste0(rep("A", 3), rep("B", 2))
 
 # Create example MOList object
-objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group,
-                    smallRNAseq = smallRna, smallRNAGroupBy = group)
+objMOList <- MOList(
+  RNAseq = rnaseq, RNAGroupBy = group,
+  smallRNAseq = smallRna, smallRNAGroupBy = group
+)
 
 # Before filtering, check the dimensions of the small RNAseq data
-dim(getCounts(objMOList, "smallRNAseq"))
+dim(getRawData(objMOList, "smallRNAseq"))
 
 # Filter the small RNAseq data
 objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
 
 # After filtering, check the dimensions of the small RNAseq data
-dim(getCounts(objMOList, "smallRNAseq")) # should be lower than the original
-
+dim(getRawData(objMOList, "smallRNAseq")) # should be lower than the original
 
 }
 \references{

@@ -4,9 +4,16 @@
 # Version: 1.0
 # Bugs and Issues: Currently, only DESeq2 is supported for differential analysis
 
-#' DETag S4 class
-#'
-#' @keywords internal
+
+# Define global variables
+DESEQ2 <- "DESeq2"
+EDGER <- "edgeR"
+ATAC_GRANGE <- "GRangesATAC"
+METHODS <- c(DESEQ2, EDGER, ATAC_GRANGE)
+
+#' @name DETag-class
+#' @title DETag S4 class
+#' @aliases DETag-class DETag
 #'
 #' @description This class is used to store the differential expression analysis
 #'              results for the count-based omics data. Although the
@@ -18,7 +25,8 @@
 #'
 #' @slot DEResult A data frame containing the differential expression analysis
 #'                results
-#' @slot method A character string specifying the program used for the analysis
+#' @slot method A character string specifying the program used for the analysis,
+#'              must be one of the valid METHODS defined
 #'
 #' @exportClass DETag
 #'
@@ -36,9 +44,56 @@ methods::setClass("DETag", slots = c(
   method = "character"
 ))
 
-#' Constructor for the DETag class
+
+#' Validator of the DETag class slots
 #'
 #' @keywords internal
+#'
+#' @description This function validates the DETag class
+#'
+#' @param DEResult A data frame containing the differential expression analysis
+#'                 results
+#' @param method A character string specifying the program used for the
+#'               analysis, must be one of the valid METHODS defined
+#'
+#' @return NULL
+#'
+#' @examples
+#' # Create an example data frame
+#' deResult <- data.frame(
+#'   gene = paste0("gene", seq_len(10)),
+#'   logFC = runif(10),
+#'   adj.P.Val = runif(10)
+#' )
+#'
+#' # Create an object of the DETag class
+#' deTag <- DETag(deResult, "DESeq2")
+#'
+#' # Validate the object
+#' validateDETagSlots(deTag)
+#'
+validateDETagSlots <- function(DEResult, method) {
+  # Validate each slot
+  # DEResult
+  if (!inherits(DEResult, "data.frame")) {
+    stop("The DEResult slot must be a data frame")
+  } else if (any(is.na(DEResult[, 1:3]))) {
+    stop("Some key differential analysis results are missing")
+  } else {
+    # Do nothing
+  }
+  # method
+  if (!is.character(method) || !method %in% METHODS) {
+    stop("The method slot must be a valid character string, see ?DETag for
+         more information")
+  } else {
+    # Do nothing
+  }
+  return(invisible(NULL))
+}
+
+
+#' Constructor for the DETag class
 #'
 #' @description This function creates an object of the DETag class
 #'
@@ -74,18 +129,8 @@ methods::setClass("DETag", slots = c(
 #' class(deTag)
 #'
 DETag <- function(DEResult, method) {
-  # Check the class of the input DEResult
-  if (!inherits(DEResult, "data.frame")) {
-    stop("The input DEResult must be a data frame")
-  } else {
-    # Do nothing
-  }
-  # Check the class of the input method
-  if (!is.character(method)) {
-    stop("The input method must be a character string")
-  } else {
-    # Do nothing
-  }
+  # Validate the input
+  validateDETagSlots(DEResult, method)
   # Create the object
   newDETag <- new("DETag", DEResult = DEResult, method = method)
 
