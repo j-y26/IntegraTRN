@@ -53,8 +53,8 @@ An MOList object containing the differential analysis results
 \item \code{DEproteomics}: A DETag object containing the differential
                            expression analysis results for the proteomics
                            data
-\item \code{DEATAC}: A DETag object object containing the differential accessible
-                     accessible regions for the ATACseq data
+\item \code{DEATAC}: A DETag object object containing the differential
+                     accessible accessible regions for the ATACseq data
 }
 }
 \description{

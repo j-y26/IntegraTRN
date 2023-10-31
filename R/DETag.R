@@ -31,6 +31,8 @@ DESeq2_fields <- c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "pad
 #' @slot method A character string specifying the program used for the analysis,
 #'              must be one of the valid METHODS defined
 #'
+#' @importFrom methods setClass
+#'
 #' @exportClass DETag
 #'
 #' @references
@@ -112,6 +114,8 @@ validateDETagSlots <- function(DEResult, method) {
 #'                      analysis
 #' }
 #'
+#' @importFrom methods new
+#'
 #' @export
 #'
 #' @references
@@ -135,7 +139,7 @@ DETag <- function(DEResult, method) {
   # Validate the input
   validateDETagSlots(DEResult, method)
   # Create the object
-  newDETag <- new("DETag", DEResult = DEResult, method = method)
+  newDETag <- methods::new("DETag", DEResult = DEResult, method = method)
 
   # Return the object
   return(newDETag)
@@ -145,35 +149,37 @@ DETag <- function(DEResult, method) {
 # Define the S4 method for the DETag class
 
 #' @rdname DETag-class
-#' 
+#'
 #' @method print DETag
-#' 
+#'
 #' @description This function prints the DETag object
-#' 
+#'
 #' @param x An object of the DETag class
 #' @param ... Other arguments passed to the function
-#' 
+#'
 #' @return NULL
-#' 
+#'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @export
-#' 
+#'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#' 
+#'
 #' @examples
 #' # Create an example data frame
 #' deResult <- data.frame(
-#'  gene = paste0("gene", seq_len(10)),
-#' logFC = runif(10),
-#' adj.P.Val = runif(10)
+#'   gene = paste0("gene", seq_len(10)),
+#'   logFC = runif(10),
+#'   adj.P.Val = runif(10)
 #' )
-#' 
+#'
 #' # Create an object of the DETag class
 #' deTag <- DETag(deResult, "DESeq2")
-#' 
+#'
 #' # Print the object
 #' print(deTag)
-#' 
+#'
 print.DETag <- function(x, ...) {
   # Print the object
   cat("DETag object\n")
@@ -190,31 +196,34 @@ methods::setGeneric("exportDE", function(x, original = FALSE) {
 })
 
 #' @rdname DETag-class
-#' 
+#'
 #' @method exportDE DETag
-#' 
+#'
 #' @description This function extracts the differential analysis results from
 #'              the DETag object
-#' 
+#'
 #' @param x An object of the DETag class
 #' @param original A boolean indicating whether to return the original results.
 #'                 If FALSE, the results will be converted to a data frame with
-#'                 the following columns: gene, logFC, pvalue, padj
+#'                 the following columns: logFC, pvalue, padj
 #'                 (default: FALSE)
-#' 
-#' @return A data frame containing the differential analysis results
+#'
+#' @return A data frame containing the differential analysis results, with each
+#'         row representing a gene and each column representing a feature
 #' \itemize{
-#' \item \code{gene}: A character vector containing the gene names
+#' \item \code{row.names}: A character vector containing the gene names
 #' \item \code{logFC}: A numeric vector containing the log2 fold change values
 #' \item \code{pvalue}: A numeric vector containing the p-values
 #' \item \code{padj}: A numeric vector containing the adjusted p-values
 #' }
-#' 
+#'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @export
-#' 
+#'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#' 
+#'
 #' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
 #' differential expression analysis of digital gene expression data.
 #' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
@@ -222,24 +231,24 @@ methods::setGeneric("exportDE", function(x, original = FALSE) {
 #'
 #' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
 #' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
-#' 
+#'
 #' @examples
 #' # Example 1: export the package default results
-#' 
+#'
 #' \dontrun{
 #' # Assuming the deTag object is already created from a differential analysis
-#' 
+#'
 #' # Export the results
 #' exportDE(deTag)
 #' }
-#' 
+#'
 #' # Example 2: export the original results
-#' 
+#'
 #' \dontrun{
 #' # Export the results while keeping the original results from DESeq2 or edgeR
 #' exportDE(deTag, original = TRUE)
 #' }
-#' 
+#'
 methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
   # Validate the input
   if (!is.logical(original)) {
@@ -251,13 +260,33 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
   if (original) {
     return(x@DEResult)
   } else {
-    # Convert the results to a data frame
-    deResult <- data.frame(
-      gene = rownames(x@DEResult),
-      logFC = x@DEResult$log2FoldChange,
-      pvalue = x@DEResult$pvalue,
-      padj = x@DEResult$padj
-    )
-    return(deResult)
+    # Based on the type of the method, extract the results
+    if (x@method %in% c(DESEQ2, EDGER)) {
+      # DESeq2 or edgeR
+      # Extract the results
+      if (x@method == DESEQ2) {
+        # DESeq2
+        # Extract the results
+        deResult <- x@DEResult[, DESeq2_fields]
+        # Rename the columns
+        colnames(deResult) <- c("logFC", "pvalue", "padj")
+      } else {
+        # edgeR
+        # Extract the results
+        deResult <- x@DEResult[, edgeR_fields]
+        # Rename the columns
+        colnames(deResult) <- c("logFC", "logCPM", "pvalue", "padj")
+      }
+      # Return the results
+      return(deResult)
+    } else {
+      # ATAC-GRanges
+      # Extract the results
+      deResult <- x@DEResult
+      # Rename the columns
+      colnames(deResult) <- c("logFC", "pvalue", "padj")
+      # Return the results
+      return(deResult)
+    }
   }
 })

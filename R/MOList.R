@@ -26,6 +26,9 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #'                 condition 2
 #' @slot .Data A list containing differential expression analysis data, used
 #'             in the same way as a list
+#'
+#' @importFrom methods setClass
+#'
 #' @exportClass MOList
 #'
 #' @references
@@ -301,6 +304,8 @@ setOmics <- function(objMOList,
 #' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
 #'                     condition 2
 #' }
+#'
+#' @importFrom methods new
 #'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
@@ -670,6 +675,8 @@ MOList <- function(objMOList = NULL,
 #'                   condition 2
 #' }
 #'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming RNAseq is a matrix of count data
@@ -712,6 +719,8 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 #' \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
 #'                   condition 2
 #' }
+#'
+#' @importFrom methods standardGeneric setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -759,6 +768,8 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #'                   condition 2
 #' }
 #'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming proteomics is a matrix of count data
@@ -805,6 +816,8 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #'                   condition 2
 #' }
 #'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming peakCond1 and peakCond2 are data frames containing the ATAC peaks
@@ -832,12 +845,6 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 # Define a set of getters for the data slots of the MOList object, allowing
 # the user to retrieve information from the MOList object
 
-# Getter for count-based omics data
-methods::setGeneric(
-  "getRawData",
-  function(x, omics) standardGeneric("getRawData")
-)
-
 #' Getter for the count-based omics data from the MOList object
 #'
 #' @aliases getRawData
@@ -853,6 +860,8 @@ methods::setGeneric(
 #' @return Raw data of the specified omics type: a numeric matrix for
 #'         count-based omics data, and a list of data frames for ATAC peaks
 #'
+#' @importFrom methods standardGeneric setGeneric setMethod
+#'
 #' @export
 #'
 #' @examples
@@ -864,6 +873,10 @@ methods::setGeneric(
 #' dataATAC <- getCounts(myMOList, "ATAC")
 #' }
 #'
+methods::setGeneric(
+  "getRawData",
+  function(x, omics) standardGeneric("getRawData")
+)
 methods::setMethod("getRawData", "MOList", function(x, omics) {
   omicData <- switch(omics,
     RNAseq = x@RNAseq,
@@ -875,12 +888,6 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 })
 
 
-# Retrieving the sample information for a specific omics data
-methods::setGeneric(
-  "getSampleInfo",
-  function(x, experiment) standardGeneric("getSampleInfo")
-)
-
 #' Retrieving the grouping information for a specific omics data
 #'
 #' @keywords internal
@@ -890,6 +897,8 @@ methods::setGeneric(
 #'                   be one of "RNAseq", "smallRNAseq", and "proteomics"
 #'
 #' @return A vector of grouping information
+#'
+#' @importFrom methods standardGeneric setGeneric setMethod
 #'
 #' @examples
 #' \dontrun{
@@ -905,6 +914,10 @@ methods::setGeneric(
 #' getSampleInfo(myMOList, "proteomics")
 #' }
 #'
+methods::setGeneric(
+  "getSampleInfo",
+  function(x, experiment) standardGeneric("getSampleInfo")
+)
 methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
   sampleInfo <- switch(experiment,
     RNAseq = x@RNAseqSamples$groupBy,

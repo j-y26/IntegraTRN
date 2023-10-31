@@ -525,7 +525,7 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   } else {
     # Do nothing
   }
-  
+
   cat("Performing differential analysis on", omic, "data\n\n")
 
   # Differential analysis based on selected program

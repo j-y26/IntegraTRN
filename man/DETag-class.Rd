@@ -4,7 +4,34 @@
 \name{DETag-class}
 \alias{DETag-class}
 \alias{DETag}
+\alias{print.DETag}
+\alias{exportDE,DETag-method}
 \title{DETag S4 class}
+\usage{
+\method{print}{DETag}(x, ...)
+
+\S4method{exportDE}{DETag}(x, original = FALSE)
+}
+\arguments{
+\item{x}{An object of the DETag class}
+
+\item{...}{Other arguments passed to the function}
+
+\item{original}{A boolean indicating whether to return the original results.
+If FALSE, the results will be converted to a data frame with
+the following columns: logFC, pvalue, padj
+(default: FALSE)}
+}
+\value{
+A data frame containing the differential analysis results, with each
+        row representing a gene and each column representing a feature
+\itemize{
+\item \code{row.names}: A character vector containing the gene names
+\item \code{logFC}: A numeric vector containing the log2 fold change values
+\item \code{pvalue}: A numeric vector containing the p-values
+\item \code{padj}: A numeric vector containing the adjusted p-values
+}
+}
 \description{
 This class is used to store the differential expression analysis
              results for the count-based omics data. Although the
@@ -13,6 +40,11 @@ This class is used to store the differential expression analysis
              S4 class to allow future extension of the program, e.g.
              providing different methods for differential expression
              analysis while maintaining a consistent interface.
+
+This function prints the DETag object
+
+This function extracts the differential analysis results from
+             the DETag object
 }
 \section{Slots}{
 
@@ -24,6 +56,37 @@ results}
 must be one of the valid METHODS defined}
 }}
 
+\examples{
+# Create an example data frame
+deResult <- data.frame(
+  gene = paste0("gene", seq_len(10)),
+  logFC = runif(10),
+  adj.P.Val = runif(10)
+)
+
+# Create an object of the DETag class
+deTag <- DETag(deResult, "DESeq2")
+
+# Print the object
+print(deTag)
+
+# Example 1: export the package default results
+
+\dontrun{
+# Assuming the deTag object is already created from a differential analysis
+
+# Export the results
+exportDE(deTag)
+}
+
+# Example 2: export the original results
+
+\dontrun{
+# Export the results while keeping the original results from DESeq2 or edgeR
+exportDE(deTag, original = TRUE)
+}
+
+}
 \references{
 Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
 differential expression analysis of digital gene expression data.
@@ -32,4 +95,16 @@ Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
 change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
 
 Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+
+Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+
+Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+
+Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+differential expression analysis of digital gene expression data.
+Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+
+Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
+change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
 }
