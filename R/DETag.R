@@ -10,6 +10,9 @@ DESEQ2 <- "DESeq2"
 EDGER <- "edgeR"
 ATAC_GRANGE <- "GRangesATAC"
 METHODS <- c(DESEQ2, EDGER, ATAC_GRANGE)
+edgeR_fields <- c("logFC", "logCPM", "PValue", "FDR", "Gene", "Annotation")
+DESeq2_fields <- c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj", "GeneID", "Annotation")
+
 
 #' @name DETag-class
 #' @title DETag S4 class
@@ -138,7 +141,123 @@ DETag <- function(DEResult, method) {
   return(newDETag)
 }
 
-#### Need to define an S4 method to extract the differential results to
-#### unified interface of dataframe
 
-# exportDE
+# Define the S4 method for the DETag class
+
+#' @rdname DETag-class
+#' 
+#' @method print DETag
+#' 
+#' @description This function prints the DETag object
+#' 
+#' @param x An object of the DETag class
+#' @param ... Other arguments passed to the function
+#' 
+#' @return NULL
+#' 
+#' @export
+#' 
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' 
+#' @examples
+#' # Create an example data frame
+#' deResult <- data.frame(
+#'  gene = paste0("gene", seq_len(10)),
+#' logFC = runif(10),
+#' adj.P.Val = runif(10)
+#' )
+#' 
+#' # Create an object of the DETag class
+#' deTag <- DETag(deResult, "DESeq2")
+#' 
+#' # Print the object
+#' print(deTag)
+#' 
+print.DETag <- function(x, ...) {
+  # Print the object
+  cat("DETag object\n")
+  cat("Method: ", x@method, "\n")
+  cat("Differential analysis results:\n")
+  print(exportDE(x))
+  return(invisible(NULL))
+}
+
+
+# Generic function for extracting the differential analysis results
+methods::setGeneric("exportDE", function(x, original = FALSE) {
+  standardGeneric("exportDE")
+})
+
+#' @rdname DETag-class
+#' 
+#' @method exportDE DETag
+#' 
+#' @description This function extracts the differential analysis results from
+#'              the DETag object
+#' 
+#' @param x An object of the DETag class
+#' @param original A boolean indicating whether to return the original results.
+#'                 If FALSE, the results will be converted to a data frame with
+#'                 the following columns: gene, logFC, pvalue, padj
+#'                 (default: FALSE)
+#' 
+#' @return A data frame containing the differential analysis results
+#' \itemize{
+#' \item \code{gene}: A character vector containing the gene names
+#' \item \code{logFC}: A numeric vector containing the log2 fold change values
+#' \item \code{pvalue}: A numeric vector containing the p-values
+#' \item \code{padj}: A numeric vector containing the adjusted p-values
+#' }
+#' 
+#' @export
+#' 
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' 
+#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+#' differential expression analysis of digital gene expression data.
+#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#'
+#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
+#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#' 
+#' @examples
+#' # Example 1: export the package default results
+#' 
+#' \dontrun{
+#' # Assuming the deTag object is already created from a differential analysis
+#' 
+#' # Export the results
+#' exportDE(deTag)
+#' }
+#' 
+#' # Example 2: export the original results
+#' 
+#' \dontrun{
+#' # Export the results while keeping the original results from DESeq2 or edgeR
+#' exportDE(deTag, original = TRUE)
+#' }
+#' 
+methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
+  # Validate the input
+  if (!is.logical(original)) {
+    stop("The original argument must be a boolean")
+  } else {
+    # Do nothing
+  }
+  # Extract the results
+  if (original) {
+    return(x@DEResult)
+  } else {
+    # Convert the results to a data frame
+    deResult <- data.frame(
+      gene = rownames(x@DEResult),
+      logFC = x@DEResult$log2FoldChange,
+      pvalue = x@DEResult$pvalue,
+      padj = x@DEResult$padj
+    )
+    return(deResult)
+  }
+})

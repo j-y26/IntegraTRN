@@ -285,6 +285,9 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
     method = DESEQ2
   )
 
+  # Free up memory for large operational objects
+  rm(dds)
+
   # Return the results
   return(deTag)
 }
@@ -394,6 +397,9 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
     DEResult = DEResult,
     method = EDGER
   )
+
+  # Free up memory for large operational objects
+  rm(dge, fit, qlf)
 
   # Return the results
   return(deTag)
@@ -519,6 +525,8 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   } else {
     # Do nothing
   }
+  
+  cat("Performing differential analysis on", omic, "data\n\n")
 
   # Differential analysis based on selected program
   filtedCounts <- getRawData(objMOList, omic)
