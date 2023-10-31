@@ -47,6 +47,9 @@ deTag <- DETag(deResult, "DESeq2")
 # Print the object
 print(deTag)
 
+# or simply do
+deTag
+
 }
 \references{
 Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for

@@ -179,7 +179,7 @@ DETag <- function(DEResult, method) {
 #'
 #' # Print the object
 #' print(deTag)
-#' 
+#'
 #' # or simply do
 #' deTag
 #'
@@ -189,12 +189,16 @@ methods::setMethod("show", "DETag", function(object) {
   # Some more DE details for count-based DE
   if (object@method == DESEQ2) {
     cat("Number of genes: ", nrow(object@DEResult), "\n")
-    cat("Number of genes with adjusted p-value < 0.05: ",
-        sum(object@DEResult$padj < 0.05), "\n\n")
+    cat(
+      "Number of genes with adjusted p-value < 0.05: ",
+      sum(object@DEResult$padj < 0.05), "\n\n"
+    )
   } else if (object@method == EDGER) {
     cat("Number of genes: ", nrow(object@DEResult), "\n")
-    cat("Number of genes with FDR < 0.05: ",
-        sum(object@DEResult$FDR < 0.05), "\n\n")
+    cat(
+      "Number of genes with FDR < 0.05: ",
+      sum(object@DEResult$FDR < 0.05), "\n\n"
+    )
   } else {
     # Do nothing
   }
