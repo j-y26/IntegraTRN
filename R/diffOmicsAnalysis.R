@@ -84,9 +84,9 @@ validateDataAnno <- function(objMOList, annoList) {
 #'
 #' @return An MOList object containing the filtered omics data
 #' \itemize{
-#' \item code(RNAseq): The RNAseq data in the MOList object is filtered and 
+#' \item code(RNAseq): The RNAseq data in the MOList object is filtered and
 #'                     updated, if omic = "RNAseq"
-#' \item code(smallRNAseq): The small RNAseq data in the MOList object is 
+#' \item code(smallRNAseq): The small RNAseq data in the MOList object is
 #'                           filtered and updated, if omic = "smallRNAseq"
 #' \item code(proteomics): The protein data in the MOList object is filtered and
 #'                         updated, if omic = "proteomics"
@@ -105,7 +105,7 @@ validateDataAnno <- function(objMOList, annoList) {
 #'
 #' @examples
 #' # Example 1: Filtering the RNAseq data
-#' 
+#'
 #' # Create example RNAseq data
 #' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
 #' rnaseq[1:20, 1:8] <- 0
@@ -122,27 +122,28 @@ validateDataAnno <- function(objMOList, annoList) {
 #'
 #' # After filtering, check the dimensions of the RNAseq data
 #' dim(getRawData(objMOList, "RNAseq")) # should be lower than the original
-#' 
+#'
 #' # Example 2: Filtering the small RNAseq data
-#' 
+#'
 #' # Create example small RNAseq data
 #' smallRna <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
 #' smallRna[1:20, 1:3] <- 0
 #' group <- paste0(rep("A", 3), rep("B", 2))
-#' 
+#'
 #' # Create example MOList object
-#' objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group,
-#'                     smallRNAseq = smallRna, smallRNAGroupBy = group)
-#' 
+#' objMOList <- MOList(
+#'   RNAseq = rnaseq, RNAGroupBy = group,
+#'   smallRNAseq = smallRna, smallRNAGroupBy = group
+#' )
+#'
 #' # Before filtering, check the dimensions of the small RNAseq data
 #' dim(getRawData(objMOList, "smallRNAseq"))
-#' 
+#'
 #' # Filter the small RNAseq data
 #' objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
-#' 
+#'
 #' # After filtering, check the dimensions of the small RNAseq data
 #' dim(getRawData(objMOList, "smallRNAseq")) # should be lower than the original
-#' 
 #'
 filterGeneCounts <- function(objMOList, omic) {
   if (!(omic %in% COUNT_OMICS)) {
@@ -188,13 +189,13 @@ filterGeneCounts <- function(objMOList, omic) {
 
 
 #' Differential expression analysis of count-based omics data
-#' 
+#'
 #' @description This function performs differential expression analysis on the
 #'              count-based omics data. The RNAseq, small RNAseq, and protein
 #'              data are supported for differential expression analysis.
 #'              Calling this function again on the same omics data will
 #'              overwrite the previous results.
-#' 
+#'
 #' @note Preconditions:
 #' \itemize{
 #' \item The input omics data must be a MOList object
@@ -202,7 +203,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' \item The batch information must have the same length as the number of
 #'       samples in the omics data
 #' }
-#' 
+#'
 #' @param objMOList A MOList object containing the omics data
 #' @param omic A character string specifying the omics data to be analyzed
 #'             must be one of "RNAseq", "smallRNAseq", and "proteomics"
@@ -212,7 +213,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #'              batch correction is needed.
 #' @param program A character string specifying the program used for the
 #'               analysis, currently only DESEQ2 is supported
-#' 
+#'
 #' @return An MOList object containing the differential expression analysis
 #'         results. Results are appended to the original MOList object as
 #'         list elements named "DERNAseq", "DEsmallRNAseq", and "DEProteomics"
@@ -238,15 +239,15 @@ filterGeneCounts <- function(objMOList, omic) {
 #'                            expression analysis results for the proteomics
 #'                            data
 #' }
-#' 
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
+#'
 countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
-  
+
 }
-  
+
 
 
 
@@ -277,7 +278,7 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                     of samples in the protein data, used for batch correction
 #' @param program A character string specifying the program used for the
 #'                analysis, currently only DESEQ2 is supported
-#' 
+#'
 #' @return An MOList object containing the differential analysis results
 #' @export
 #'
@@ -298,12 +299,14 @@ diffOmics <- function(objMOList,
   # count-based omics data, even if they could be NULL
   for (omic in COUNT_OMICS) {
     objMOList <- filterGeneCounts(objMOList, omic)
-    objMOList <- countDiffExpr(objMOList = objMOList,
-                               omic = omic,
-                               batch = switch(omic,
-                                 RNAseq = rnaseqBatch,
-                                 smallRNAseq = smallRnaBatch,
-                                 proteomics = proteinBatch
-                               ))
+    objMOList <- countDiffExpr(
+      objMOList = objMOList,
+      omic = omic,
+      batch = switch(omic,
+        RNAseq = rnaseqBatch,
+        smallRNAseq = smallRnaBatch,
+        proteomics = proteinBatch
+      )
+    )
   }
 }

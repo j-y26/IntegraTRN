@@ -643,7 +643,7 @@ MOList <- function(objMOList = NULL,
 # Must be used in caution, the user should not have access to these functions
 
 #' Setter for the RNAseq slot
-#' 
+#'
 #' @aliases RNAseq<-
 #'
 #' @keywords internal
@@ -690,7 +690,7 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 })
 
 #' Setter for the smallRNAseq slot
-#' 
+#'
 #' @aliases smallRNAseq<-
 #'
 #' @keywords internal
@@ -736,7 +736,7 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 })
 
 #' Setter for the proteomics slot
-#' 
+#'
 #' @aliases proteomics<-
 #'
 #' @keywords internal
@@ -782,7 +782,7 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 })
 
 #' Setter for the ATACpeaks slot
-#' 
+#'
 #' @aliases ATACpeaks<-
 #'
 #' @keywords internal
@@ -833,26 +833,28 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 # the user to retrieve information from the MOList object
 
 # Getter for count-based omics data
-methods::setGeneric("getRawData",
-                    function(x, omics) standardGeneric("getRawData"))
+methods::setGeneric(
+  "getRawData",
+  function(x, omics) standardGeneric("getRawData")
+)
 
 #' Getter for the count-based omics data from the MOList object
-#' 
+#'
 #' @aliases getRawData
-#' 
+#'
 #' @description This function is a getter for the count-based omics data from
 #'              the MOList object. The user can retrieve the RNAseq,
 #'              smallRNAseq, and proteomics data from the MOList object.
-#' 
+#'
 #' @param x An object of class MOList for retrieving omics data
 #' @param omics A character string specifying the omics data to be retrieved
 #'        must be one of "RNAseq", "smallRNAseq", "proteomics", or "ATAC"
-#' 
-#' @return Raw data of the specified omics type: a numeric matrix for 
+#'
+#' @return Raw data of the specified omics type: a numeric matrix for
 #'         count-based omics data, and a list of data frames for ATAC peaks
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Using the example MOList object
