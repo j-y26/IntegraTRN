@@ -20,6 +20,7 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     DESeq2,
+    dplyr,
     edgeR,
     GenomicTools.fileHandler,
     methods
