@@ -179,6 +179,9 @@ DETag <- function(DEResult, method) {
 #'
 #' # Print the object
 #' print(deTag)
+#' 
+#' # or simply do
+#' deTag
 #'
 methods::setMethod("show", "DETag", function(object) {
   cat("A DETag S4 object\n")
@@ -280,9 +283,9 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
     } else if (x@method == EDGER) {
       deResult <- deResult %>% dplyr::select(EDGER_FIELDS)
     } else {
-      stop("The method is not supported")
+      stop("The method is not supported") # never happen for a valid DETag obj
     }
-    # Rename the columns
     colnames(deResult) <- COUNT_DEFIELDS
+    return(deResult)
   }
 })
