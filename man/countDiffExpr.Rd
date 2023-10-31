@@ -18,7 +18,7 @@ the omics data, used for batch correction. Can be NULL if no
 batch correction is needed.}
 
 \item{program}{A character string specifying the program used for the
-analysis, currently only DESEQ2 is supported}
+analysis, DESeq2 or EdgeR}
 }
 \value{
 An MOList object containing the differential expression analysis
@@ -62,4 +62,58 @@ Preconditions:
 \item The batch information must have the same length as the number of
       samples in the omics data
 }
+}
+\examples{
+# Example 1: Differential expression analysis of RNAseq data without batch
+#            correction
+
+# Create example count matrix
+countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
+  nrow = 100, ncol = 10
+)
+
+# Create example grouping information
+group <- rep(c("A", "B"), each = 5)
+
+# Create example MOList object
+objMOList <- MOList(RNAseq = countMatrix, RNAGroupBy = group)
+
+# Perform differential expression analysis
+objMOList <- countDiffExpr(objMOList, "RNAseq", group)
+
+
+# Example 2: Differential expression analysis of protein data with batch
+#            correction
+
+# Create example count matrix
+proteinCounts <- matrix(sample(0:100, nrow = 100, ncol = 20, replace = TRUE))
+
+# Create example grouping information
+proteinGroup <- rep(c("A", "B"), each = 10)
+
+# Create example batch information
+proteinBatch <- c(rep("batch1", 5), rep("batch2", 15))
+
+# Create example MOList object
+objMOList <- MOList(
+  RNAseq = countMatrix, RNAGroupBy = group,
+  proteomics = proteinCounts,
+  proteomicsGroupBy = proteinGroup
+)
+
+# Perform differential expression analysis
+objMOList <- countDiffExpr(
+  objMOList, "proteomics",
+  proteinGroup, proteinBatch
+)
+
+}
+\references{
+Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+differential expression analysis of digital gene expression data.
+Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+
+Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
+change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
 }

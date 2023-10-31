@@ -2,7 +2,7 @@
 # Author: Jielin Yang
 # Date: 2023-10-30
 # Version: 1.0
-# Bugs and Issues: Currently, only DESeq2 is supported for differential analysis
+# Bugs and Issues: None
 
 
 # Define a global variable for the count-based omics data
@@ -319,6 +319,7 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
 #' }
 #'
 #' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
+#'             topTags
 #' @importFrom dplyr %>%
 #'
 #' @references
@@ -399,12 +400,6 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 }
 
 
-
-
-
-
-
-
 #' Differential expression analysis of count-based omics data
 #'
 #' @description This function performs differential expression analysis on the
@@ -429,7 +424,7 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 #'              the omics data, used for batch correction. Can be NULL if no
 #'              batch correction is needed.
 #' @param program A character string specifying the program used for the
-#'               analysis, currently only DESEQ2 is supported
+#'               analysis, DESeq2 or EdgeR
 #'
 #' @return An MOList object containing the differential expression analysis
 #'         results. Results are appended to the original MOList object as
@@ -457,9 +452,63 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 #'                            data
 #' }
 #'
+#' @importFrom dplyr %>%
+#' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
+#'             topTags
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
+#'
+#' @references
+#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
+#' differential expression analysis of digital gene expression data.
+#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
+#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#'
+#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
+#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#'
+#' @examples
+#' # Example 1: Differential expression analysis of RNAseq data without batch
+#' #            correction
+#'
+#' # Create example count matrix
+#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
+#'   nrow = 100, ncol = 10
+#' )
+#'
+#' # Create example grouping information
+#' group <- rep(c("A", "B"), each = 5)
+#'
+#' # Create example MOList object
+#' objMOList <- MOList(RNAseq = countMatrix, RNAGroupBy = group)
+#'
+#' # Perform differential expression analysis
+#' objMOList <- countDiffExpr(objMOList, "RNAseq", group)
 #'
 #'
+#' # Example 2: Differential expression analysis of protein data with batch
+#' #            correction
 #'
+#' # Create example count matrix
+#' proteinCounts <- matrix(sample(0:100, nrow = 100, ncol = 20, replace = TRUE))
+#'
+#' # Create example grouping information
+#' proteinGroup <- rep(c("A", "B"), each = 10)
+#'
+#' # Create example batch information
+#' proteinBatch <- c(rep("batch1", 5), rep("batch2", 15))
+#'
+#' # Create example MOList object
+#' objMOList <- MOList(
+#'   RNAseq = countMatrix, RNAGroupBy = group,
+#'   proteomics = proteinCounts,
+#'   proteomicsGroupBy = proteinGroup
+#' )
+#'
+#' # Perform differential expression analysis
+#' objMOList <- countDiffExpr(
+#'   objMOList, "proteomics",
+#'   proteinGroup, proteinBatch
+#' )
 #'
 countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   if (!(omic %in% COUNT_OMICS)) {
@@ -472,10 +521,14 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   }
 
   # Differential analysis based on selected program
-  # Currently only DESEQ2 is supported
   filtedCounts <- getRawData(objMOList, omic)
   DEResult <- switch(omic,
     DESEQ2 = diffExprDESeq2(
+      filteredCounts = filtedCounts,
+      groupBy = getSampleInfo(objMOList, omic)$groupBy,
+      batch = batch
+    ),
+    EDGER = diffExprEdgeR(
       filteredCounts = filtedCounts,
       groupBy = getSampleInfo(objMOList, omic)$groupBy,
       batch = batch
@@ -513,7 +566,7 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                     the protein data, must be the same length as the number
 #'                     of samples in the protein data, used for batch correction
 #' @param program A character string specifying the program used for the
-#'                analysis, currently only DESEQ2 is supported
+#'                analysis, DESeq2 or EdgeR
 #'
 #' @return An MOList object containing the differential analysis results
 #' \itemize{
@@ -536,8 +589,8 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #' \item \code{DEproteomics}: A DETag object containing the differential
 #'                            expression analysis results for the proteomics
 #'                            data
-#' \item \code{DEATAC}: A DETag object object containing the differential accessible
-#'                      accessible regions for the ATACseq data
+#' \item \code{DEATAC}: A DETag object object containing the differential
+#'                      accessible accessible regions for the ATACseq data
 #' }
 #'
 #'

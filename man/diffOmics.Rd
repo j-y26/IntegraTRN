@@ -29,7 +29,7 @@ the protein data, must be the same length as the number
 of samples in the protein data, used for batch correction}
 
 \item{program}{A character string specifying the program used for the
-analysis, currently only DESEQ2 is supported}
+analysis, DESeq2 or EdgeR}
 }
 \value{
 An MOList object containing the differential analysis results
