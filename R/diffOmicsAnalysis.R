@@ -205,7 +205,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #'              omics data, must be the same length as the number of samples in
 #'              the omics data, used for batch correction. Can be NULL if no
 #'              batch correction is needed.
-#' 
+#'
 #' @return A DETag object containing the differential expression analysis
 #'         results, and the method DESeq2
 #' \itemize{
@@ -213,7 +213,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #'                        analysis results
 #' \item \code{method}: The character string "DESeq2"
 #' }
-#' 
+#'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
 #' @importFrom dplyr %>%
 #'
@@ -229,57 +229,60 @@ filterGeneCounts <- function(objMOList, omic) {
 #' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
 #'   nrow = 100, ncol = 10
 #' )
-#' 
+#'
 #' # Create example grouping information
 #' group <- rep(c("A", "B"), each = 5)
-#' 
+#'
 #' # Perform differential expression analysis
 #' deTag <- diffExprDESeq2(countMatrix, group)
-#' 
+#'
 #' # Check the results
 #' head(exportDE(deTag))
-#' 
+#'
 #' # Example 2: Differential expression analysis of RNAseq data with batch
 #' #            correction
-#' 
+#'
 #' # Create example count matrix
 #' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'  nrow = 100, ncol = 10
+#'   nrow = 100, ncol = 10
 #' )
-#' 
+#'
 #' # Create example grouping information
 #' group <- seq_len(10)
-#' 
+#'
 #' # Create example batch information
 #' batch <- rep(c("batch1", "batch2"), each = 5)
-#' 
+#'
 #' # Perform differential expression analysis
-#' deTag <- diffExprDESeq2(filteredCounts = countMatrix,
-#'                         groupBy = group, 
-#'                         batch = batch)
-#' 
-diffExprDESeq2 <- function(filteredCounts, groupBy, batch == NULL) {
+#' deTag <- diffExprDESeq2(
+#'   filteredCounts = countMatrix,
+#'   groupBy = group,
+#'   batch = batch
+#' )
+#'
+diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   # Generate DESeqDataSet as the base object
   colData <- data.frame(group = groupBy)
   if (!is.null(batch)) {
     colData$batch <- batch
     design <- ~ batch + group
   } else {
-    design <- ~ group
+    design <- ~group
   }
   dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = filteredCounts,
     colData = colData,
     design = design
   )
+
   # Perform differential expression analysis and obtain results
   dds <- DESeq2::DESeq(dds)
   DEResult <- DESeq2::results(dds) %>% as.data.frame()
 
   # Create the DETag object
   deTag <- DETag(
-    DEResult = res,
-    method = "DESeq2"
+    DEResult = DEResult,
+    method = DESEQ2
   )
 
   # Return the results
@@ -287,6 +290,8 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch == NULL) {
 }
 
 
+#' Perform differential expression analysis on the count-based omics data using
+#' EdgeR
 
 
 
@@ -366,9 +371,10 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   filtedCounts <- getRawData(objMOList, omic)
   DEResult <- switch(omic,
     DESEQ2 = diffExprDESeq2(
-                            filteredCounts = filtedCounts,
-                            groupBy = getSampleInfo(objMOList, omic)$groupBy,
-                            batch = batch)
+      filteredCounts = filtedCounts,
+      groupBy = getSampleInfo(objMOList, omic)$groupBy,
+      batch = batch
+    )
   )
 
   # Update the MOList object

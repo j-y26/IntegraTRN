@@ -141,4 +141,4 @@ DETag <- function(DEResult, method) {
 #### Need to define an S4 method to extract the differential results to
 #### unified interface of dataframe
 
-exportDE
+# exportDE

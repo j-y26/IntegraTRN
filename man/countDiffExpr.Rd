@@ -3,7 +3,8 @@
 \name{countDiffExpr}
 \alias{countDiffExpr}
 \title{Perform differential expression analysis on the count-based omics data using
-DESeq2}
+EdgeR
+Differential expression analysis of count-based omics data}
 \usage{
 countDiffExpr(objMOList, omic, batch, program = DESEQ2)
 }
@@ -20,19 +21,8 @@ batch correction is needed.}
 
 \item{program}{A character string specifying the program used for the
 analysis, currently only DESEQ2 is supported}
-
-\item{filtedCounts}{A numeric matrix containing the filtered count-based
-omics data}
 }
 \value{
-A DETag object containing the differential expression analysis
-        results, and the method DESeq2
-\itemize{
-\item \code{DEResult}: A data frame containing the differential expression
-                       analysis results
-\item \code{method}: The character string "DESeq2"
-}
-
 An MOList object containing the differential expression analysis
         results. Results are appended to the original MOList object as
         list elements named "DERNAseq", "DEsmallRNAseq", and "DEProteomics"
@@ -61,11 +51,6 @@ An MOList object containing the differential expression analysis
 }
 \description{
 This function performs differential expression analysis on the
-             count-based omics data using DESeq2. The RNAseq, small RNAseq,
-             and protein data are supported for differential expression
-             analysis.
-
-This function performs differential expression analysis on the
              count-based omics data. The RNAseq, small RNAseq, and protein
              data are supported for differential expression analysis.
              Calling this function again on the same omics data will
@@ -80,21 +65,3 @@ Preconditions:
       samples in the omics data
 }
 }
-\examples{
-# Example 1: Differential expression analysis of RNAseq data without batch
-#            correction
-
-# Create example count matrix
-countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-  nrow = 100, ncol = 10
-)
-
-#
-Differential expression analysis of count-based omics data
-
-}
-\references{
-Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
-}
-\keyword{internal}
