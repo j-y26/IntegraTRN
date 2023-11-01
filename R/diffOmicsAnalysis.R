@@ -635,9 +635,7 @@ diffOmics <- function(objMOList,
     )
   }
 
-  # Differential analysis of ATACseq data
-
-
+  # Construct a master list of differentially accessible regions
 
 
   # Finished, return the object

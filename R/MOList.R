@@ -23,7 +23,13 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #' @slot proteomicsSamples A list containing the sample names and grouping
 #'                         information for the proteomics data
 #' @slot ATACpeaks A list containing the ATAC peaks for condition 1 and
-#'                 condition 2 that are found to be differentially accessible
+#'                 condition 2 that are found to be differentially accessible.
+#'                 The users should ensure that each BED file used as input
+#'                 contains the chromosome regions that are found to have
+#'                 increased accessibility in each condition. The BED regions
+#'                 can be constructed either by merging the peaks from all
+#'                 replicates in each condition using a variable-length method
+#'                 or a fixed-width approach, as indicated in Grandi et al. 2022
 #' @slot .Data A list containing differential expression analysis data, used
 #'             in the same way as a list
 #'
@@ -33,6 +39,10 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' 
+#' Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling 
+#' by ATAC-seq. Nat Protoc 17, 1518–1552 (2022). 
+#' https://doi-org.myaccess.library.utoronto.ca/10.1038/s41596-022-00692-9
 #'
 methods::setClass("MOList",
   # Inheritance
@@ -543,6 +553,13 @@ validateMOList <- function(objMOList) {
 #'                  peaks for condition 1
 #' @param peakCond2 A data frame containing the differentially accessible ATAC 
 #'                  peaks for condition 2
+#' 
+#' @note The users should ensure that each BED file used as input
+#'                 contains the chromosome regions that are found to have
+#'                 increased accessibility in each condition. The BED regions
+#'                 can be constructed either by merging the peaks from all
+#'                 replicates in each condition using a variable-length method
+#'                 or a fixed-width approach, as indicated in Grandi et al. 2022
 #'
 #' @return An object of class MOList
 #' @export MOList

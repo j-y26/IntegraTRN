@@ -1,0 +1,14 @@
+citHeader("To cite IntegraTRN in publications use:")
+
+citEntry(entry = "Unpublished",
+  title        = "IntegraTRN: Integrated omics for the inference of
+                 Transcriptional Regulatory Network",
+  author       = "Jielin Yang",
+  note         = "Unpublished",
+  year         = "2023",
+
+  textVersion  =
+  paste("Yang, J. (2023) IntegraTRN: Integrated omics for the inference of
+        Transcriptional Regulatory Network. Unpublished.
+        URL https://github.com/j-y26/IntegraTRN.")
+)
