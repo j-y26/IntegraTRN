@@ -62,3 +62,6 @@ matchVecToMatrix <- function(vec, mat) {
   }
   return(TRUE)
 }
+
+
+# [END]

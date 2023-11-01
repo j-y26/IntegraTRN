@@ -643,3 +643,6 @@ diffOmics <- function(objMOList,
   # Finished, return the object
   return(objMOList)
 }
+
+
+# [END]

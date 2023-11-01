@@ -293,3 +293,6 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
     return(deResult)
   }
 })
+
+
+# [END]
