@@ -39,9 +39,9 @@ CHROMINFO <- c("chrom", "chromStart", "chromEnd")
 #'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#' 
-#' Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling 
-#' by ATAC-seq. Nat Protoc 17, 1518–1552 (2022). 
+#'
+#' Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
+#' by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
 #' https://doi-org.myaccess.library.utoronto.ca/10.1038/s41596-022-00692-9
 #'
 methods::setClass("MOList",
@@ -144,9 +144,9 @@ validateMatrix <- function(matrix, groupBy) {
 #' @param proteomics A numeric matrix containing the proteomics data
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data
-#' @param peakCond1 A data frame containing the differentially accessible ATAC 
+#' @param peakCond1 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC 
+#' @param peakCond2 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 2
 #'
 #' @return NULL
@@ -227,9 +227,9 @@ validateMOInputs <- function(RNAseq,
 #' @param proteomics A numeric matrix containing the proteomics data
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data
-#' @param peakCond1 A data frame containing the differentially accessible ATAC 
+#' @param peakCond1 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC 
+#' @param peakCond2 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 2
 #'
 #' @return An object of class MOList
@@ -243,7 +243,7 @@ validateMOInputs <- function(RNAseq,
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                             grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -301,9 +301,9 @@ setOmics <- function(objMOList,
 #' @param proteomics A numeric matrix containing the proteomics data
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data
-#' @param peakCond1 A data frame containing the differentially accessible ATAC 
+#' @param peakCond1 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC 
+#' @param peakCond2 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 2
 #'
 #' @return An object of class MOList
@@ -317,7 +317,7 @@ setOmics <- function(objMOList,
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                            grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -368,7 +368,7 @@ newMOList <- function(RNAseq,
 #'
 #' @keywords internal
 #'
-#' @param objMOList An object of class MOList for appending/exchanging omics 
+#' @param objMOList An object of class MOList for appending/exchanging omics
 #'                  data
 #' @param RNAseq A numeric matrix containing the RNAseq data
 #' @param RNAGroupBy A vector of grouping information for the RNAseq data
@@ -378,9 +378,9 @@ newMOList <- function(RNAseq,
 #' @param proteomics A numeric matrix containing the proteomics data
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data
-#' @param peakCond1 A data frame containing the differentially accessible ATAC 
+#' @param peakCond1 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC 
+#' @param peakCond2 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 2
 #'
 #' @return An object of class MOList
@@ -394,7 +394,7 @@ newMOList <- function(RNAseq,
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                           grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -483,7 +483,7 @@ validateOmics <- function(dataMatrix, sampleInfo) {
 #'
 #' @keywords internal
 #'
-#' @param objMOList An object of class MOList for appending/exchanging omics 
+#' @param objMOList An object of class MOList for appending/exchanging omics
 #'                  data
 #'
 #' @return NULL
@@ -549,11 +549,11 @@ validateMOList <- function(objMOList) {
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data, used to perform differential expression
 #'                          analysis
-#' @param peakCond1 A data frame containing the differentially accessible ATAC 
+#' @param peakCond1 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC 
+#' @param peakCond2 A data frame containing the differentially accessible ATAC
 #'                  peaks for condition 2
-#' 
+#'
 #' @note The users should ensure that each BED file used as input
 #'                 contains the chromosome regions that are found to have
 #'                 increased accessibility in each condition. The BED regions
@@ -698,7 +698,7 @@ MOList <- function(objMOList = NULL,
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                           grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -743,7 +743,7 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                           grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -791,7 +791,7 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                           grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC 
+#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -826,7 +826,7 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #' @keywords internal
 #'
 #' @param x An object of class MOList for appending/exchanging omics data
-#' @param value A list containing the differentially accessible ATAC peaks for 
+#' @param value A list containing the differentially accessible ATAC peaks for
 #'              condition 1 and condition 2
 #'
 #' @return An object of class MOList
@@ -840,7 +840,7 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #' \item \code{proteomics}: A numeric matrix containing the proteomics data
 #' \item \code{proteomicsSamples}: A list containing the sample names and
 #'                           grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially ATAC peaks for 
+#' \item \code{ATACpeaks}: A list containing the differentially ATAC peaks for
 #'                         condition 1 and condition 2
 #' }
 #'
@@ -848,8 +848,8 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #'
 #' @examples
 #' \dontrun{
-#' # Assuming peakCond1 and peakCond2 are data frames containing the 
-#' differentially ATAC peaks for condition 1 and condition 2, respectively
+#' # Assuming peakCond1 and peakCond2 are data frames containing the
+#' # differentially ATAC peaks for condition 1 and condition 2, respectively
 #'
 #' # Setting the ATAC peaks data to the MOList object
 #' ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)

@@ -575,6 +575,14 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                     of samples in the protein data, used for batch correction
 #' @param program A character string specifying the program used for the
 #'                analysis, DESeq2 or EdgeR
+#' 
+#' @export
+#' 
+#' @importFrom dplyr %>%
+#' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
+#'             topTags
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
+#' @importFrom GenomicRanges makeGRangesFromDataFrame reduce
 #'
 #' @return An MOList object containing the differential analysis results
 #' \itemize{
@@ -601,8 +609,6 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                      accessible accessible regions for the ATACseq data
 #' }
 #'
-#'
-#' @export
 #'
 diffOmics <- function(objMOList,
                       rnaseqBatch = NULL,
@@ -635,10 +641,10 @@ diffOmics <- function(objMOList,
     )
   }
 
-  # Construct a master list of differentially accessible regions
+  # Construct a master list of differentially accessible regions with merged
+  # intra-condition peaks
+  objMOList <- processPeakOverlap(objMOList)
 
-
-  # Finished, return the object
   return(objMOList)
 }
 
