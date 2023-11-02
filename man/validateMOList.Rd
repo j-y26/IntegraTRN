@@ -7,7 +7,8 @@
 validateMOList(objMOList)
 }
 \arguments{
-\item{objMOList}{An object of class MOList for appending/exchanging omics data}
+\item{objMOList}{An object of class MOList for appending/exchanging omics
+data}
 }
 \description{
 Validator of the MOList S4 object

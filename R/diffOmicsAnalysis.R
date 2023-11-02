@@ -6,7 +6,11 @@
 
 
 # Define a global variable for the count-based omics data
-COUNT_OMICS <- c("RNAseq", "smallRNAseq", "proteomics")
+RNA <- "RNAseq"
+SMALLRNA <- "smallRNAseq"
+PROTEIN <- "proteomics"
+ATAC <- "ATACseq"
+COUNT_OMICS <- c(RNA, SMALLRNA, PROTEIN)
 
 
 #' Validate the input data and annotations on the samples
@@ -575,9 +579,9 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                     of samples in the protein data, used for batch correction
 #' @param program A character string specifying the program used for the
 #'                analysis, DESeq2 or EdgeR
-#' 
+#'
 #' @export
-#' 
+#'
 #' @importFrom dplyr %>%
 #' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
 #'             topTags

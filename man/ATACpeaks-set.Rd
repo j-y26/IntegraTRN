@@ -9,7 +9,8 @@ ATACpeaks(x) <- value
 \arguments{
 \item{x}{An object of class MOList for appending/exchanging omics data}
 
-\item{value}{A list containing the ATAC peaks for condition 1 and condition 2}
+\item{value}{A list containing the differentially accessible ATAC peaks for
+condition 1 and condition 2}
 }
 \value{
 An object of class MOList
@@ -23,8 +24,8 @@ An object of class MOList
 \item \code{proteomics}: A numeric matrix containing the proteomics data
 \item \code{proteomicsSamples}: A list containing the sample names and
                           grouping information for the proteomics data
-\item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
-                  condition 2
+\item \code{ATACpeaks}: A list containing the differentially ATAC peaks for
+                        condition 1 and condition 2
 }
 }
 \description{
@@ -32,8 +33,8 @@ Setter for the ATACpeaks slot
 }
 \examples{
 \dontrun{
-# Assuming peakCond1 and peakCond2 are data frames containing the ATAC peaks
-# for condition 1 and condition 2, respectively
+# Assuming peakCond1 and peakCond2 are data frames containing the
+# differentially ATAC peaks for condition 1 and condition 2, respectively
 
 # Setting the ATAC peaks data to the MOList object
 ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)

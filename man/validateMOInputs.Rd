@@ -30,9 +30,11 @@ data}
 \item{proteomicsGroupBy}{A vector of grouping information for the proteomics
 data}
 
-\item{peakCond1}{A data frame containing the ATAC peaks for condition 1}
+\item{peakCond1}{A data frame containing the differentially accessible ATAC
+peaks for condition 1}
 
-\item{peakCond2}{A data frame containing the ATAC peaks for condition 2}
+\item{peakCond2}{A data frame containing the differentially accessible ATAC
+peaks for condition 2}
 }
 \description{
 This function validates the inputs for the MOList constructor.

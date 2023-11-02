@@ -23,8 +23,8 @@ An object of class MOList
 \item \code{proteomics}: A numeric matrix containing the proteomics data
 \item \code{proteomicsSamples}: A list containing the sample names and
                           grouping information for the proteomics data
-\item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
-                  condition 2
+\item \code{ATACpeaks}: A list containing the differentially accessible ATAC
+                        peaks for condition 1 and condition 2
 }
 }
 \description{

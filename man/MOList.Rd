@@ -39,11 +39,11 @@ names as gene names and column names as sample names}
 data, used to perform differential expression
 analysis}
 
-\item{pathATACpeak1}{The path to a BED file containing the ATAC peaks for
-condition 1}
+\item{peakCond1}{A data frame containing the differentially accessible ATAC
+peaks for condition 1}
 
-\item{pathATACpeak2}{The path to a BED file containing the ATAC peaks for
-condition 2}
+\item{peakCond2}{A data frame containing the differentially accessible ATAC
+peaks for condition 2}
 }
 \value{
 An object of class MOList
@@ -56,6 +56,14 @@ This function is a constructor of the MOList object, which is
              each omics data separately. The RNAseq data is required for the
              initial construction of the MOList object. If data of existing
              omics type is provided, old data will be replaced.
+}
+\note{
+The users should ensure that each BED file used as input
+                contains the chromosome regions that are found to have
+                increased accessibility in each condition. The BED regions
+                can be constructed either by merging the peaks from all
+                replicates in each condition using a variable-length method
+                or a fixed-width approach, as indicated in Grandi et al. 2022
 }
 \examples{
 # Generating some example data

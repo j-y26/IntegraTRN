@@ -27,7 +27,13 @@ information for the smallRNAseq data}
 information for the proteomics data}
 
 \item{\code{ATACpeaks}}{A list containing the ATAC peaks for condition 1 and
-condition 2}
+condition 2 that are found to be differentially accessible.
+The users should ensure that each BED file used as input
+contains the chromosome regions that are found to have
+increased accessibility in each condition. The BED regions
+can be constructed either by merging the peaks from all
+replicates in each condition using a variable-length method
+or a fixed-width approach, as indicated in Grandi et al. 2022}
 
 \item{\code{.Data}}{A list containing differential expression analysis data, used
 in the same way as a list}
@@ -35,4 +41,8 @@ in the same way as a list}
 
 \references{
 Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+
+Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
+by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
+https://doi-org.myaccess.library.utoronto.ca/10.1038/s41596-022-00692-9
 }

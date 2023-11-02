@@ -12,7 +12,7 @@
 #' @param peaks A data frame containing the peak information, in BED format
 #'
 #' @return A GRanges object containing the merged peaks
-#' 
+#'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame reduce
 #'
 mergePeaks <- function(peaks) {
@@ -50,7 +50,7 @@ mergePeaks <- function(peaks) {
 #'
 #' @return An object of class MOList, with a DETag added containing a master
 #'         peak set that annotates where the peaks come from
-#' 
+#'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame reduce
 #'
 processPeakOverlap <- function(objMOList) {

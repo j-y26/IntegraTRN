@@ -15,6 +15,7 @@ must be one of "RNAseq", "smallRNAseq", "proteomics", or "ATAC"}
 \value{
 Raw data of the specified omics type: a numeric matrix for
         count-based omics data, and a list of data frames for ATAC peaks
+        that are differentially accessible between two conditions
 }
 \description{
 This function is a getter for the count-based omics data from
@@ -24,10 +25,10 @@ This function is a getter for the count-based omics data from
 \examples{
 \dontrun{
 # Using the example MOList object
-dataRNAseq <- getCounts(myMOList, "RNAseq")
-dataSmallRNAseq <- getCounts(myMOList, "smallRNAseq")
-dataProteomics <- getCounts(myMOList, "proteomics")
-dataATAC <- getCounts(myMOList, "ATAC")
+dataRNAseq <- getRawData(myMOList, "RNAseq")
+dataSmallRNAseq <- getRawData(myMOList, "smallRNAseq")
+dataProteomics <- getRawData(myMOList, "proteomics")
+dataATAC <- getRawData(myMOList, "ATAC")
 }
 
 }
