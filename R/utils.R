@@ -64,4 +64,29 @@ matchVecToMatrix <- function(vec, mat) {
 }
 
 
+#' Defining DESeq2 colData and design from vectors
+#'
+#' @keywords internal
+#'
+#' @param groupBy A vector of group names
+#' @param batch A vector of batch names
+#'
+#' @return A list containing the colData and design, where colData is a data
+#'         frame and design is a formula
+#'
+DESeqDesign <- function(groupBy, batch = NULL) {
+  colData <- data.frame(group = groupBy)
+  if (!is.null(batch)) {
+    if (length(batch) != length(groupBy)) {
+      stop("Length of batch and groupBy vectors do not match")
+    } else {
+      colData$batch <- batch
+      design <- ~ batch + group
+    }
+  } else {
+    design <- ~group
+  }
+  return(list(colData = colData, design = design))
+}
+
 # [END]

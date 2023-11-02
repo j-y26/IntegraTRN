@@ -9,6 +9,15 @@
 HUMAN <- "human"
 USERANNO <- "userAnno"
 
+SNCANNOLIST_HSAPIENS <- list(
+  miRNA = miRNAHsapiens,
+  piRNA = piRNAHsapiens,
+  snoRNA = snoRNAHsapiens,
+  snRNA = snRNAHsapiens,
+  tRNA = tRNAHsapiens,
+  circRNA = circRNAHsapiens
+)
+
 
 #' Check annotation coverage
 #'
@@ -29,10 +38,7 @@ USERANNO <- "userAnno"
 sncAnnoCoverage <- function(transcripts, objMOList, anno) {
   # Check if the annotation covers all transcripts
   if (anno == HUMAN) {
-    passed <- transcripts %in% c(
-      miRNAHsapiens, piRNAHsapiens, tRNAHsapiens,
-      circRNAHsapiens, snRNAHsapiens, snoRNAHsapiens
-    )
+    passed <- transcripts %in% unlist(SNCANNOLIST_HSAPIENS)
   } else if (anno == USERANNO) {
     passed <- transcripts %in% unlist(objMOList$annoSncRNA)
   } else {

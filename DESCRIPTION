@@ -23,6 +23,8 @@ Imports:
     dplyr,
     edgeR,
     GenomicTools.fileHandler,
+    ggplot2 (>= 3.4.0),
+    ggpubr (>= 0.6.0),
     methods
 URL: https://github.com/j-y26/IntegraTRN
 BugReports: https://github.com/j-y26/IntegraTRN/issues

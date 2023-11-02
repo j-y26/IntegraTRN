@@ -5,6 +5,10 @@
 # Bugs and Issues: None
 
 
+# Define the global variables
+NOANNO <- "Unannotated"
+
+
 #' Annotate by expression
 #'
 #' @description This function annotates whether a gene is up-regulated,
@@ -209,7 +213,7 @@ plotVolcanoRNA <- function(objMOList,
 #'
 #' @importFrom dplyr mutate case_when %>%
 #'
-annoSncDEList <- function(deg, annoList) {
+annoSncList <- function(deg, annoList) {
   deg <- deg %>% dplyr::mutate(type = dplyr::case_when(
     rownames(deg) %in% annoList$miRNA ~ "miRNA",
     rownames(deg) %in% annoList$piRNA ~ "piRNA",
@@ -217,7 +221,7 @@ annoSncDEList <- function(deg, annoList) {
     rownames(deg) %in% annoList$snRNA ~ "snRNA",
     rownames(deg) %in% annoList$tRNA ~ "tRNA",
     rownames(deg) %in% annoList$circRNA ~ "circRNA",
-    TRUE ~ "Unannotated"
+    TRUE ~ NOANNO
   ))
 
   return(deg)
@@ -296,18 +300,11 @@ plotVolcanoSmallRNA <- function(objMOList,
   # Annotate the type of small RNA
   sncAnno <- objMOList$annoSncRNA
   if (sncAnno == HUMAN) {
-    degSmallRNAseq <- annoSncDEList(degSmallRNAseq,
-      annoList = list(
-        miRNA = miRNAHsapiens,
-        piRNA = piRNAHsapiens,
-        snoRNA = snoRNAHsapiens,
-        snRNA = snRNAHsapiens,
-        tRNA = tRNAHsapiens,
-        circRNA = circRNAHsapiens
-      )
+    degSmallRNAseq <- annoSncList(degSmallRNAseq,
+      annoList = SNCANNOLIST_HSAPIENS
     )
   } else if (is.list(sncAnno)) {
-    degSmallRNAseq <- annoSncDEList(degSmallRNAseq, sncAnno)
+    degSmallRNAseq <- annoSncList(degSmallRNAseq, sncAnno)
   } else {
     stop("Incompatible annotation for small RNA. Please check the annotation.")
   }
@@ -341,3 +338,195 @@ plotVolcanoSmallRNA <- function(objMOList,
     ))
   return(vPlot)
 }
+
+
+#' Principle Component Analysis (PCA) for count-based omics data
+#'
+#' @description This function performs PCA analysis for count-based omics data.
+#'              The user can specify the title for the plot.
+#'
+#' @details Raw counts are normalized by RLE method and then transformed by
+#'         variance stabilizing transformation (VST) before PCA analysis.
+#'
+#' @param matrix A numeric matrix containing the count-based omics data, must be
+#'               raw count expression matrix, not normalized by any method
+#' @param groupBy A vector of factors for grouping samples
+#' @param batch A vector of factors for batch effect, default is NULL
+#' @param title The title for the plot, default is NULL
+#' @param col1 The color for the first group, default is "#440154"
+#' @param col2 The color for the second group, default is "#fde725". If
+#'             continuous grouping variable is used, the color gradient will be
+#'             used instead of the two colors
+#'
+#' @return A ggplot object
+#'
+#' @export
+#'
+countPCA <- function(matrix,
+                     groupBy,
+                     batch = NULL,
+                     title = NULL,
+                     col1 = "#440154",
+                     col2 = "#fde725") {
+  # Check if the input is a numeric matrix
+  if (!is.matrix(matrix) || !is.numeric(matrix)) {
+    stop("The input must be a numeric matrix.")
+  } else {
+    # Continue
+  }
+
+  # Raw count expression normalization and variance stabilizing transformation
+  designList <- DESeqDesign(groupBy, batch)
+  dds <- DESeq2::DESeqDataSetFromMatrix(
+    countData = matrix,
+    colData = designList$colData,
+    design = designList$design
+  )
+  dds <- DESeq2::DESeq(dds)
+  vts <- DESeq2::varianceStabilizingTransformation(dds)
+
+  # Perform PCA analysis
+  pcaData <- DESeq2::plotPCA(vts, intgroup = "group", returnData = TRUE)
+  percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+  # Further customization of the PCA plot using ggplot2
+  pcaPlot <- ggplot2::ggplot(
+    pcaData,
+    ggplot2::aes(x = -PC1, y = PC2, color = group)
+  ) +
+    ggplot2::geom_point(size = 3) +
+    ggplot2::coord_fixed() +
+    ggplot2::theme_bw() +
+    ggplot2::xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+    ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+    ggplot2::theme(
+      legend.position = "bottom",
+      plot.title = ggplot2::element_text(
+        color = "black",
+        size = 11,
+        hjust = 0.5
+      ),
+      legend.title = ggplot2::element_blank()
+    )
+  # Color sample points based on the grouping variable
+  if (length(unique(groupBy)) > 2) {
+    pcaPlot <- pcaPlot + ggplot2::scale_color_gradient(
+      low = col1,
+      high = col2
+    )
+  } else {
+    pcaPlot <- pcaPlot + ggplot2::scale_color_manual(values = c(col1, col2))
+  }
+
+  # Add the title
+  if (!is.null(title)) {
+    pcaPlot <- pcaPlot + ggplot2::ggtitle(title)
+  }
+
+  return(pcaPlot)
+}
+
+
+
+
+
+
+#' Plotting results for Principle Component Analysis (PCA) for each type of
+#' small RNA
+#'
+#' @description This function generates a PCA plot for each type of small RNA
+#'              based on the normalized expression matrix. This function is
+#'              used to explore the contribution of each type of small RNA to
+#'              separating samples based on their phenotypes.
+#'
+#' @param objMOList An MOList object containing the raw expression matrix for
+#'                  small RNAs
+#' @param batch A vector of factors for batch effect, default is NULL. Used to
+#'              correct batch effect in the PCA analysis for count normalization
+#' @param col1 The color for the first group, default is "#440154"
+#' @param col2 The color for the second group, default is "#fde725". If
+#'             continuous grouping variable is used, the color gradient will be
+#'             used instead of the two colors
+#'
+#' @return A list of ggplot objects
+#'
+#' @export
+#'
+plotSmallRNAPCAs <- function(objMOList,
+                             batch = NULL,
+                             col1 = "#440154",
+                             col2 = "#fde725") {
+  # Check if smallRNA data or annotation is available
+  if (is.null(getRawData(objMOList, "smallRNAseq"))) {
+    stop("No small RNA data available.")
+  } else if (is.null(objMOList$annoSncRNA)) {
+    stop("No annotation for small RNA data. Please run annotateSmallRNA first.")
+  } else {
+    # Continue
+  }
+
+  # Retrieve the raw expression matrix for small RNA annotation
+  dfSncRNA <- objMOList %>%
+    getRawData("smallRNAseq") %>%
+    as.data.frame()
+  sncAnno <- objMOList$annoSncRNA
+  if (sncAnno == HUMAN) {
+    dfSncRNA <- annoSncList(dfSncRNA,
+      annoList = SNCANNOLIST_HSAPIENS
+    )
+  } else if (is.list(sncAnno)) {
+    dfSncRNA <- annoSncList(degSmallRNAseq, sncAnno)
+  } else {
+    stop("Incompatible annotation for small RNA. Please check the annotation.")
+  }
+
+  # Separate the expression matrix for each type of small RNA
+  sncTypes <- unique(dfSncRNA$type)
+  if (NOANNO %in% sncTypes) {
+    numUnannotated <- sum(dfSncRNA$type == NOANNO)
+    warning(paste0("Unannotated small RNAs: ", numUnannotated))
+    warning("Some small RNAs are not annotated. Unannotated small RNAs are
+    excluded from the analysis.")
+    dfSncRNA <- dfSncRNA %>% dplyr::filter(type != NOANNO)
+    sncTypes <- sncTypes[sncTypes != NOANNO]
+
+    # Check if there is any small RNA type left
+    if (length(sncTypes) == 0) {
+      # should not reach here if the users do not temper the annotation
+      stop("Error validating small RNA types. Please check the annotation.")
+    } else {
+      # Continue
+    }
+  } else {
+    # Continue
+  }
+
+  # Generate a list of raw expression matrices
+  matrixSncRNAList <- list()
+  # Separate by type and remove the type variable for a numeric matrix
+  for (sncType in sncTypes) {
+    matrixSncRNAList[[sncType]] <- dfSncRNA %>%
+      dplyr::filter(type == sncType) %>%
+      dplyr::select(-type) %>%
+      as.matrix()
+  }
+
+  # Perform PCA calculation and generate the plots
+  pcaPlotList <- list()
+  for (sncType in sncTypes) {
+    cat("Performing PCA analysis for ", sncType, "...\n", sep = "")
+    pcaPlotList[[sncType]] <- countPCA(
+      matrix = matrixSncRNAList[[sncType]],
+      title = sncType
+    )
+  }
+  cat("Finished estimating PCA for existing small RNA types.\n")
+  cat("Individual PCA plots can be assessed by pcaPlotList$<small RNA type>.\n")
+
+  rm(dfSncRNA, matrixSncRNAList) # free up memory from big objects
+
+  return(pcaPlotList)
+}
+
+
+# [END]

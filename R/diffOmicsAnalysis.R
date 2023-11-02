@@ -266,17 +266,11 @@ filterGeneCounts <- function(objMOList, omic) {
 #'
 diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   # Generate DESeqDataSet as the base object
-  colData <- data.frame(group = groupBy)
-  if (!is.null(batch)) {
-    colData$batch <- batch
-    design <- ~ batch + group
-  } else {
-    design <- ~group
-  }
+  designList <- DESeqDesign(groupBy, batch)
   dds <- DESeq2::DESeqDataSetFromMatrix(
     countData = filteredCounts,
-    colData = colData,
-    design = design
+    colData = designList$colData,
+    design = designList$design
   )
 
   # Perform differential expression analysis and obtain results
