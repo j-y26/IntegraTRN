@@ -191,13 +191,13 @@ methods::setMethod("show", "DETag", function(object) {
     cat("Number of genes: ", nrow(object@DEResult), "\n")
     cat(
       "Number of genes with adjusted p-value < 0.05: ",
-      sum(object@DEResult$padj < 0.05), "\n\n"
+      sum(object@DEResult$padj < 0.05, na.rm = TRUE), "\n\n"
     )
   } else if (object@method == EDGER) {
     cat("Number of genes: ", nrow(object@DEResult), "\n")
     cat(
       "Number of genes with FDR < 0.05: ",
-      sum(object@DEResult$FDR < 0.05), "\n\n"
+      sum(object@DEResult$FDR < 0.05, na.rm = TRUE), "\n\n"
     )
   } else {
     # Do nothing

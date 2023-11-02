@@ -68,7 +68,7 @@
 #' A small RNAseq experiment conducted on fetal ventricular heart tissues from
 #' 37 individuals
 #'
-#' @format A data frame with 14801 rows (small RNA transcripts) and 37 columns
+#' @format A data frame with 14227 rows (small RNA transcripts) and 37 columns
 #' (samples)
 #' \describe{
 #'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,

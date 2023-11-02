@@ -4,15 +4,7 @@
 \alias{plotVolcano}
 \title{Generate a base volcano plot}
 \usage{
-plotVolcano(
-  deg,
-  log2FC = 1,
-  adjP = 0.05,
-  geneList = NULL,
-  upColor = "firebrick3",
-  downColor = "dodgerblue3",
-  title = NULL
-)
+plotVolcano(deg, log2FC = 1, adjP = 0.05, geneList = NULL, title = NULL)
 }
 \arguments{
 \item{deg}{A data frame containing the differential expression analysis
@@ -21,10 +13,6 @@ results, must follow the described format in DETag-class}
 \item{log2FC}{The cutoff for log2 fold change.}
 
 \item{adjP}{The cutoff for adjusted p-value.}
-
-\item{upColor}{The color for up-regulated genes.}
-
-\item{downColor}{The color for down-regulated genes.}
 
 \item{title}{The title for the plot.}
 }
