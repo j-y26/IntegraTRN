@@ -9,8 +9,8 @@ plotVolcanoRNA(
   log2FC = 1,
   adjP = 0.05,
   geneList = NULL,
-  upColor = "red",
-  downColor = "blue",
+  upColor = "firebrick3",
+  downColor = "dodgerblue3",
   title = NULL
 )
 }
@@ -41,4 +41,26 @@ This function generates a volcano plot for visualizing
              genes to highlight in the plot. The colors for up- and down-
              regulated genes can be specified by the user, but a default
              color scheme is provided.
+}
+\examples{
+# Suppose that we have an MOList object called objMOList, which contains the
+# differential expression results for mRNA as an element named DERNAseq.
+
+# Example 1: Generate the volcano plot by default parameters
+\dontrun{
+plotVolcanoRNA(objMOList)
+}
+
+# Example 2: Generate the volcano plot with custom parameters
+\dontrun{
+plotVolcanoRNA(objMOList,
+  log2FC = 2,
+  adjP = 0.01,
+  geneList = c("MYH7B", "NELFCD", "KDM8"),
+  upColor = "purple",
+  downColor = "green",
+  title = "Volcano plot for DE mRNA"
+)
+}
+
 }

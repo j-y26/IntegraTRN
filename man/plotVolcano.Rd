@@ -4,7 +4,15 @@
 \alias{plotVolcano}
 \title{Generate a base volcano plot}
 \usage{
-plotVolcano(deg, log2FC, adjP, upColor, downColor, title)
+plotVolcano(
+  deg,
+  log2FC = 1,
+  adjP = 0.05,
+  geneList = NULL,
+  upColor = "firebrick3",
+  downColor = "dodgerblue3",
+  title = NULL
+)
 }
 \arguments{
 \item{deg}{A data frame containing the differential expression analysis

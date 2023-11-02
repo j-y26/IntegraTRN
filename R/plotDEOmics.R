@@ -7,13 +7,13 @@
 
 
 #' Generate a base volcano plot
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @description This function generates a base volcano plot for visualizing
 #'             differentially expressed omics data based on log2 fold change
 #'             and adjusted p-value.
-#' 
+#'
 #' @param deg A data frame containing the differential expression analysis
 #'            results, must follow the described format in DETag-class
 #' @param log2FC The cutoff for log2 fold change.
@@ -21,36 +21,64 @@
 #' @param upColor The color for up-regulated genes.
 #' @param downColor The color for down-regulated genes.
 #' @param title The title for the plot.
-#' 
+#'
 #' @return A ggplot object
-#' 
-#' @importFrom ggplot2 aes color scale_color_manual guides theme_bw xlab ylab
-#' @importFrom ggplot2 ggplot geom_point ggtitle theme element_blank
+#'
+#' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
+#' @importFrom ggplot2 ylab theme element_blank
+#' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom stats log
-#' 
-#' 
-plotVolcano <- function(deg, log2FC, adjP, upColor, downColor, title) {
+#' @importFrom ggrepel geom_label_repel
+#'
+plotVolcano <- function(deg,
+                        log2FC = 1,
+                        adjP = 0.05,
+                        geneList = NULL,
+                        upColor = "firebrick3",
+                        downColor = "dodgerblue3",
+                        title = NULL) {
   # Annotate the data for plotting
   deg <- deg %>%
     dplyr::mutate(expr = dplyr::case_when(
       logFC >= log2FC & padj < adjP ~ "Up-regulated",
       logFC <= -log2FC & padj < adjP ~ "Down-regulated",
-      TRUE ~ "Not DE"))
-  
+      TRUE ~ "Not DE"
+    ))
+
   # Generate the plot
   vPlot <- ggplot2::ggplot(deg, ggplot2::aes(x = logFC, y = -log(padj, 10))) +
-    ggplot2::geom_point(ggplot2::aes(color = expr), size = 3/5) +
-    ggplot2::scale_color_manual(values = c("Up-regulated" = upColor, 
-                                           "Down-regulated" = downColor,
-                                           "Not DE" = "grey50")) +
-    ggplot2::guides(color = ggplot2::guide_legend(override.aes =
-                                                      list(size = 2.5))) +
+    ggplot2::geom_point(ggplot2::aes(color = expr), size = 4 / 5) +
+    ggplot2::scale_color_manual(values = c(
+      "Up-regulated" = upColor,
+      "Down-regulated" = downColor,
+      "Not DE" = "grey50"
+    )) +
+    ggplot2::guides(color = ggplot2::guide_legend(
+      override.aes =
+        list(size = 2.5)
+    )) +
     ggplot2::theme_bw() +
-    ggplot2::xlab(expression("log"[2]*"FC")) + 
-    ggplot2::ylab(expression("-log"[10]*"adj.p-value")) + 
+    ggplot2::xlab(expression("log"[2] * "FC")) +
+    ggplot2::ylab(expression("-log"[10] * "adj.p-value")) +
     ggplot2::theme(legend.title = ggplot2::element_blank())
-  
+
+  # Label the genes in the geneList
+  labelData <- deg[rownames(deg) %in% geneList, ]
+  if (!is.null(geneList)) {
+    vPlot <- vPlot + ggrepel::geom_label_repel(
+      data = labelData,
+      mapping = ggplot2::aes(logFC, -log(padj, 10),
+        label = rownames(labelData)
+      ),
+      size = 3,
+      color = "black",
+      nudge_x = 0.1,
+      nudge_y = 0.1
+    )
+  } else {
+    # Do nothing
+  }
+
   # Add the title
   if (!is.null(title)) {
     vPlot <- vPlot + ggplot2::ggtitle(title)
@@ -80,36 +108,56 @@ plotVolcano <- function(deg, log2FC, adjP, upColor, downColor, title) {
 #' @param title The title for the plot. Default is NULL.
 #'
 #' @return A ggplot object
-#' 
-#' @importFrom ggplot2 aes color scale_color_manual guides theme_bw xlab ylab
-#' @importFrom ggplot2 ggplot geom_point ggtitle geom_text theme element_blank
+#'
+#' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
+#' @importFrom ggplot2 ylab theme element_blank
+#' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom stats log
+#' @importFrom ggrepel geom_label_repel
 #'
 #' @export
 #'
 #' @examples
-#' 
+#' # Suppose that we have an MOList object called objMOList, which contains the
+#' # differential expression results for mRNA as an element named DERNAseq.
 #'
+#' # Example 1: Generate the volcano plot by default parameters
+#' \dontrun{
+#' plotVolcanoRNA(objMOList)
+#' }
+#'
+#' # Example 2: Generate the volcano plot with custom parameters
+#' \dontrun{
+#' plotVolcanoRNA(objMOList,
+#'   log2FC = 2,
+#'   adjP = 0.01,
+#'   geneList = c("MYH7B", "NELFCD", "KDM8"),
+#'   upColor = "purple",
+#'   downColor = "green",
+#'   title = "Volcano plot for DE mRNA"
+#' )
+#' }
 #'
 plotVolcanoRNA <- function(objMOList,
                            log2FC = 1,
                            adjP = 0.05,
                            geneList = NULL,
-                           upColor = "red",
-                           downColor = "blue",
+                           upColor = "firebrick3",
+                           downColor = "dodgerblue3",
                            title = NULL) {
-
   if (is.null(objMOList$DERNAseq)) {
     stop("No differential expression results for mRNA. Please run diffOmics()
-         first. See ?diffOmics for details.")
+  first. See ?diffOmics for details.")
   }
 
   # Retrieve the differential expression results for mRNA
   degRNAseq <- objMOList$DERNAseq %>% exportDE()
 
   # Generate the base volcano plot
-  vPlot <- plotVolcano(degRNAseq, log2FC, adjP, upColor, downColor, title)
+  vPlot <- plotVolcano(
+    degRNAseq, log2FC, adjP, geneList,
+    upColor, downColor, title
+  )
 
   # Annotate the numbers of up- and down-regulated genes
   upNum <- sum(degRNAseq$logFC >= log2FC & degRNAseq$padj < adjP)
