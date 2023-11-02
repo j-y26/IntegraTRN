@@ -1,4 +1,4 @@
-# Purpose: Utility functions more streamlined code
+# Purpose: Small RNA processing functions, annotations, and clustering
 # Author: Jielin Yang
 # Date: 2023-11-01
 # Version: 1.0
