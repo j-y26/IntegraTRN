@@ -6,3 +6,4 @@
 ^codecov\.yml$
 /temp/*
 /temp
+^data-raw$
