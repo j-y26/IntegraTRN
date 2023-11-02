@@ -358,6 +358,15 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'             continuous grouping variable is used, the color gradient will be
 #'             used instead of the two colors
 #'
+#' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
+#' @importFrom ggplot2 ylab theme element_blank element_text
+#' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
+#' @importFrom ggplot2 coord_fixed scale_color_gradient
+#' @importFrom dplyr mutate case_when
+#' @importFrom ggrepel geom_label_repel
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq
+#' @importFrom DESeq2 varianceStabilizingTransformation plotPCA
+#'
 #' @return A ggplot object
 #'
 #' @export
@@ -427,10 +436,6 @@ countPCA <- function(matrix,
 }
 
 
-
-
-
-
 #' Plotting results for Principle Component Analysis (PCA) for each type of
 #' small RNA
 #'
@@ -449,6 +454,15 @@ countPCA <- function(matrix,
 #'             used instead of the two colors
 #'
 #' @return A list of ggplot objects
+#'
+#' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
+#' @importFrom ggplot2 ylab theme element_blank element_text
+#' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
+#' @importFrom ggplot2 coord_fixed scale_color_gradient
+#' @importFrom dplyr mutate case_when
+#' @importFrom ggrepel geom_label_repel
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq
+#' @importFrom DESeq2 varianceStabilizingTransformation plotPCA
 #'
 #' @export
 #'
