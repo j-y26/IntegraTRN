@@ -10,7 +10,7 @@ annoExpr(deg, log2FC, adjP)
 \item{deg}{A data frame containing the differential expression analysis
 results, must follow the described format in DETag-class}
 
-\item{log2FC}{The cutoff for log2 fold change}
+\item{log2FC}{The cutoff for log2 fold change, a positive number}
 
 \item{adjP}{The cutoff for adjusted p-value}
 }

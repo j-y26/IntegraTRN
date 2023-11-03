@@ -41,7 +41,8 @@ exportDiffGenes(myMOList, "RNAseq", "diffGenes_RNAseq.txt")
 # with custom cutoffs
 \dontrun{
 exportDiffGenes(myMOList, "smallRNAseq", "diffGenes_smallRNAseq.txt",
-  log2FC = 2, adjP = 0.01)
+  log2FC = 2, adjP = 0.01
+)
 }
 
 }

@@ -4,7 +4,7 @@
 \alias{validateDETagSlots}
 \title{Validator of the DETag class slots}
 \usage{
-validateDETagSlots(DEResult, method)
+validateDETagSlots(DEResult, method, normalizedCounts = NULL)
 }
 \arguments{
 \item{DEResult}{A data frame containing the differential expression analysis

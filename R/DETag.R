@@ -84,7 +84,7 @@ methods::setClass("DETag", slots = c(
 #' # Validate the object
 #' validateDETagSlots(deTag)
 #'
-validateDETagSlots <- function(DEResult, method) {
+validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
   # Validate each slot
   # DEResult
   if (!inherits(DEResult, "data.frame")) {
@@ -102,7 +102,8 @@ validateDETagSlots <- function(DEResult, method) {
     # Do nothing
   }
   # normalizedCounts
-  if (!is.matrix || !is.numeric(normalizedCounts)) {
+  if (!is.null(normalizedCounts) &&
+    (!is.matrix(normalizedCounts) || !is.numeric(normalizedCounts))) {
     stop("The normalizedCounts slot must be a numeric matrix")
   } else {
     # Do nothing
@@ -155,7 +156,7 @@ validateDETagSlots <- function(DEResult, method) {
 #'
 DETag <- function(DEResult, method, normalizedCounts = NULL) {
   # Validate the input
-  validateDETagSlots(DEResult, method)
+  validateDETagSlots(DEResult, method, normalizedCounts)
   # Create the object
   if (method %in% c(DESEQ2, EDGER)) {
     # Count-based differential analysis

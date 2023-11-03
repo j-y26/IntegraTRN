@@ -993,7 +993,8 @@ methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
 #' # with custom cutoffs
 #' \dontrun{
 #' exportDiffGenes(myMOList, "smallRNAseq", "diffGenes_smallRNAseq.txt",
-#'   log2FC = 2, adjP = 0.01)
+#'   log2FC = 2, adjP = 0.01
+#' )
 #' }
 #'
 exportDiffGenes <- function(objMOList, experiment, outPath,
@@ -1028,5 +1029,6 @@ exportDiffGenes <- function(objMOList, experiment, outPath,
     )
   }
 }
+
 
 # [END]

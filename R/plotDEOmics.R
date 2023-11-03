@@ -16,7 +16,7 @@ NOANNO <- "Unannotated"
 #'
 #' @param deg A data frame containing the differential expression analysis
 #'            results, must follow the described format in DETag-class
-#' @param log2FC The cutoff for log2 fold change
+#' @param log2FC The cutoff for log2 fold change, a positive number
 #' @param adjP The cutoff for adjusted p-value
 #'
 annoExpr <- function(deg, log2FC, adjP) {
@@ -47,7 +47,7 @@ annoExpr <- function(deg, log2FC, adjP) {
 #' @return A ggplot object
 #'
 #' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
-#' @importFrom ggplot2 ylab theme element_blank
+#' @importFrom ggplot2 ylab theme element_blank element_text element_line
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
 #' @importFrom ggrepel geom_label_repel
@@ -64,7 +64,12 @@ plotVolcano <- function(deg,
     ggplot2::ylab(expression("-log"[10] * "adj.p-value")) +
     ggplot2::theme(legend.title = ggplot2::element_blank()) +
     ggplot2::geom_hline(yintercept = -log(adjP, 10), linetype = "dashed") +
-    ggplot2::geom_vline(xintercept = c(-log2FC, log2FC), linetype = "dashed")
+    ggplot2::geom_vline(xintercept = c(-log2FC, log2FC), linetype = "dashed") +
+    ggplot2::theme(
+      axis.line = ggplot2::element_line(size = 0.7),
+      axis.ticks = ggplot2::element_line(size = 0.4),
+      axis.text = ggplot2::element_text(size = 10)
+    )
 
   # Label the genes in the geneList
   labelData <- deg[rownames(deg) %in% geneList, ]
@@ -114,7 +119,7 @@ plotVolcano <- function(deg,
 #' @return A ggplot object
 #'
 #' @importFrom ggplot2 aes scale_color_manual guides guide_legend theme_bw xlab
-#' @importFrom ggplot2 ylab theme element_blank
+#' @importFrom ggplot2 ylab theme element_blank element_text element_line
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
 #' @importFrom ggrepel geom_label_repel
