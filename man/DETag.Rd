@@ -4,13 +4,17 @@
 \alias{DETag}
 \title{Constructor for the DETag class}
 \usage{
-DETag(DEResult, method)
+DETag(DEResult, method, normalizedCounts = NULL)
 }
 \arguments{
 \item{DEResult}{A data frame containing the differential expression analysis
 results}
 
 \item{method}{A character string specifying the program used for the analysis}
+
+\item{normalizedCounts}{A matrix containing the normalized counts for the
+genes, with each row representing a gene and each
+column representing a sample}
 }
 \value{
 An object of the DETag class

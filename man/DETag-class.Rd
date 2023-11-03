@@ -27,10 +27,16 @@ This function prints the DETag object
 
 \describe{
 \item{\code{DEResult}}{A data frame containing the differential expression analysis
-results}
+results, with each row representing a gene and each column
+representing a feature. The exact columns depend on the
+method used for the analysis}
 
 \item{\code{method}}{A character string specifying the program used for the analysis,
 must be one of the valid METHODS defined}
+
+\item{\code{normalizedCounts}}{A matrix containing the normalized counts for the
+genes, with each row representing a gene and each
+column representing a sample}
 }}
 
 \examples{

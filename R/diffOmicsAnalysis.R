@@ -218,7 +218,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' \item \code{method}: The character string "DESeq2"
 #' }
 #'
-#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
+#' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results counts
 #' @importFrom dplyr %>%
 #'
 #' @references
@@ -322,7 +322,7 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
 #' }
 #'
 #' @importFrom edgeR DGEList estimateDisp calcNormFactors glmQLFit glmQLFTest
-#'             topTags
+#' @importFrom edgeR topTags cpm
 #' @importFrom dplyr %>%
 #'
 #' @references
