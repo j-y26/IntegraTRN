@@ -956,5 +956,77 @@ methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
   return(sampleInfo)
 })
 
+#' Export a list of differentially expressed genes
+#'
+#' @description This function exports a list of differentially expressed genes
+#'              from the MOList object. The user can specify the experiment type
+#'              and the cutoffs for the log2 fold change and adjusted p-value.
+#'              The function will export a file containing the differentially
+#'              expressed genes as a comma- or tab-separated text file. The
+#'              uses the suffix ".csv" or ".txt/tsv" to determine the file type.
+#'
+#' @param objMOList A MOList object containing the omics data
+#' @param experiment A character string specifying the experiment type, must
+#'                   be one of "RNAseq", "smallRNAseq", and "proteomics"
+#' @param outPath A character string specifying the output file path
+#' @param log2FC A numeric value specifying the cutoff for the log2 fold change
+#'               of the differentially expressed genes, default is 1
+#' @param adjP A numeric value specifying the cutoff for the adjusted p-value
+#'             of the differentially expressed genes, default is 0.05
+#'
+#' @return NULL
+#'
+#' @importFrom methods setGeneric setMethod
+#'
+#' @export
+#'
+#' @examples
+#' # Assuming myMOList contains the differential omics data
+#' # i.e., diffOmics has been performed
+#'
+#' # Example 1: Exporting the differentially expressed genes from RNAseq
+#' \dontrun{
+#' exportDiffGenes(myMOList, "RNAseq", "diffGenes_RNAseq.txt")
+#' }
+#'
+#' # Example 2: Exporting the differentially expressed genes from smallRNAseq
+#' # with custom cutoffs
+#' \dontrun{
+#' exportDiffGenes(myMOList, "smallRNAseq", "diffGenes_smallRNAseq.txt",
+#'   log2FC = 2, adjP = 0.01)
+#' }
+#'
+exportDiffGenes <- function(objMOList, experiment, outPath,
+                            log2FC = 1, adjP = 0.05) {
+  if (!experiment %in% COUNT_OMICS) {
+    stop("Please provide a valid experiment type. See ?exportDiffGenes for
+    details.")
+  } else {
+    # Continue
+  }
+  # Retrieve the respective omics
+  deResult <- switch(experiment,
+    RNAseq = objMOList$DERNAseq,
+    smallRNAseq = objMOList$DEsmallRNAseq,
+    proteomics = objMOList$DEproteomics
+  ) %>% exportDE()
+  # Filter the differentially expressed genes
+  deGenes <- deResult %>%
+    dplyr::filter(abs(logFC) > log2FC, padj < adjP) %>%
+    rownames()
+  # Export the differentially expressed genes to a file, a single column
+  # containing the gene names
+  if (grepl(".csv$", outPath)) {
+    write.table(deGenes, outPath,
+      sep = ",",
+      row.names = FALSE, col.names = FALSE
+    )
+  } else {
+    write.table(deGenes, outPath,
+      sep = "\t", quote = FALSE,
+      row.names = FALSE, col.names = FALSE
+    )
+  }
+}
 
 # [END]
