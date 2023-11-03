@@ -6,6 +6,7 @@ citEntry(entry = "Unpublished",
   author       = "Jielin Yang",
   note         = "Unpublished",
   year         = "2023",
+  url          = "https://github.com/j-y26/IntegraTRN"
 
   textVersion  =
   paste("Yang, J. (2023) IntegraTRN: Integrated omics for the inference of

@@ -276,11 +276,13 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   # Perform differential expression analysis and obtain results
   dds <- DESeq2::DESeq(dds)
   DEResult <- DESeq2::results(dds) %>% as.data.frame()
+  normalizedCounts <- DESeq2::counts(dds, normalized = TRUE) %>% as.matrix()
 
   # Create the DETag object
   deTag <- DETag(
     DEResult = DEResult,
-    method = DESEQ2
+    method = DESEQ2,
+    normalizedCounts = normalizedCounts
   )
 
   # Free up memory for large operational objects
@@ -382,18 +384,21 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
     design <- model.matrix(~groupBy)
   }
 
-  # Estimate dispersion
+  # Normalization and dispersion estimation
+  dge <- edgeR::calcNormFactors(dge)
   dge <- edgeR::estimateDisp(dge, design = design)
 
   # Perform differential expression analysis and obtain results
   fit <- edgeR::glmQLFit(dge, design = design)
   qlf <- edgeR::glmQLFTest(fit, coef = ncol(design))
   DEResult <- edgeR::topTags(qlf, n = nrow(filteredCounts)) %>% as.data.frame()
+  normalizedCounts <- edgeR::cpm(dge) %>% as.matrix()
 
   # Create the DETag object
   deTag <- DETag(
     DEResult = DEResult,
-    method = EDGER
+    method = EDGER,
+    normalizedCounts = normalizedCounts
   )
 
   # Free up memory for large operational objects

@@ -28,9 +28,14 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 #'              analysis while maintaining a consistent interface.
 #'
 #' @slot DEResult A data frame containing the differential expression analysis
-#'                results
+#'                results, with each row representing a gene and each column
+#'                representing a feature. The exact columns depend on the
+#'                method used for the analysis
 #' @slot method A character string specifying the program used for the analysis,
 #'              must be one of the valid METHODS defined
+#' @slot normalizedCounts A matrix containing the normalized counts for the
+#'                        genes, with each row representing a gene and each
+#'                        column representing a sample
 #'
 #' @importFrom methods setClass
 #'
@@ -47,8 +52,9 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 #'
 methods::setClass("DETag", slots = c(
   DEResult = "data.frame",
-  method = "character"
-))
+  method = "character",
+  normalizedCounts = "matrix"
+  ))
 
 
 #' Validator of the DETag class slots
@@ -95,6 +101,13 @@ validateDETagSlots <- function(DEResult, method) {
   } else {
     # Do nothing
   }
+  # normalizedCounts
+  if (!is.matrix || ! is.numeric(normalizedCounts)) {
+    stop("The normalizedCounts slot must be a numeric matrix")
+  } else {
+    # Do nothing
+  }
+
   return(invisible(NULL))
 }
 
@@ -106,6 +119,10 @@ validateDETagSlots <- function(DEResult, method) {
 #' @param DEResult A data frame containing the differential expression analysis
 #'                 results
 #' @param method A character string specifying the program used for the analysis
+#' 
+#' @param normalizedCounts A matrix containing the normalized counts for the
+#'                         genes, with each row representing a gene and each
+#'                         column representing a sample
 #'
 #' @return An object of the DETag class
 #' \itemize{
@@ -136,12 +153,21 @@ validateDETagSlots <- function(DEResult, method) {
 #' # Check the class of the object
 #' class(deTag)
 #'
-DETag <- function(DEResult, method) {
+DETag <- function(DEResult, method, normalizedCounts = NULL) {
   # Validate the input
   validateDETagSlots(DEResult, method)
   # Create the object
-  newDETag <- methods::new("DETag", DEResult = DEResult, method = method)
-
+  if (method %in% c(DESEQ2, EDGER)) {
+    # Count-based differential analysis
+    newDETag <- methods::new("DETag", DEResult = DEResult, 
+                                      method = method,
+                                      normalizedCounts = normalizedCounts)
+  } else if (method == ATAC_GRANGE) {
+    # Differential accessibility analysis
+    newDETag <- methods::new("DETag", DEResult = DEResult, method = method)
+  } else {
+    stop("The method is not supported")
+  }
   # Return the object
   return(newDETag)
 }
@@ -210,11 +236,6 @@ methods::setMethod("show", "DETag", function(object) {
 })
 
 
-# Generic function for extracting the differential analysis results
-methods::setGeneric("exportDE", function(x, original = FALSE) {
-  standardGeneric("exportDE")
-})
-
 #' Export the differential analysis results from a DETag object
 #'
 #' @description This function extracts the differential analysis results from
@@ -267,6 +288,9 @@ methods::setGeneric("exportDE", function(x, original = FALSE) {
 #' exportDE(deTag, original = TRUE)
 #' }
 #'
+methods::setGeneric("exportDE", function(x, original = FALSE) {
+  standardGeneric("exportDE")
+})
 methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
   # Validate the input
   if (!is.logical(original)) {
@@ -292,6 +316,47 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
     colnames(deResult) <- COUNT_DEFIELDS
     return(deResult)
   }
+})
+
+
+#' Export the normalized counts from a DETag object
+#' 
+#' @description This function extracts the normalized counts from the DETag
+#'              object, but this only applies to the count-based differential
+#'              analysis
+#' 
+#' @param x An object of the DETag class
+#' 
+#' @return A matrix containing the normalized counts for the genes, with each
+#'         row representing a gene and each column representing a sample
+#' 
+#' @importFrom methods setGeneric setMethod
+#' 
+#' @export
+#' 
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' 
+#' @examples
+#' # Assuming the deTag object is already created from a differential analysis
+#' 
+#' # Export the normalized counts
+#' \dontrun{
+#' exportNormalizedCounts(deTag)
+#' }
+#' 
+methods::setGeneric("exportNormalizedCounts", function(x) {
+  standardGeneric("exportNormalizedCounts")
+})
+methods::setMethod("exportNormalizedCounts", "DETag", function(x) {
+  # Validate the input
+  if (x@method != DESEQ2 && x@method != EDGER) {
+    stop("The method is not supported")
+  } else {
+    # Do nothing
+  }
+  # Extract the normalized counts
+  return(x@normalizedCounts)
 })
 
 
