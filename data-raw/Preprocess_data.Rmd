@@ -1,0 +1,133 @@
+---
+title: "Title"
+subtitle: "Subtitle"
+author: Jielin Yang
+date: `r Sys.Date()`
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    df_print: paged
+    highlight: pygments
+---
+
+<style type="text/css">
+    body {
+    max-width: 100%;
+    overflow-x: auto;
+    font-family: Helvetica;
+    font-size: 12pt;
+    }
+    h1 {
+    font-size: 20pt;
+    font-weight: bold;
+    }
+    h2 {
+        font-size: 18pt;
+        font-weight: bold;
+    }
+    h3 {
+        font-size: 16pt;
+        font-weight: bold;
+    }
+    h4 {
+        font-size: 14pt;
+        font-weight: bold;
+    }
+    code {
+        font-family: monospace;
+        font-size: 11pt;
+    }
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_knit$set(root.dir = here::here())  # Must be the project directory
+```
+    
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# Preprocess RNAseq data
+RNAseq <- read.table("./temp/GSE241758_allcounts.txt", header = TRUE, sep = "\t")
+
+# Rename the columns
+sampleNames <- paste0("sample_", seq(1, ncol(RNAseq) - 1))
+colName <- c("gene", sampleNames)
+colnames(RNAseq) <- colName
+
+# Filtering low count genes
+cpm <- edgeR::cpm(RNAseq[, -1])
+rownames(cpm) <- RNAseq$gene
+keep <- rowSums(cpm > 1) == ncol(cpm)
+RNAseq <- RNAseq[keep, ]
+
+# Save the RNAseq count data
+write.csv(RNAseq, "./temp/RNAseq_heart.csv", row.names = FALSE)
+RNAseq_heart <- RNAseq
+usethis::use_data(RNAseq_heart, overwrite = TRUE)
+```
+
+```{r}
+# Sample matrix for RNAseq data
+RNAseqSamples <- readxl::read_excel("./temp/Additional_file6.xlsx")
+RNAseqSamples <- RNAseqSamples[, c("Age", "Gender", "Batch")]
+colnames(RNAseqSamples)[2] <- "Sex"
+RNAseqSamples <- cbind(sampleNames, RNAseqSamples)
+colnames(RNAseqSamples)[1] <- "Sample"
+write.csv(RNAseqSamples, "./temp/RNAseq_heart_samples.csv", row.names = FALSE)
+RNAseq_heart_samples <- RNAseqSamples
+usethis::use_data(RNAseq_heart_samples, overwrite = TRUE)
+```
+
+```{r}
+# Preprocess small RNAseq data
+smallRNAseq <- read.table("./temp/GSE241759_all_unique_counts_smallRNAseq.txt", header = TRUE, sep = "\t")
+
+# Filtering out genes that has more than half of the samples with 0 counts
+keep <- rowSums(smallRNAseq > 0) > ncol(smallRNAseq) / 2
+smallRNAseq <- smallRNAseq[keep, ]
+sampleNames <- paste0("sample_", seq(1, ncol(smallRNAseq)))
+colnames(smallRNAseq) <- sampleNames
+smallRNAseq <- rownames_to_column(smallRNAseq, var = "transcript")
+write.csv(smallRNAseq, "./temp/smallRNAseq_heart.csv", row.names = FALSE)
+smallRNAseq_heart <- smallRNAseq
+usethis::use_data(smallRNAseq_heart, overwrite = TRUE)
+```
+
+```{r}
+# Sample matrix for small RNAseq data
+smallRNAseqSamples <- readxl::read_excel("./temp/Additional_file1.xlsx")
+smallRNAseqSamples <- smallRNAseqSamples[, c("Sample ID", "Gestational Age (wks)", "Sex")]
+colnames(smallRNAseqSamples) <- c("Sample", "Age", "Sex")
+smallRNAseqSamples$Sample <- paste0("sample_", 1:nrow(smallRNAseqSamples))
+write.csv(smallRNAseqSamples, "./temp/smallRNAseq_heart_samples.csv", row.names = FALSE)
+smallRNAseq_heart_samples <- smallRNAseqSamples
+usethis::use_data(smallRNAseq_heart_samples, overwrite = TRUE)
+```
+
+```{r}
+# Proteomics data
+protein10wks <- readxl::read_excel("./temp/Additional_file9.xlsx", sheet = 1)
+protein18wks <- readxl::read_excel("./temp/Additional_file10.xlsx", sheet = 1)
+colnames(protein10wks) <- c("gene", paste0("sample_", 1:3))
+colnames(protein18wks) <- c("gene", paste0("sample_", 4:6))
+protein <- full_join(protein10wks, protein18wks, by = "gene")
+protein[is.na(protein)] <- 0
+write.csv(protein, "./temp/protein_heart.csv", row.names = FALSE)
+protein_heart <- protein
+usethis::use_data(protein_heart, overwrite = TRUE)
+```
+
+```{r}
+# Sample matrix for proteomics data
+proteinSamples <- data.frame(Sample = paste0("sample_", 1:6),
+                             Age = c(rep(10, 3), rep(18, 3)))
+write.csv(proteinSamples, "./temp/protein_heart_samples.csv", row.names = FALSE)
+protein_heart_samples <- proteinSamples
+usethis::use_data(protein_heart_samples, overwrite = TRUE)
+```
