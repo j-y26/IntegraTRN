@@ -89,4 +89,53 @@ DESeqDesign <- function(groupBy, batch = NULL) {
   return(list(colData = colData, design = design))
 }
 
+#' Transform the result of MatchIt::matchit() to a data frame
+#'
+#' @keywords internal
+#'
+#' @param matchResult The result of MatchIt::matchit()
+#'
+#' @return A data frame containing the matched pairs
+#'
+matchResultToDF <- function(matchResult) {
+  if (is.null(matchResult)) {
+    stop("Error generating matches.")
+  }
+  matchResult <- matchResult$match.matrix
+  sampleMatch <- data.frame()
+  if (all(grepl(SRNA_SUFFIX, rownames(matchResult)))) {
+    sampleMatch$smallRNA <- gsub(SRNA_SUFFIX, "", rownames(matchResult))
+    sampleMatch$RNA <- matchResult[, 1]
+  } else {
+    sampleMatch$smallRNA <- gsub(SRNA_SUFFIX, "", matchResult[, 1])
+    sampleMatch$RNA <- rownames(matchResult)
+  }
+  return(sampleMatch)
+}
+
+
+#' Label the samples with smaller sample size as 1
+#'
+#' @keywords internal
+#'
+#' @param sampleDF A data frame containing the sample names as row names
+#' @param identifier A string to identify the samples in sample names
+#' @param colname The column name to be added to the data frame
+#'
+#' @return A data frame with the column added
+#'
+labelSmallSizeGroup <- function(sampleDF, identifier, colname) {
+  identified <- grepl(identifier, row.names(sampleDF))
+  nonIdentified <- !identified
+  if (sum(identified) < sum(nonIdentified)) {
+    sampleDF[identified, colname] <- 1
+    sampleDF[nonIdentified, colname] <- 0
+  } else {
+    sampleDF[identified, colname] <- 0
+    sampleDF[nonIdentified, colname] <- 1
+  }
+  return(sampleDF)
+}
+
+
 # [END]
