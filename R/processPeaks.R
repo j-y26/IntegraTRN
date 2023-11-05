@@ -1,6 +1,6 @@
 # Purpose: Processing peak files and motif enrichment analysis
 # Author: Jielin Yang
-# Date: 2023-11-01
+# Date: 2023-11-05
 # Version: 1.0
 # Bugs and Issues: None
 
@@ -87,3 +87,11 @@ processPeakOverlap <- function(objMOList) {
   objMOList$DEATAC <- atacDETag
   return(objMOList)
 }
+
+
+#' Annotate peaks with genomic features
+#'
+#' @description This function annotates the ATACseq peaks with genomic features
+#'              using the ChIPseeker package. The annotation is performed
+#'              separately for each condition, and the results are combined
+#'              into a single data frame.
