@@ -12,7 +12,7 @@
 #'              all slots of the DETag class, with stringent filtering on the
 #'              genes involved. Additional slots are added as a more convenient
 #'              way for users to access the top differential genes.
-#' 
+#'
 #'
 #' @slot DEResult A data frame containing the differential expression results
 #'                for only the top differential genes. The columns resemble the
