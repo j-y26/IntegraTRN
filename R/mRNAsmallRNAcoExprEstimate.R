@@ -290,6 +290,7 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'                    samples.}
 #' \item{indexSmallRNAseq}{A numeric vector containing the indices of the small
 #'                         RNAseq samples.}
+#' }
 #'
 matchSamplesRNAsmallRNA <- function(objMOList,
                                     sampleDFRNAseq = NULL,
