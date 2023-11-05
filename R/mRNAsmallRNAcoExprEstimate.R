@@ -241,8 +241,16 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
     sampleMatchDF <- matchBinary(sampleDF)
   }
 
-
-  # Parse the index of the matched samples
+  # Convert the sample names to indices
+  indexRNAseq <- match(
+    sampleMatchDF$RNA,
+    objMOList@RNAseqSamples$samples
+  )
+  indexSmallRNAseq <- match(
+    sampleMatchDF$smallRNA,
+    objMOList@SmallRNAseqSamples$samples
+  )
+  return(list(indexRNAseq = indexRNAseq, indexSmallRNAseq = indexSmallRNAseq))
 }
 
 
@@ -276,7 +284,12 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'         corresponding element in the second vector is the index of the
 #'         matched small RNAseq sample. These indices match to the sample names
 #'         in the RNAseqSamples and SmallRNAseqSamples slots of the MOList
-#'         object.
+#'         object. The slot is a list under the following structure:
+#' \itemize{
+#' \item{indexRNAseq}{A numeric vector containing the indices of the RNAseq
+#'                    samples.}
+#' \item{indexSmallRNAseq}{A numeric vector containing the indices of the small
+#'                         RNAseq samples.}
 #'
 matchSamplesRNAsmallRNA <- function(objMOList,
                                     sampleDFRNAseq = NULL,
