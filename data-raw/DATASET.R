@@ -1,8 +1,3 @@
-## code to prepare `DATASET` dataset goes here
-
-usethis::use_data(DATASET, overwrite = TRUE)
-
-
 # Internal data to be used
 
 # Preparing human transcription factor data
@@ -11,10 +6,9 @@ humanTF <- read.csv("./data-raw/DatabaseExtract_v_1.01.csv",
   header = TRUE,
   row.names = 1
 )
-humanTF <- humanTF[humanTF$Is.TF. == "Yes", ]
 humanTF <- humanTF %>% dplyr::select(
   HGNC.symbol, Ensembl.ID, EntrezGene.ID,
-  EntrezGene.Description, DBD, PDB.ID
+  EntrezGene.Description, DBD, PDB.ID, Is.TF.
 )
 
 rownames(humanTF) <- humanTF$HGNC.symbol
