@@ -548,4 +548,139 @@ plotSmallRNAPCAs <- function(objMOList,
 }
 
 
+#' Peak coverage plot for differential accessible regions
+#' 
+#' @description This function generates a peak coverage plot for differential
+#'              accessible regions based on the ATACseq data. This is a wrapper
+#'              function for the covplot function in the ChIPseeker package.
+#' 
+#' @param objMOList An MOList object containing the differential accessible
+#'                  regions
+#' @param title The title for the plot, default is "ATAC Peaks over Chromosomes"
+#' 
+#' @return A ggplot object
+#' 
+#' @importFrom ChIPseeker covplot
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' 
+#' @export
+#' 
+#' @examples
+#' # Suppose that we have an MOList object called objMOList, which contains the
+#' # differential accessible regions as an element named DEPeaks
+#' 
+#' # Plotting the peak coverage
+#' \dontrun{
+#' plotATACCoverage(objMOList)
+#' }
+#' 
+plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
+  if (is.null(objMOList$DEATAC)) {
+    stop("No differential accessible regions. Please run diffOmics() first.
+  See ?diffOmics for details.")
+  } else {
+    # Continue
+  }
+  if (inherits(objMOList$DEATAC, "PEAKTag")) {
+    # A PEAKTag object
+    peakGR <- asGRanges(objMOList$DEATAC)
+  } else {
+    # A DETag object
+    peakGR <- GRanges::makeGRangesFromDataFrame(exportDE(objMOList$DEATAC))
+  }
+  covPlot <- ChIPseeker::covplot(peakGR, title = title)
+  return(covPlot)
+}
+
+
+#' Plotting the annotation Pie chart of differential accessible regions
+#' 
+#' @description This function generates a pie chart for the annotation of
+#'              differential accessible regions based on the ATACseq data.
+#'              This is a wrapper function for the plotAnnoPie function in the
+#'              ChIPseeker package.
+#' 
+#' @param objMOList An MOList object containing the differential accessible
+#'                  regions
+#' 
+#' @return A ggplot object
+#' 
+#' @importFrom ChIPseeker plotAnnoPie
+#' 
+#' @export
+#' 
+#' @examples
+#' # Suppose that we have an MOList object called objMOList, which contains the
+#' # differential accessible regions with annotation
+#' 
+#' # Plotting the annotation pie chart
+#' \dontrun{
+#' plotATACAnno(objMOList)
+#' }
+#' 
+#' 
+plotATACAnno <- function(objMOList) {
+  if (is.null(objMOList$DEATAC) || 
+      !inherits(objMOList$DEATAC, "PEAKTag") ||
+      is.null(objMOList$annoATAC@annotatedPeaks)) {
+      stop("No peak annotation found.")
+  } else {
+    # Continue
+  }
+  csAnno <- objMOList$annoATAC@annotatedPeaks
+  piePlot <- ChIPseeker::plotAnnoPie(csAnno)
+  return(piePlot)
+}
+
+
+#' Plotting the combined profile and heatmap of annotated peaks
+#' 
+#' @description This function generates a combined profile and heatmap of
+#'              annotated peaks based on the ATACseq data. This is a wrapper
+#'              function for the peak_Profile_Heatmap function in the
+#'              ChIPseeker package.
+#' 
+#' @param objMOList An MOList object containing the annotated peaks
+#' @param upstream The upstream distance from the TSS, default is 1000
+#' @param downstream The downstream distance from the TSS, default is 1000
+#' @param by The feature to be used for grouping, default is "gene"
+#' @param type The type of the feature, default is "start_site"
+#' @param bin The bin size for the heatmap, default is 100
+#' 
+#' @details See ?ChIPseeker::peak_Profile_Heatmap for details on the values of
+#'          the parameters.
+#' 
+#' 
+#' @return A ggplot object
+#' 
+plotATACProfileHeatmap <- function(objMOList,
+                                   upstream = 1000,
+                                   downstream = 1000,
+                                   by = "gene",
+                                   type = "start_site",
+                                   bin = 100) {
+  if (is.null(objMOList$DEATAC) || 
+      !inherits(objMOList$DEATAC, "PEAKTag") ||
+      is.null(objMOList$annoATAC@annotatedPeaks)) {
+      stop("No peak annotation found.")
+  } else {
+    # Continue
+  }
+  peakGR <- asGRanges(objMOList$DEATAC)
+  txdb <- objMOList$DEATAC@TxDB
+
+  # Generate the profile and heatmap
+  profileHeatmap <- ChIPseeker::peak_Profile_Heatmap(
+    peak = peakGR,
+    upstream = upstream,
+    downstream = downstream,
+    TxDb = txdb,
+    by = by,
+    type = type,
+    bin = bin
+  )
+  return(profileHeatmap)
+}
+
+
 # [END]
