@@ -285,7 +285,6 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @importFrom ChIPseeker annotatePeak
 #' @importFrom GenomicRanges makeGRangesFromDataFrame resize
 #' @importFrom IRanges width
-#' @importFrom TBSTools getMatrixSet
 #' @importFrom monaLisa calcBinnedMotifEnrR
 #' @importClassesFrom TFBSTools PWMatrixList
 #'

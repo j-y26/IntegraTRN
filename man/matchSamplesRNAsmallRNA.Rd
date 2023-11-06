@@ -52,3 +52,43 @@ This function generates a one-to-one matching between the
              neighbor matching. The matching is based on the grouping
              variable and other variables in the sample data frames.
 }
+\examples{
+# Suppose we have an MOList object with RNAseq and small RNAseq data
+
+# Example 1: No additional sample information provided
+\dontrun{
+# Perform matching
+myMOList <- matchSamplesRNAsmallRNA(myMOList)
+}
+
+# Example 2: Additional sample information provided
+\dontrun{
+# Suppose we have two data frames containing the sample information
+sampleDFRNAseq <- data.frame(
+  Age = c(1, 2, 3, 4, 5),
+  Sex = c("M", "M", "F", "F", "F")
+)
+sampleDFSmallRNAseq <- data.frame(
+  Age = c(1, 2, 3, 4, 5),
+  Sex = c("M", "M", "F", "F", "F")
+)
+# Perform matching
+myMOList <- matchSamplesRNAsmallRNA(myMOList,
+  sampleDFRNAseq = sampleDFRNAseq,
+  sampleDFSmallRNAseq = sampleDFSmallRNAseq
+)
+# Will account for both age and sex
+}
+
+# Example 3: Additional sample information provided, with matching variables
+\dontrun{
+# Suppose we just want to match based on age
+myMOList <- matchSamplesRNAsmallRNA(myMOList,
+  sampleDFRNAseq = sampleDFRNAseq,
+  sampleDFSmallRNAseq = sampleDFSmallRNAseq,
+  varMatch = "Age"
+)
+# Will only account for age
+}
+
+}

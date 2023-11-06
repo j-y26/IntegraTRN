@@ -292,6 +292,50 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'                         RNAseq samples.}
 #' }
 #'
+#' @importFrom MatchIt matchit
+#' @import optmatch
+#'
+#' @export
+#'
+#' @examples
+#' # Suppose we have an MOList object with RNAseq and small RNAseq data
+#'
+#' # Example 1: No additional sample information provided
+#' \dontrun{
+#' # Perform matching
+#' myMOList <- matchSamplesRNAsmallRNA(myMOList)
+#' }
+#'
+#' # Example 2: Additional sample information provided
+#' \dontrun{
+#' # Suppose we have two data frames containing the sample information
+#' sampleDFRNAseq <- data.frame(
+#'   Age = c(1, 2, 3, 4, 5),
+#'   Sex = c("M", "M", "F", "F", "F")
+#' )
+#' sampleDFSmallRNAseq <- data.frame(
+#'   Age = c(1, 2, 3, 4, 5),
+#'   Sex = c("M", "M", "F", "F", "F")
+#' )
+#' # Perform matching
+#' myMOList <- matchSamplesRNAsmallRNA(myMOList,
+#'   sampleDFRNAseq = sampleDFRNAseq,
+#'   sampleDFSmallRNAseq = sampleDFSmallRNAseq
+#' )
+#' # Will account for both age and sex
+#' }
+#'
+#' # Example 3: Additional sample information provided, with matching variables
+#' \dontrun{
+#' # Suppose we just want to match based on age
+#' myMOList <- matchSamplesRNAsmallRNA(myMOList,
+#'   sampleDFRNAseq = sampleDFRNAseq,
+#'   sampleDFSmallRNAseq = sampleDFSmallRNAseq,
+#'   varMatch = "Age"
+#' )
+#' # Will only account for age
+#' }
+#'
 matchSamplesRNAsmallRNA <- function(objMOList,
                                     sampleDFRNAseq = NULL,
                                     sampleDFSmallRNAseq = NULL,
@@ -383,12 +427,54 @@ matchSamplesRNAsmallRNA <- function(objMOList,
       sampleDFSmallRNAseq
     )
   }
+
+  # Display the matching result to console
+  cat("The matching result is:\n")
+  print(exportMatchResult(objMOList))
   return(objMOList)
 }
 
 
-# Use two ways to match: continuous grouping var to increase the weight of the grouping variable
-# and binary grouping var to match separately between groups.
+#' Export the match result of RNAseq and small RNAseq samples
+#'
+#' @description This function exports the match result of RNAseq and small
+#'              RNAseq samples.
+#'
+#' @param objMOList An object of class MOList
+#'
+#' @return A data frame containing the match result, with the following format:
+#' \itemize{
+#' \item{RNAseq}{The sample names of the RNAseq samples.}
+#' \item{SmallRNAseq}{The sample names of the small RNAseq samples.}
+#' }
+#'
+#' @export
+#'
+#' @examples
+#' # Suppose we have an MOList object with RNAseq and small RNAseq data
+#' \dontrun{
+#' # Perform matching
+#' myMOList <- matchSamplesRNAsmallRNA(myMOList)
+#' # Export the match result
+#' exportMatchResult(myMOList)
+#' }
+#'
+exportMatchResult <- function(objMOList) {
+  if (is.null(objMOList$matchingRNAsmallRNA)) {
+    stop("The MOList object does not contain matching information.")
+  } else {
+    # Continue
+  }
+  matchResult <- data.frame(
+    RNAseq = objMOList@RNAseqSamples$samples[
+      objMOList$matchingRNAsmallRNA$indexRNAseq
+    ],
+    SmallRNAseq = objMOList@SmallRNAseqSamples$samples[
+      objMOList$matchingRNAsmallRNA$indexSmallRNAseq
+    ]
+  )
+  return(matchResult)
+}
 
 
 
