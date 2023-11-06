@@ -650,6 +650,7 @@ plotATACAnno <- function(objMOList) {
 #' @details See ?ChIPseeker::peak_Profile_Heatmap for details on the values of
 #'          the parameters.
 #' 
+#' @export
 #' 
 #' @return A ggplot object
 #' 
