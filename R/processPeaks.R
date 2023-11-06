@@ -110,6 +110,60 @@ processPeakOverlap <- function(objMOList) {
 #' Annotate peaks with genomic features
 #'
 #' @description This function annotates the ATACseq peaks with genomic features
-#'              using the ChIPseeker package. The annotation is performed
-#'              separately for each condition, and the results are combined
-#'              into a single data frame.
+#'              using the ChIPseeker package.
+#'
+#' @details The annotation is performed using the TxDb object and annotation
+#'          database specified by the user. Depending on the style of genomic
+#'          coordinate representation (with or without the "chr" prefix for the
+#'          chromosome name, or the use of "chrM", "M", "MT" for mitochondrial
+#'          DNA), the TxDb object may need to be adjusted to match the style
+#'          used in the peak file. See the vignette of the ChIPseeker package
+#'          for more details. By default, we recommend using the UCSC style
+#'          genomic coordinates, and the use of the
+#'          TxDb.Hsapiens.UCSC.hg38.knownGene and org.Hs.eg.db packages for
+#'          human samples, and the TxDb.Mmusculus.UCSC.mm10.knownGene and
+#'          org.Mm.eg.db packages for mouse samples.
+#'
+#' @param objMOList An object of class MOList
+#' @param tssRegion The region around the TSS to annotate with
+#'                  (default: +/- 3000)
+#' @param TxDB The TxDb object to use for annotation, using one of the TxDb
+#'             packages
+#' @param annoDb The annotation database to use for annotation, using one of
+#'               the org.*.eg.db packages. Must be a valid string for the name
+#'               of the package. For details, see the vignette of the ChIPseeker
+#'               package for custom annotation databases.
+#'
+#' @return A csAnno object containing the annotated peaks, as defined by the
+#'         ChIPseeker package. In particular, the original "Condition"
+#'         annotation is preserved.
+#'
+#' @importFrom ChIPseeker annotatePeak
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
+#'
+annotatePeaks <- function(objMOList,
+                          tssRegion = c(-3000, 3000),
+                          TxDb,
+                          annoDb = "org.Hs.eg.db") {
+  # Retrieve the ATACseq peaks
+  peaks <- exportDE(objMOList$DEATAC)
+
+  # Generate a GRanges object from the peak data frame
+  peakGR <- GenomicRanges::makeGRangesFromDataFrame(peaks,
+    keep.extra.columns = TRUE
+  )
+
+  # Annotate the peaks with genomic features
+  # The annotation is performed using the TxDb object and annotation database
+  # specified by the user
+  peakAnno <- ChIPseeker::annotatePeak(
+    peakGR,
+    tssRegion = tssRegion,
+    TxDb = TxDb,
+    annoDb = annoDb
+  )
+  # Generate a PEAKTag object that replaces original DETag object
+  peakTag <- PEAKTag(objMOList$DEATAC, peakAnno, TxDb, annoDb)
+  objMOList$DEATAC <- peakTag
+  return(objMOList)
+}

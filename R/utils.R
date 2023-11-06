@@ -138,4 +138,27 @@ labelSmallSizeGroup <- function(sampleDF, identifier, colname) {
 }
 
 
+#' Format csAnno object to a data frame
+#'
+#' @keywords internal
+#'
+#' @param anno A csAnno object
+#'
+#' @return A data frame containing the annotation information
+#'
+#' @importFrom BiocGenerics as.data.frame
+#'
+csAnnoToDF <- function(anno) {
+  annoDF <- BiocGenerics::as.data.frame(anno)
+  colnames(annoDF)[1] <- "chr"
+  annoDF <- annoDF %>%
+    dplyr::select(
+      chr, start, end, width, strand, Condition,
+      annotation, ENSEMBL, SYMBOL, GENENAME
+    ) %>%
+    dplyr::arrange(chr, start)
+  return(annoDF)
+}
+
+
 # [END]

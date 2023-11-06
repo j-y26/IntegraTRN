@@ -45,9 +45,6 @@
 #'                DE genes based on logFCCutoff and pCutoff, then topGenes will
 #'                be set to the number of DE genes.
 #'
-#'
-#' @inherit DETag
-#'
 #' @exportClass TOPTag
 #'
 #' @importFrom methods setClass

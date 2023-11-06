@@ -17,10 +17,13 @@ Depends:
     R (>= 2.10)
 Suggests: 
     ggpubr (>= 0.6.0),
+    org.Hs.eg.db,
     testthat (>= 3.0.0),
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Config/testthat/edition: 3
 Imports: 
+    BiocGenerics,
+    ChIPseeker (>= 1.35.1),
     DESeq2 (>= 1.39.7),
     dplyr (>= 1.0.7),
     edgeR (>= 3.36.0),

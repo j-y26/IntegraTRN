@@ -11,15 +11,6 @@
 \arguments{
 \item{object}{An object of the DETag class}
 }
-\value{
-An object of the DETag class
-\itemize{
-\item \code{DEResult}: A data frame containing the differential expression
-                       analysis results
-\item \code{method}: A character string specifying the program used for the
-                     analysis
-}
-}
 \description{
 The TOPTag S4 class inherits the DETag class and is a more
              specific class for storing top differential genes. It contains
