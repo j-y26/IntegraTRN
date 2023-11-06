@@ -2,7 +2,8 @@
 % Please edit documentation in R/processPeaks.R
 \name{mergePeaks}
 \alias{mergePeaks}
-\title{Merge peaks with overlapping genomic coordinates}
+\title{Merge peaks with overlapping genomic coordinates and filter out highly
+overlapped peaks between conditions}
 \usage{
 mergePeaks(peaks)
 }
@@ -13,6 +14,7 @@ mergePeaks(peaks)
 A GRanges object containing the merged peaks
 }
 \description{
-Merge peaks with overlapping genomic coordinates
+Merge peaks with overlapping genomic coordinates and filter out highly
+overlapped peaks between conditions
 }
 \keyword{internal}

@@ -27,9 +27,12 @@ Imports:
     GenomicRanges (>= 1.52.0),
     GenomicTools.fileHandler (>= 0.1.5.9),
     ggplot2 (>= 3.4.0),
+    IRanges,
     MatchIt (>= 4.4.0),
     methods (>= 3.6.0),
     optmatch (>= 0.10.6),
-    RColorBrewer (>= 1.1-2)
+    RColorBrewer (>= 1.1-2),
+    Repitools,
+    S4Vectors (>= 0.38.0)
 URL: https://github.com/j-y26/IntegraTRN
 BugReports: https://github.com/j-y26/IntegraTRN/issues

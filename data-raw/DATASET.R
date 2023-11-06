@@ -20,12 +20,24 @@ TFHsapiens <- humanTF
 
 
 # Document human small RNAs
-write.csv(miRNAHsapiens, "./data-raw/miRNAHsapiens_COMPSRA.csv", row.names = FALSE)
-write.csv(snoRNAHsapiens, "./data-raw/snoRNAHsapiens_COMPSRA.csv", row.names = FALSE)
-write.csv(snRNAHsapiens, "./data-raw/snRNAHsapiens_COMPSRA.csv", row.names = FALSE)
-write.csv(tRNAHsapiens, "./data-raw/tRNAHsapiens_COMPSRA.csv", row.names = FALSE)
-write.csv(piRNAHsapiens, "./data-raw/piRNAHsapiens_COMPSRA.csv", row.names = FALSE)
-write.csv(circRNAHsapiens, "./data-raw/circRNAHsapiens_COMPSRA.csv", row.names = FALSE)
+write.csv(miRNAHsapiens, "./data-raw/miRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
+write.csv(snoRNAHsapiens, "./data-raw/snoRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
+write.csv(snRNAHsapiens, "./data-raw/snRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
+write.csv(tRNAHsapiens, "./data-raw/tRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
+write.csv(piRNAHsapiens, "./data-raw/piRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
+write.csv(circRNAHsapiens, "./data-raw/circRNAHsapiens_COMPSRA.csv",
+  row.names = FALSE
+)
 
 
 # Saving internal data
@@ -38,7 +50,9 @@ usethis::use_data(TFHsapiens, miRNAHsapiens, snoRNAHsapiens, snRNAHsapiens,
 # Exported Data
 
 # Preprocess RNAseq data
-RNAseq <- read.table("./data-raw/GSE241758_allcounts.txt", header = TRUE, sep = "\t")
+RNAseq <- read.table("./data-raw/GSE241758_allcounts.txt",
+  header = TRUE, sep = "\t"
+)
 
 # Rename the columns
 sampleNames <- paste0("sample_", seq(1, ncol(RNAseq) - 1))
@@ -64,14 +78,19 @@ RNAseqSamples <- RNAseqSamples[, c("Age", "Gender", "Batch")]
 colnames(RNAseqSamples)[2] <- "Sex"
 RNAseqSamples <- cbind(sampleNames, RNAseqSamples)
 colnames(RNAseqSamples)[1] <- "Sample"
-write.csv(RNAseqSamples, "./data-raw/RNAseq_heart_samples.csv", row.names = FALSE)
+write.csv(RNAseqSamples, "./data-raw/RNAseq_heart_samples.csv",
+  row.names = FALSE
+)
 RNAseq_heart_samples <- RNAseqSamples
 usethis::use_data(RNAseq_heart_samples, overwrite = TRUE)
 
 
 
 # Preprocess small RNAseq data
-smallRNAseq <- read.table("./data-raw/GSE241759_all_unique_counts_smallRNAseq.txt", header = TRUE, sep = "\t")
+smallRNAseq <- read.table(
+  "./data-raw/GSE241759_all_unique_counts_smallRNAseq.txt",
+  header = TRUE, sep = "\t"
+)
 
 # Filtering out genes that has more than half of the samples with 0 counts
 keep <- rowSums(smallRNAseq > 0) > ncol(smallRNAseq) / 2
@@ -87,18 +106,27 @@ usethis::use_data(smallRNAseq_heart, overwrite = TRUE)
 
 # Sample matrix for small RNAseq data
 smallRNAseqSamples <- readxl::read_excel("./data-raw/Additional_file1.xlsx")
-smallRNAseqSamples <- smallRNAseqSamples[, c("Sample ID", "Gestational Age (wks)", "Sex")]
+smallRNAseqSamples <- smallRNAseqSamples[
+  ,
+  c("Sample ID", "Gestational Age (wks)", "Sex")
+]
 colnames(smallRNAseqSamples) <- c("Sample", "Age", "Sex")
 smallRNAseqSamples$Sample <- paste0("sample_", 1:nrow(smallRNAseqSamples))
-write.csv(smallRNAseqSamples, "./data-raw/smallRNAseq_heart_samples.csv", row.names = FALSE)
+write.csv(smallRNAseqSamples, "./data-raw/smallRNAseq_heart_samples.csv",
+  row.names = FALSE
+)
 smallRNAseq_heart_samples <- smallRNAseqSamples
 usethis::use_data(smallRNAseq_heart_samples, overwrite = TRUE)
 
 
 
 # Proteomics data
-protein10wks <- readxl::read_excel("./data-raw/Additional_file9.xlsx", sheet = 1)
-protein18wks <- readxl::read_excel("./data-raw/Additional_file10.xlsx", sheet = 1)
+protein10wks <- readxl::read_excel("./data-raw/Additional_file9.xlsx",
+  sheet = 1
+)
+protein18wks <- readxl::read_excel("./data-raw/Additional_file10.xlsx",
+  sheet = 1
+)
 colnames(protein10wks) <- c("gene", paste0("sample_", 1:3))
 colnames(protein18wks) <- c("gene", paste0("sample_", 4:6))
 protein <- full_join(protein10wks, protein18wks, by = "gene")
@@ -114,13 +142,17 @@ proteinSamples <- data.frame(
   Sample = paste0("sample_", 1:6),
   Age = c(rep(10, 3), rep(18, 3))
 )
-write.csv(proteinSamples, "./data-raw/protein_heart_samples.csv", row.names = FALSE)
+write.csv(proteinSamples, "./data-raw/protein_heart_samples.csv",
+  row.names = FALSE
+)
 protein_heart_samples <- proteinSamples
 usethis::use_data(protein_heart_samples, overwrite = TRUE)
 
 
 # Simulation of ATACseq peaks using some differential expressed genes
-deResult <- read.csv("./data-raw/diff_expr_result_rnaseq.csv", header = TRUE, row.names = 1)
+deResult <- read.csv("./data-raw/diff_expr_result_rnaseq.csv",
+  header = TRUE, row.names = 1
+)
 # Retrieve up and down regulated genes
 upGenes <- rownames(deResult)[deResult$logFC > 0 & deResult$padj < 0.05]
 downGenes <- rownames(deResult)[deResult$logFC < 0 & deResult$padj < 0.05]
@@ -255,12 +287,17 @@ set.seed(NULL)
 # Validate the size of the simulated peaks
 simulatedPeaksUp$peakWidth <- simulatedPeaksUp$end - simulatedPeaksUp$start
 summary(simulatedPeaksUp$peakWidth)
-simulatedPeaksDown$peakWidth <- simulatedPeaksDown$end - simulatedPeaksDown$start
+simulatedPeaksDown$peakWidth <- simulatedPeaksDown$end -
+  simulatedPeaksDown$start
 summary(simulatedPeaksDown$peakWidth)
 
 # Save the simulated peaks
-write.csv(simulatedPeaksUp, "./data-raw/simulatedPeaksUp.csv", row.names = FALSE)
-write.csv(simulatedPeaksDown, "./data-raw/simulatedPeaksDown.csv", row.names = FALSE)
+write.csv(simulatedPeaksUp, "./data-raw/simulatedPeaksUp.csv",
+  row.names = FALSE
+)
+write.csv(simulatedPeaksDown, "./data-raw/simulatedPeaksDown.csv",
+  row.names = FALSE
+)
 
 # Exchange peaks between up and down regulated genes with 100 randomly selected peaks
 set.seed(91711)
@@ -279,8 +316,10 @@ fraction <- runif(1, min = 0.3, max = 0.7)
 numPeaksSel <- round(nrow(randomPeaks) * fraction)
 selPeaks <- sample(1:nrow(randomPeaks), numPeaksSel)
 nselPeaks <- (1:nrow(randomPeaks))[-selPeaks]
-peaksCond1 <- rbind(peaksCond1, randomPeaks[selPeaks, ] %>% dplyr::select(chr, start, end))
-peaksCond2 <- rbind(peaksCond2, randomPeaks[nselPeaks, ] %>% dplyr::select(chr, start, end))
+peaksCond1 <- rbind(peaksCond1, randomPeaks[selPeaks, ] %>%
+  dplyr::select(chr, start, end))
+peaksCond2 <- rbind(peaksCond2, randomPeaks[nselPeaks, ] %>%
+  dplyr::select(chr, start, end))
 set.seed(NULL)
 
 # Save the simulated peaks

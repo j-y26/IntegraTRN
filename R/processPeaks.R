@@ -5,7 +5,8 @@
 # Bugs and Issues: None
 
 
-#' Merge peaks with overlapping genomic coordinates
+#' Merge peaks with overlapping genomic coordinates and filter out highly
+#' overlapped peaks between conditions
 #'
 #' @keywords internal
 #'
@@ -19,7 +20,6 @@ mergePeaks <- function(peaks) {
   # Generate a GRanges object from the peak data frame
   # The GRangesFromDataFrame function requires "start" and "end" as column names
   # No strandedness in ATACseq
-  colnames(peaks)[2:3] <- c("start", "end")
   peakGR <- GenomicRanges::makeGRangesFromDataFrame(peaks,
     ignore.strand = TRUE
   )
@@ -44,14 +44,19 @@ mergePeaks <- function(peaks) {
 #'              with a minimum of 1 bp overlap will be merged into a single
 #'              peak, for peaks from a single condition. Since the two input
 #'              peak files that already represents differential accessible
-#'              regions, we do not merge peaks across conditions.
+#'              regions, we do not merge peaks across conditions. Instead,
+#'              peaks with overlapping genomic coordinates that covers more than
+#'              50% of the peak region will be removed.
 #'
 #' @param objMOList An object of class MOList
 #'
 #' @return An object of class MOList, with a DETag added containing a master
 #'         peak set that annotates where the peaks come from
 #'
-#' @importFrom GenomicRanges makeGRangesFromDataFrame reduce
+#' @importFrom GenomicRanges makeGRangesFromDataFrame reduce findOverlaps
+#' @importFrom IRanges width
+#' @importFrom Repitools annoGR2DF
+#' @importFrom S4Vectors from to
 #'
 processPeakOverlap <- function(objMOList) {
   # Check if the ATACseq peak files exist
@@ -65,22 +70,35 @@ processPeakOverlap <- function(objMOList) {
   peakGR1 <- mergePeaks(peaksCond1)
   peakGR2 <- mergePeaks(peaksCond2)
 
-  # Master peak set
-  masterPeaks <- data.frame(
-    seqnames = peakGR1@seqnames,
-    start = peakGR1@ranges@start,
-    end = start + peakGR1@ranges@width - 1,
-    Cond = "Cond1"
-  )
-  masterPeaks <- rbind(
-    masterPeaks,
-    data.frame(
-      seqnames = peakGR2@seqnames,
-      start = peakGR2@ranges@start,
-      end = start + peakGR2@ranges@width - 1,
-      Cond = "Cond2"
-    )
-  )
+  # Remove overlapping peaks across conditions, with having at least 50% overlap
+  # in any peak considered as overlapping
+  overlaps <- GenomicRanges::findOverlaps(peakGR1, peakGR2)
+  fromP1 <- S4Vectors::from(overlaps) # index of overlapped peaks in peakGR1
+  fromP2 <- S4Vectors::to(overlaps) # index of pverlapped peaks in peakGR2
+  overlappedWidth <- IRanges::width(GenomicRanges::pintersect(
+    peakGR1[fromP1],
+    peakGR2[fromP2]
+  ))
+  # Calculate the minimum peak width for peaks that overlap
+  width1 <- IRanges::width(peakGR1[fromP1])
+  width2 <- IRanges::width(peakGR2[fromP2])
+
+  peakGR1 <- peakGR1[-fromP1[overlappedWidth / width1 > 0.5]]
+  peakGR2 <- peakGR2[-fromP2[overlappedWidth / width2 > 0.5]]
+
+  # Convert the GRanges objects back to data frames
+  peakDF1 <- Repitools::annoGR2DF(peakGR1)
+  peakDF2 <- Repitools::annoGR2DF(peakGR2)
+
+  # Make a master peak set
+  peakDF1 <- peakDF1 %>%
+    dplyr::select(-width) %>%
+    dplyr::mutate(Condition = "-")
+  peakDF2 <- peakDF2 %>%
+    dplyr::select(-width) %>%
+    dplyr::mutate(Condition = "+")
+  masterPeaks <- dplyr::bind_rows(peakDF1, peakDF2)
+
   atacDETag <- DETag(masterPeaks, ATAC_GRANGE)
 
   # Update the MOList object

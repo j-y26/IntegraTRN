@@ -22,6 +22,8 @@ This function processes user input peak files to check for
              with a minimum of 1 bp overlap will be merged into a single
              peak, for peaks from a single condition. Since the two input
              peak files that already represents differential accessible
-             regions, we do not merge peaks across conditions.
+             regions, we do not merge peaks across conditions. Instead,
+             peaks with overlapping genomic coordinates that covers more than
+             50% of the peak region will be removed.
 }
 \keyword{internal}
