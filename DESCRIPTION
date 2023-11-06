@@ -16,13 +16,17 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
 Suggests: 
+    BSgenome.Hsapiens.UCSC.hg38,
     ggpubr (>= 0.6.0),
+    JASPAR2022,
     org.Hs.eg.db,
     testthat (>= 3.0.0),
+    TFBSTools,
     TxDb.Hsapiens.UCSC.hg38.knownGene
 Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
+    Biostrings (>= 2.56.0),
     ChIPseeker (>= 1.35.1),
     DESeq2 (>= 1.39.7),
     dplyr (>= 1.0.7),
@@ -33,9 +37,11 @@ Imports:
     IRanges,
     MatchIt (>= 4.4.0),
     methods (>= 3.6.0),
+    monaLisa (>= 1.7.1),
     optmatch (>= 0.10.6),
     RColorBrewer (>= 1.1-2),
     Repitools,
-    S4Vectors (>= 0.38.0)
+    S4Vectors (>= 0.38.0),
+    SummarizedExperiment
 URL: https://github.com/j-y26/IntegraTRN
 BugReports: https://github.com/j-y26/IntegraTRN/issues

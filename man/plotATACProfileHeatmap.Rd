@@ -9,8 +9,7 @@ plotATACProfileHeatmap(
   upstream = 1000,
   downstream = 1000,
   by = "gene",
-  type = "start_site",
-  bin = 100
+  type = "start_site"
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ plotATACProfileHeatmap(
 \item{by}{The feature to be used for grouping, default is "gene"}
 
 \item{type}{The type of the feature, default is "start_site"}
-
-\item{bin}{The bin size for the heatmap, default is 100}
 }
 \value{
 A ggplot object

@@ -160,8 +160,8 @@ downGenes <- rownames(deResult)[deResult$logFC < 0 & deResult$padj < 0.05]
 deResult$piVal <- log(deResult$padj, 10) * -1 * sign(deResult$logFC)
 deResult <- deResult[order(deResult$piVal), ]
 # Retrieve the top 100 up and down regulated genes
-topUpGenes <- rownames(deResult)[1:150]
-topDownGenes <- rownames(deResult)[(nrow(deResult) - 149):nrow(deResult)]
+topUpGenes <- rownames(deResult)[1:200]
+topDownGenes <- rownames(deResult)[(nrow(deResult) - 199):nrow(deResult)]
 
 # Annotate TSS for all differentially expressed genes
 library("biomaRt")
@@ -192,13 +192,13 @@ ATACseq <- ATACseq[, 1:3]
 colnames(ATACseq) <- c("chr", "start", "end")
 
 set.seed(91711)
-# Randomly select 1000 peaks
-randomPeaks <- ATACseq[sample(1:nrow(ATACseq), 1000), ]
+# Randomly select 500 peaks
+randomPeaks <- ATACseq[sample(1:nrow(ATACseq), 500), ]
 set.seed(NULL)
 
-# Simulate peaks TSS-based peaks for the top 100 up and down regulated genes
-numPeaks <- 632
-peakWidth <- 200
+# Simulate peaks TSS-based peaks for the top 200 up and down regulated genes
+numPeaks <- 2000
+peakWidth <- 500
 simulatedPeaksUp <- data.frame(
   chr = character(),
   start = numeric(),
@@ -224,16 +224,15 @@ for (i in 1:numPeaks) {
   # TSS-proximal region defined to be 1000bp upstream and 3000bp downstream
   # of the TSS
   if (strand == 1) {
-    promotorStart <- tss - 1000
+    promotorStart <- tss - 1500
     promotorEnd <- tss + 3000
   } else {
     promotorStart <- tss - 3000
-    promotorEnd <- tss + 1000
+    promotorEnd <- tss + 1500
   }
   # Randomly select a position within the promotor region
   peakStart <- sample(promotorStart:promotorEnd, 1)
-  # randomize the peak width with a size factor between 0.7 and 1.5
-  peakEnd <- peakStart + round(peakWidth * runif(1, min = 0.7, max = 1.5))
+  peakEnd <- peakStart + peakWidth
   # Append the simulated peak to the data frame
   simulatedPeaksUp <- rbind(
     simulatedPeaksUp,
@@ -257,16 +256,16 @@ for (i in 1:numPeaks) {
   # TSS-proximal region defined to be 1000bp upstream and 3000bp downstream
   # of the TSS
   if (strand == 1) {
-    promotorStart <- tss - 1000
+    promotorStart <- tss - 1500
     promotorEnd <- tss + 3000
   } else {
     promotorStart <- tss - 3000
-    promotorEnd <- tss + 1000
+    promotorEnd <- tss + 1500
   }
   # Randomly select a position within the promotor region
   peakStart <- sample(promotorStart:promotorEnd, 1)
   # randomize the peak width with a size factor between 0.7 and 1.5
-  peakEnd <- peakStart + round(peakWidth * runif(1, min = 0.7, max = 1.5))
+  peakEnd <- peakStart + peakWidth
   # Append the simulated peak to the data frame
   simulatedPeaksDown <- rbind(
     simulatedPeaksDown,
@@ -332,6 +331,93 @@ write.table(peaksCond1, "./data-raw/peaksCond1.bed",
   row.names = FALSE, col.names = FALSE
 )
 write.table(peaksCond2, "./data-raw/peaksCond2.bed",
+  sep = "\t", quote = FALSE,
+  row.names = FALSE, col.names = FALSE
+)
+
+
+
+# Simply obtain the promoter regions of differentially expressed genes
+# for motif enrichment analysis
+peak1 <- data.frame(
+  chr = character(),
+  start = numeric(),
+  end = numeric(),
+  gene = character()
+)
+for (gene in topDownGenes) {
+  tss <- GList[GList$hgnc_symbol == gene, "start_position"]
+  strand <- GList[GList$hgnc_symbol == gene, "strand"]
+  if (strand == 1) {
+    str1 <- tss - 1000
+    str2 <- tss - 500
+    str3 <- tss
+  } else {
+    str1 <- tss + 500
+    str2 <- tss
+    str3 <- tss - 500
+  }
+  peak1 <- rbind(
+    peak1,
+    data.frame(
+      chr = rep(GList[
+        GList$hgnc_symbol == gene,
+        "chromosome_name"
+      ], 3),
+      start = c(str1, str2, str3),
+      end = c(str1 + 498, str2 + 498, str3 + 498),
+      gene = rep(gene, 3)
+    )
+  )
+}
+
+peak2 <- data.frame(
+  chr = character(),
+  start = numeric(),
+  end = numeric(),
+  gene = character()
+)
+for (gene in topUpGenes) {
+  tss <- GList[GList$hgnc_symbol == gene, "start_position"]
+  strand <- GList[GList$hgnc_symbol == gene, "strand"]
+  if (strand == 1) {
+    str1 <- tss - 1000
+    str2 <- tss - 500
+    str3 <- tss
+  } else {
+    str1 <- tss + 500
+    str2 <- tss
+    str3 <- tss - 500
+  }
+  peak2 <- rbind(
+    peak2,
+    data.frame(
+      chr = rep(GList[
+        GList$hgnc_symbol == gene,
+        "chromosome_name"
+      ], 3),
+      start = c(str1, str2, str3),
+      end = c(str1 + 498, str2 + 498, str3 + 498),
+      gene = rep(gene, 3)
+    )
+  )
+}
+
+peak1 <- peak1[, 1:3]
+peak2 <- peak2[, 1:3]
+
+# Add random peaks to the promoter regions
+peak1 <- rbind(peak1, randomPeaks[selPeaks, ] %>%
+  dplyr::select(chr, start, end))
+peak2 <- rbind(peak2, randomPeaks[nselPeaks, ] %>%
+  dplyr::select(chr, start, end))
+
+
+write.table(peak1, "./data-raw/peak1.bed",
+  sep = "\t", quote = FALSE,
+  row.names = FALSE, col.names = FALSE
+)
+write.table(peak2, "./data-raw/peak2.bed",
   sep = "\t", quote = FALSE,
   row.names = FALSE, col.names = FALSE
 )

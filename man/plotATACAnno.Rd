@@ -28,5 +28,4 @@ This function generates a pie chart for the annotation of
 plotATACAnno(objMOList)
 }
 
-
 }

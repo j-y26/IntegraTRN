@@ -44,9 +44,7 @@ mergePeaks <- function(peaks) {
 #'              with a minimum of 1 bp overlap will be merged into a single
 #'              peak, for peaks from a single condition. Since the two input
 #'              peak files that already represents differential accessible
-#'              regions, we do not merge peaks across conditions. Instead,
-#'              peaks with overlapping genomic coordinates that covers more than
-#'              50% of the peak region will be removed.
+#'              regions, we do not merge peaks across conditions.
 #'
 #' @param objMOList An object of class MOList
 #'
@@ -69,22 +67,6 @@ processPeakOverlap <- function(objMOList) {
   # Respectively check for peak overlaps within each condition
   peakGR1 <- mergePeaks(peaksCond1)
   peakGR2 <- mergePeaks(peaksCond2)
-
-  # Remove overlapping peaks across conditions, with having at least 50% overlap
-  # in any peak considered as overlapping
-  overlaps <- GenomicRanges::findOverlaps(peakGR1, peakGR2)
-  fromP1 <- S4Vectors::from(overlaps) # index of overlapped peaks in peakGR1
-  fromP2 <- S4Vectors::to(overlaps) # index of pverlapped peaks in peakGR2
-  overlappedWidth <- IRanges::width(GenomicRanges::pintersect(
-    peakGR1[fromP1],
-    peakGR2[fromP2]
-  ))
-  # Calculate the minimum peak width for peaks that overlap
-  width1 <- IRanges::width(peakGR1[fromP1])
-  width2 <- IRanges::width(peakGR2[fromP2])
-
-  peakGR1 <- peakGR1[-fromP1[overlappedWidth / width1 > 0.5]]
-  peakGR2 <- peakGR2[-fromP2[overlappedWidth / width2 > 0.5]]
 
   # Convert the GRanges objects back to data frames
   peakDF1 <- Repitools::annoGR2DF(peakGR1)
@@ -167,3 +149,191 @@ annotatePeaks <- function(objMOList,
   objMOList$DEATAC <- peakTag
   return(objMOList)
 }
+
+
+
+#' Perform motif enrichment analysis on peaks with binary conditions
+#'
+#' @description This function performs motif enrichment analysis on peaks with
+#'              binary conditions. The motif enrichment analysis is performed
+#'              using the monaLisa package.
+#'
+#' @param objMOList An object of class MOList
+#' @param bsgenome The BSgenome object that contains the genome sequence
+#'                 Read the Bioconductor
+#'                 vignette for the BSgenome package for more details.
+#' @param pwmL A PWMatrixList object containing the position-weight matrices
+#'             (PWMs) to use for motif enrichment analysis. The PWMs can be
+#'             generated using the getMatrixSet() function from the TFBSTools
+#'             package. See the vignette of the TFBSTools package for more
+#'             details.
+#' @param fixedWidth The fixed width to adjust the peak size for motif if
+#'                   necessary (default: 500)
+#'
+#' @importClassesFrom BSgenome BSgenome
+#' @importClassesFrom TFBSTools PWMatrixList
+#'
+#' @examples
+#'
+#' # Generate position-weight matrices (PWMs) from the JASPAR database
+#' pwms <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+#'   opts = list(
+#'     matrixtype = "PWM",
+#'     tax_group = "vertebrates"
+#'   )
+#' )
+#'
+enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
+  if (is.null(objMOList$DEATAC)) {
+    # No ATACseq peaks
+    stop("No differential accessible regions. Please run diffOmics() first.
+    See ?diffOmics for details.")
+  } else if (!inherits(objMOList$DEATAC, "PEAKTag")) {
+    # The ATACseq peaks are not annotated
+    stop("The ATACseq peaks are not annotated. Please run annotatePeaks()
+    first. See ?annotatePeaks for details.")
+  } else {
+    # Retrieve the ATACseq peaks
+    peaks <- exportDE(objMOList$DEATAC)
+    cond <- peaks$Condition
+    bins <- factor(cond)
+  }
+
+  # Check the validity of the PWMs
+  if (!inherits(pwmL, "PWMatrixList")) {
+    stop("The PWMs must be a PWMatrixList object. See ?enrichMotifs for
+    details.")
+  } else {
+    # Continue
+  }
+
+  # Generate GRanges mobject
+  peakGR <- GenomicRanges::makeGRangesFromDataFrame(peaks,
+    keep.extra.columns = TRUE
+  )
+
+  # First check if the peak size is the same
+  peakWidth <- IRanges::width(peakGR)
+  if (length(unique(peakWidth)) > 1) {
+    # The peak size is not the same, need to fix the peak size for motif
+    # enrichment analysis
+    peakGR <- GenomicRanges::resize(peakGR, width = fixedWidth, fix = "center")
+  } else {
+    # The peak size is the same
+    # No need to fix the peak size
+  }
+
+  # Generate a DNAStringSet object for motif enrichment
+  peakSeq <- Biostrings::getSeq(bsgenome, peakGR)
+
+  # Perform motif enrichment analysis on binary conditions
+  enrichedMotifs <- monaLisa::calcBinnedMotifEnrR(
+    seqs = peakSeq,
+    bins = bins,
+    pwmL = pwmL,
+  )
+
+  # Append the motif enrichment results to the MOList object
+  objMOList$DEATAC$motifEnrichment <- enrichedMotifs
+  return(objMOList)
+}
+
+
+#' Performing peak annotation and motif enrichment analysis
+#'
+#' @description This function performs peak annotation and motif enrichment
+#'              analysis on the ATACseq peaks. The peak annotation is performed
+#'              using the ChIPseeker package, and the motif enrichment analysis
+#'              is performed using the monaLisa package.
+#'
+#' @details The annotation is performed using the TxDb object and annotation
+#'          database specified by the user. Depending on the style of genomic
+#'          coordinate representation (with or without the "chr" prefix for the
+#'          chromosome name, or the use of "chrM", "M", "MT" for mitochondrial
+#'          DNA), the TxDb object may need to be adjusted to match the style
+#'          used in the peak file. See the vignette of the ChIPseeker package
+#'          for more details. By default, we recommend using the UCSC style
+#'          genomic coordinates, and the use of the
+#'          TxDb.Hsapiens.UCSC.hg38.knownGene and org.Hs.eg.db packages for
+#'          human samples, and the TxDb.Mmusculus.UCSC.mm10.knownGene and
+#'          org.Mm.eg.db packages for mouse samples.
+#'
+#' @param objMOList An object of class MOList
+#' @param tssRegion The region around the TSS to annotate with
+#'                 (default: +/- 3000)
+#' @param TxDB The TxDb object to use for annotation, using one of the TxDb
+#'             packages
+#' @param annoDb The annotation database to use for annotation, using one of
+#'               the org.*.eg.db packages. Must be a valid string for the name
+#'               of the package. For details, see the vignette of the ChIPseeker
+#'               package for custom annotation databases.
+#' @param bsgenome The BSgenome object that contains the genome sequence
+#'                Read the Bioconductor
+#'               vignette for the BSgenome package for more details.
+#' @param pwmL A PWMatrixList object containing the position-weight matrices
+#'             (PWMs) to use for motif enrichment analysis. The PWMs can be
+#'             generated using the getMatrixSet() function from the TFBSTools
+#'             package. See the vignette of the TFBSTools package for more
+#'             details.
+#' @param fixedWidth The fixed width to adjust the peak size for motif if
+#'                   necessary (default: 500)
+#'
+#' @return An object of class MOList, with the ATACseq peaks annotated with
+#'         genomic features and motif enrichment analysis results appended.
+#'
+#' @importFrom BSgenome BSgenome
+#' @importFrom ChIPseeker annotatePeak
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
+#' @importFrom IRanges width
+#' @importFrom TBSTools getMatrixSet
+#' @importFrom monaLisa calcBinnedMotifEnrR
+#' @importClassesFrom TFBSTools PWMatrixList
+#'
+#' @examples
+#' # Suppose that myMOList is an object of class MOList with $DEATAC containing
+#' # the ATACseq peaks as a DETag object
+#' \dontrun{
+#' # Generate position-weight matrices (PWMs) from the JASPAR database
+#' pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+#'   opts = list(
+#'     matrixtype = "PWM",
+#'     tax_group = "vertebrates"
+#'   )
+#' )
+#' # Annotate the ATACseq peaks with genomic features and perform motif
+#' # enrichment analysis
+#' myMOList <- annotateATACPeaksMotif(myMOList,
+#'   tssRegion = c(-3000, 3000),
+#'   TxDb = TxDb.Hsapiens.UCSC.hg38.knownGene,
+#'   annoDb = "org.Hs.eg.db",
+#'   bsgenome = BSgenome.Hsapiens.UCSC.hg38,
+#'   pwmL = pwmL,
+#'   fixedWidth = 500
+#' )
+#' }
+#'
+annotateATACPeaksMotif <- function(objMOList,
+                                   tssRegion = c(-3000, 3000),
+                                   TxDb,
+                                   annoDb = "org.Hs.eg.db",
+                                   bsgenome,
+                                   pwmL,
+                                   fixedWidth = 500) {
+  # Annotate the ATACseq peaks with genomic features
+  objMOList <- annotatePeaks(objMOList,
+    tssRegion = tssRegion,
+    TxDb = TxDb,
+    annoDb = annoDb
+  )
+
+  # Perform motif enrichment analysis on the ATACseq peaks
+  objMOList <- enrichMotifs(objMOList,
+    bsgenome = bsgenome,
+    pwmL = pwmL,
+    fixedWidth = fixedWidth
+  )
+  return(objMOList)
+}
+
+
+# [END]
