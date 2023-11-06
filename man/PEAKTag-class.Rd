@@ -5,11 +5,14 @@
 \alias{PEAKTag-class}
 \alias{show,PEAKTag-method}
 \alias{asGRanges}
+\alias{as.data.frame,PEAKTag-method}
 \title{PEAKTag S4 class for storing peak information}
 \usage{
 \S4method{show}{PEAKTag}(object)
 
 asGRanges(x)
+
+\S4method{as.data.frame}{PEAKTag}(x)
 }
 \arguments{
 \item{object}{An object of the DETag class}
@@ -18,6 +21,8 @@ asGRanges(x)
 }
 \value{
 A GRanges object
+
+A data frame
 }
 \description{
 The PEAKTag S4 class inherits the DETag class and is a more
@@ -35,14 +40,8 @@ The print method for the PEAKTag class.
  \item \code{chr}: Chromosome
 \item \code{start}: Start coordinate
 \item \code{end}: End coordinate
-\item \code{width}: Width of the peak
-\item \code{strand}: Strand, always \code{"*"} for ATACseq
 \item \code{Condition}: Condition of the peak, "-" for peaks from condition 1
                         and "+" for peaks from condition 2
-\item \code{annotation}: Annotation of the peak, the class of the peak
-\item \code{ENSEMBL}: ENSEMBL gene ID, based on the peak annotation
-\item \code{SYMBOL}: Gene symbol, based on the peak annotation
-\item \code{GENENAME}: Gene name, based on the peak annotation
 }}
 
 \item{\code{method}}{A character string indicating the method used to generate the
@@ -82,6 +81,11 @@ peakTag
 # Assuming that the object "peakTag" is a PEAKTag object
 \dontrun{
 asGRanges(peakTag)
+}
+
+# Assuming that the object "peakTag" is a PEAKTag object
+\dontrun{
+as.data.frame(peakTag)
 }
 
 }

@@ -20,14 +20,8 @@
 #'  \item \code{chr}: Chromosome
 #' \item \code{start}: Start coordinate
 #' \item \code{end}: End coordinate
-#' \item \code{width}: Width of the peak
-#' \item \code{strand}: Strand, always \code{"*"} for ATACseq
 #' \item \code{Condition}: Condition of the peak, "-" for peaks from condition 1
 #'                         and "+" for peaks from condition 2
-#' \item \code{annotation}: Annotation of the peak, the class of the peak
-#' \item \code{ENSEMBL}: ENSEMBL gene ID, based on the peak annotation
-#' \item \code{SYMBOL}: Gene symbol, based on the peak annotation
-#' \item \code{GENENAME}: Gene name, based on the peak annotation
 #' }
 #'
 #' @slot method A character string indicating the method used to generate the
@@ -71,7 +65,6 @@ methods::setClass("PEAKTag",
 #'
 #' @return A PEAKTag object
 #'
-#' @importClassesFrom DETag DETag
 #' @importClassesFrom ChIPseeker csAnno
 #' @importFrom methods as
 #'
@@ -229,10 +222,33 @@ methods::setMethod(
 #' @export
 #'
 #' @importFrom methods setMethod setGeneric
+#' @importFrom BiocGenerics as.data.frame
 #'
-
-
-
+#' @param x A PEAKTag object
+#'
+#' @return A data frame
+#'
+#' @examples
+#' # Assuming that the object "peakTag" is a PEAKTag object
+#' \dontrun{
+#' as.data.frame(peakTag)
+#' }
+#'
+methods::setMethod(
+  "as.data.frame",
+  signature(x = "PEAKTag"),
+  function(x) {
+    # Determine if an annotation exists
+    if (is.null(x@annotatedPeaks)) {
+      # No annotation
+      peakDF <- x@DEResult
+    } else {
+      # Annotation exists
+      peakDF <- as.data.frame(x@annotatedPeaks)
+    }
+    return(peakDF)
+  }
+)
 
 
 # [END]
