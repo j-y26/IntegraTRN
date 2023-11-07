@@ -31,6 +31,7 @@ Imports:
     DESeq2 (>= 1.39.7),
     dplyr (>= 1.0.7),
     edgeR (>= 3.36.0),
+    GENIE3 (>= 1.13.3),
     GenomicRanges (>= 1.52.0),
     GenomicTools.fileHandler (>= 0.1.5.9),
     ggplot2 (>= 3.4.0),

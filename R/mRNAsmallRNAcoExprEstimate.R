@@ -477,12 +477,195 @@ exportMatchResult <- function(objMOList) {
 }
 
 
+#' Run GENIE3 for predicted interactions
+#'
+#' @keywords internal
+#'
+#' @description This function runs GENIE3 for predicted interactions.
+#'
+#' @param exprMatrix A numeric matrix containing the expression data.
+#' @param regulators A character vector containing the names of the regulators.
+#' @param ntree The number of trees to be used in the ensemble learning.
+#' @param nthreads The number of threads to be used in the ensemble learning.
+#' @param treeMethod The tree method to be used in the ensemble learning, either
+#'                   "RF" for random forest or "ET" for extra trees. See the
+#'                   documentation of the GENIE3 package for details.
+#' @param seed The seed to be used in the ensemble learning for reproducibility.
+#'
+#' @return A data frame containing the predicted interactions, with the
+#'        following format:
+#' \itemize{
+#' \item{regulator}{The names of the small RNAs that are predicted to regulate
+#'                  the target genes.}
+#' \item{target}{The names of the target genes that are predicted to be
+#'              regulated by the small RNAs.}
+#' \item{weight}{The weight of the predicted interactions.}
+#' }
+#'
+#' @importFrom GENIE3 GENIE3
+#'
+runGENIE3 <- function(exprMatrix,
+                      ntree = 1000,
+                      nthreads = 1,
+                      treeMethod = "RF",
+                      seed = 91711) {
+  cat("Running GENIE3 for predicted interactions...\n")
+  cat("  Number of trees: ", ntree, "\n")
+  cat("  Number of threads: ", nthreads, "\n")
+  cat("  Tree method: ", treeMethod, "\n")
+  cat("This may take a while...\n")
+
+  # Set seed for reproducibility
+  set.seed(seed)
+
+  # Run GENIE3
+  weightedAdjList <- GENIE3::GENIE3(
+    exprMatrix,
+    regulators = regulators,
+    nTrees = ntree,
+    nCores = nthreads,
+    treeMethod = treeMethod,
+    returnMatrix = FALSE
+  )
+  set.seed(NULL)
+
+  # Convert the weighted adjacency list to a data frame
+  weightedAdjList <- as.data.frame(weightedAdjList)
+  colnames(weightedAdjList) <- c("regulator", "target", "weight")
+  return(weightedAdjList)
+}
 
 
+#' Predict small RNA - mRNA interactions via tree-based ensemble learning
+#' 
+#' @keywords internal
+#'
+#' @description This function predicts small NC RNA - mRNA interactions via
+#'              tree-based ensemble learning using the GENIE3 algorithm.
+#'              The prediction is directed from small RNA to mRNA.
+#'
+#' @param mRNATopTag A TOPTag object containing the top mRNAs that are
+#'                   differentially expressed cross the conditions.
+#' @param smallRNATopTag A TOPTag object containing the top small RNAs that are
+#'                       differentially expressed cross the conditions.
+#' @param smallRNATypes A character vector containing the types of small RNAs to
+#'                      be used for prediction. The types should be a valid type
+#'                      defined during the annotation process. Must be a subset
+#'                      of the types: "miRNA", "piRNA", "tRNA", "snRNA",
+#'                      "snoRNA", "circRNA", or a single string "all" to use all
+#'                      types.
+#' @param annoSncRNA A list containing the transcripts of the small RNAs
+#'                   in each respective type. The list should be named
+#'                   consistently as defined in annotateSmallRNA().
+#' @param matchingRNAsmallRNA A list of two numeric vectors with equal length,
+#'                            where each element in the first vector is the
+#'                            index of the RNAseq sample, and the corresponding
+#'                            element in the second vector is the index of the
+#'                            matched small RNAseq sample. These indices match
+#'                            to the sample names in the RNAseqSamples and
+#'                            SmallRNAseqSamples slots of the MOList object.
+#' @param ntree The number of trees to be used in the ensemble learning.
+#' @param nthreads The number of threads to be used in the ensemble learning.
+#' @param treeMethod The tree method to be used in the ensemble learning, either
+#'                   "RF" for random forest or "ET" for extra trees. See the
+#'                   documentation of the GENIE3 package for details.
+#' @param seed The seed to be used in the ensemble learning for reproducibility.
+#'
+#' @return A data frame containing the predicted interactions, with the
+#'         following format:
+#' \itemize{
+#' \item{regulator}{The names of the small RNAs that are predicted to regulate
+#'                  the target genes.}
+#' \item{target}{The names of the target genes that are predicted to be
+#'               regulated by the small RNAs.}
+#' \item{weight}{The weight of the predicted interactions.}
+#' }
+#'
+#' @note The final result includes all predicted interactions, without any
+#'       filtering on the weight of the predicted interactions.
+#'
+#' @importFrom GENIE3 GENIE3
+#'
+#'
+predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
+                                      smallRNATopTag,
+                                      smallRNATypes = "all",
+                                      annoSncRNA,
+                                      matchingRNAsmallRNA,
+                                      ntree = 1000,
+                                      nthreads = 1,
+                                      treeMethod = "RF",
+                                      seed = 91711) {
+  # Check if required annotation and matching information are provided
+  if (is.null(annoSncRNA) || length(annoSncRNA) == 0) {
+    stop("The annotation information of small RNAs is not provided.")
+  } else if (is.null(matchingRNAsmallRNA)) {
+    stop("The matching information of RNAseq and small RNAseq samples is not
+      provided.")
+  } else {
+    # Do nothing
+  }
+  # Check to be valid TOPTag objects
+  if (!inherits(mRNATopTag, "TOPTag")) {
+    stop("The mRNATopTag object is not a valid TOPTag object.")
+  } else if (!inherits(smallRNATopTag, "TOPTag")) {
+    stop("The smallRNATopTag object is not a valid TOPTag object.")
+  } else {
+    # Do nothing
+  }
 
+  # Show the user about construction information
+  cat("Constructing a combined expression matrix for GENIE3...\n")
+  cat("Criteria for defining the top differentially expressed genes:\n")
+  cat("  log2 fold change cutoff: ", mRNATopTag@logFCCutoff, "\n")
+  cat("  adjusted p-value cutoff: ", mRNATopTag@pCutoff, "\n")
+  if (mRNATopTag@topGenes > 1) {
+    cat("  top " + mRNATopTag@topGenes + " genes selected\n")
+  } else {
+    cat("  top " + mRNATopTag@topGenes * 100 + "% genes selected\n")
+  }
+  cat("Criteria for defining the top differentially expressed small RNAs:\n")
+  cat("  log2 fold change cutoff: ", smallRNATopTag@logFCCutoff, "\n")
+  cat("  adjusted p-value cutoff: ", smallRNATopTag@pCutoff, "\n")
+  if (smallRNATopTag@topGenes > 1) {
+    cat("  top " + smallRNATopTag@topGenes + " small RNAs selected\n")
+  } else {
+    cat("  top " + smallRNATopTag@topGenes * 100 + "% small RNAs selected\n")
+  }
 
+  # Construct a master expression matrix
+  exprMatrixRNA <- mRNATopTag@normalizedCounts %>% select(
+    matchingRNAsmallRNA$indexRNAseq
+  )
+  exprMatrixSmallRNA <- smallRNATopTag@normalizedCounts %>% select(
+    matchingRNAsmallRNA$indexSmallRNAseq
+  )
+  sampleNames <- paste0("match_", seq_len(nrow(exprMatrixRNA)))
+  colnames(exprMatrixRNA) <- sampleNames
+  colnames(exprMatrixSmallRNA) <- sampleNames
+  exprMatrix <- cbind(exprMatrixRNA, exprMatrixSmallRNA)
 
+  # Obtain the set of regulators for GENIE3
+  if (smallRNATypes == "all") {
+    # Use all types of small RNAs
+    regulators <- unlist(annoSncRNA)
+  } else {
+    # Use only the specified types of small RNAs
+    regulators <- unlist(annoSncRNA[smallRNATypes])
+  }
 
+  # Run GENIE3 for predicted interactions
+  weightedAdjList <- runGENIE3(
+    exprMatrix,
+    regulators = regulators,
+    ntree = ntree,
+    nthreads = nthreads,
+    treeMethod = treeMethod,
+    seed = seed
+  )
+
+  return(weightedAdjList)
+}
 
 
 
