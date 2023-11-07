@@ -680,74 +680,6 @@ plotATACProfileHeatmap <- function(objMOList,
 }
 
 
-
-#' Select enriched motifs
-#'
-#' @keywords internal
-#'
-#' @description This function selects enriched motifs based on user-specified
-#'              cutoff and the motif enrichment result. If pValue is specified,
-#'              pValueAdj will be ignored.
-#'
-#' @param enrichedMotifs A SummarizedExperiment object containing the motif
-#'                       enrichment results
-#' @param pValueAdj The cutoff for adjusted p-value, default is 0.05
-#' @param pValue The cutoff for p-value, default is NULL. if pValue is
-#'               specified, pValueAdj will be ignored
-#' @param log2FEnrich The cutoff for log2 fold enrichment, default is NULL
-#'
-#' @return A logical vector with same number of rows as the number of motifs
-#'         in the input object
-#'
-#' @importFrom SummarizedExperiment assay
-#'
-selectedMotifs <- function(enrichedMotifs,
-                           pValueAdj = 0.05,
-                           pValue = NULL,
-                           log2FEnrich = NULL) {
-  # Select by P-value or adjusted P-value
-  if (is.null(pValue)) {
-    # Use adjusted p-value
-    p <- -log(pValueAdj, 10)
-    selected <- apply(
-      SummarizedExperiment::assay(
-        enrichedMotifs,
-        "negLog10Padj"
-      ),
-      1,
-      function(x) max(abs(x), 0, na.rm = TRUE)
-    ) > p
-  } else {
-    # Use p-value
-    p <- -log(pValue, 10)
-    selected <- apply(
-      SummarizedExperiment::assay(
-        enrichedMotifs,
-        "negLog10P"
-      ),
-      1,
-      function(x) max(abs(x), 0, na.rm = TRUE)
-    ) > p
-  }
-  # Select by log2 fold enrichment
-  if (!is.null(log2FEnrich)) {
-    selected <- selected & apply(
-      SummarizedExperiment::assay(
-        enrichedMotifs,
-        "log2enr"
-      ),
-      1,
-      function(x) max(abs(x), 0, na.rm = TRUE)
-    ) >
-      log2FEnrich
-  } else {
-    # Do nothing
-  }
-  return(selected)
-}
-
-
-
 #' Motif heatmap of differential accessible regions of enriched motifs
 #'
 #' @description This function generates a combined profile and heatmap of
@@ -782,22 +714,22 @@ selectedMotifs <- function(enrichedMotifs,
 #' # Suppose that we have an MOList object called objMOList, which contains the
 #' # differential accessible regions as an element named DEATAC, with motif
 #' # enrichment analysis results
-#' 
+#'
 #' # Example 1: Plot the motif heatmap by default parameters
 #' \dontrun{
 #' plotATACMotifHeatmap(objMOList)
 #' }
-#' 
+#'
 #' # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
 #' \dontrun{
 #' plotATACMotifHeatmap(objMOList, pValue = 0.01)
 #' }
-#' 
+#'
 #' # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
 #' \dontrun{
 #' plotATACMotifHeatmap(objMOList, pValue = 0.01, log2FEnrich = 1)
 #' }
-#' 
+#'
 plotATACMotifHeatmap <- function(objMOList,
                                  pValueAdj = 0.05,
                                  pValue = NULL,
@@ -820,7 +752,7 @@ plotATACMotifHeatmap <- function(objMOList,
   )
 
   # List of significant motifs
-  motifList <- (enrichedMotifs[sel, ])@elementMetadata@listData$motif.name
+  motifList <- motifNames(enrichedMotifs[sel, ])
   cat("Significant motifs:\n")
   cat(paste(motifList, collapse = ", "), "\n")
 

@@ -161,4 +161,25 @@ csAnnoToDF <- function(anno) {
 }
 
 
+#' Get the names of enriched TFs
+#'
+#' @keywords internal
+#'
+#' @param enrichedMotifs A SummarizedExperiment object containing the motif
+#'                       enrichment results
+#' @return A vector of enriched TF names
+#'
+motifNames <- function(enrichedMotifs, sel) {
+  motifNames <- enrichedMotifs@elementMetadata@listData$motif.name
+
+  # Some DNA binding elements are in the format of TF1::TF2 to indicate
+  # dimer complexes. We extract both TF1 and TF2
+  motifNames <- strsplit(motifNames, "::") %>%
+    unlist() %>%
+    unique()
+
+  return(motifNames)
+}
+
+
 # [END]

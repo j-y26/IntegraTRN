@@ -335,4 +335,70 @@ annotateATACPeaksMotif <- function(objMOList,
 }
 
 
+#' Select enriched motifs
+#'
+#' @keywords internal
+#'
+#' @description This function selects enriched motifs based on user-specified
+#'              cutoff and the motif enrichment result. If pValue is specified,
+#'              pValueAdj will be ignored.
+#'
+#' @param enrichedMotifs A SummarizedExperiment object containing the motif
+#'                       enrichment results
+#' @param pValueAdj The cutoff for adjusted p-value, default is 0.05
+#' @param pValue The cutoff for p-value, default is NULL. if pValue is
+#'               specified, pValueAdj will be ignored
+#' @param log2FEnrich The cutoff for log2 fold enrichment, default is NULL
+#'
+#' @return A logical vector with same number of rows as the number of motifs
+#'         in the input object
+#'
+#' @importFrom SummarizedExperiment assay
+#'
+selectedMotifs <- function(enrichedMotifs,
+                           pValueAdj = 0.05,
+                           pValue = NULL,
+                           log2FEnrich = NULL) {
+  # Select by P-value or adjusted P-value
+  if (is.null(pValue)) {
+    # Use adjusted p-value
+    p <- -log(pValueAdj, 10)
+    selected <- apply(
+      SummarizedExperiment::assay(
+        enrichedMotifs,
+        "negLog10Padj"
+      ),
+      1,
+      function(x) max(abs(x), 0, na.rm = TRUE)
+    ) > p
+  } else {
+    # Use p-value
+    p <- -log(pValue, 10)
+    selected <- apply(
+      SummarizedExperiment::assay(
+        enrichedMotifs,
+        "negLog10P"
+      ),
+      1,
+      function(x) max(abs(x), 0, na.rm = TRUE)
+    ) > p
+  }
+  # Select by log2 fold enrichment
+  if (!is.null(log2FEnrich)) {
+    selected <- selected & apply(
+      SummarizedExperiment::assay(
+        enrichedMotifs,
+        "log2enr"
+      ),
+      1,
+      function(x) max(abs(x), 0, na.rm = TRUE)
+    ) >
+      log2FEnrich
+  } else {
+    # Do nothing
+  }
+  return(selected)
+}
+
+
 # [END]
