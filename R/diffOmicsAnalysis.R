@@ -59,9 +59,9 @@ validateDataAnno <- function(objMOList, annoList) {
   # Validate the correctness of the MOList object
   validateMOList(objMOList)
   # Check of annotations on the samples
-  if (matchVecToMatrix(annoList$RNAseq, objMOList@RNAseq) ||
-    matchVecToMatrix(annoList$smallRNAseq, objMOList@smallRNAseq) ||
-    matchVecToMatrix(annoList$proteomics, objMOList@protein)) {
+  if (!matchVecToMatrix(annoList$RNAseq, objMOList@RNAseq) ||
+      !matchVecToMatrix(annoList$smallRNAseq, objMOList@smallRNAseq) ||
+      !matchVecToMatrix(annoList$proteomics, objMOList@proteomics)) {
     stop("The annotations on the samples do not match the omics data")
   } else {
     # Do nothing
@@ -183,7 +183,7 @@ filterGeneCounts <- function(objMOList, omic) {
     switch(omic,
       RNAseq = RNAseq(objMOList) <- omicData,
       smallRNAseq = smallRNAseq(objMOList) <- omicData,
-      proteomics = protein(objMOList) <- omicData
+      proteomics = proteomics(objMOList) <- omicData
     )
     return(objMOList)
   }
@@ -533,18 +533,21 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 
   # Differential analysis based on selected program
   filtedCounts <- getRawData(objMOList, omic)
-  DEResult <- switch(omic,
-    DESEQ2 = diffExprDESeq2(
-      filteredCounts = filtedCounts,
-      groupBy = getSampleInfo(objMOList, omic)$groupBy,
-      batch = batch
-    ),
-    EDGER = diffExprEdgeR(
+  if (program == DESEQ2) {
+    DEResult <- diffExprDESeq2(
       filteredCounts = filtedCounts,
       groupBy = getSampleInfo(objMOList, omic)$groupBy,
       batch = batch
     )
-  )
+  } else if (program == EDGER) {
+    DEResult <- diffExprEdgeR(
+      filteredCounts = filtedCounts,
+      groupBy = getSampleInfo(objMOList, omic)$groupBy,
+      batch = batch
+    )
+  } else {
+    stop("The input program is not supported for differential analysis")
+  }
 
   # Update the MOList object
   objMOList[[paste0("DE", omic)]] <- DEResult
@@ -629,19 +632,25 @@ diffOmics <- function(objMOList,
   # Here filterGeneCounts and diffExprCount are called on all types of
   # count-based omics data, even if they could be NULL
   for (omic in COUNT_OMICS) {
-    # Filter raw counts
-    objMOList <- filterGeneCounts(objMOList, omic)
-    # Differential expression
-    objMOList <- countDiffExpr(
-      objMOList = objMOList,
-      omic = omic,
-      batch = switch(omic,
-        RNAseq = rnaseqBatch,
-        smallRNAseq = smallRnaBatch,
-        proteomics = proteinBatch
-      ),
-      program = program
-    )
+    # Pass if the omics data is NULL
+    if (length(getRawData(objMOList, omic)) == 0) {
+      # Do nothing
+    } else {
+      # Filter raw counts
+      objMOList <- filterGeneCounts(objMOList, omic)
+      # Differential expression
+      objMOList <- countDiffExpr(
+        objMOList = objMOList,
+        omic = omic,
+        batch = switch(omic,
+          RNAseq = rnaseqBatch,
+          smallRNAseq = smallRnaBatch,
+          proteomics = proteinBatch
+        ),
+        program = program
+      )
+    }
+    
   }
 
   # Construct a master list of differentially accessible regions with merged

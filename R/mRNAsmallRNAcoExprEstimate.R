@@ -34,7 +34,7 @@ SRNA_SUFFIX <- "_smallRNA"
 validateSampleDFs <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   # Check of sample numbers
   if (length(objMOList@RNAseqSamples$samples) != nrow(sampleDFRNAseq) ||
-    length(objMOList@SmallRNAseqSamples$samples) !=
+    length(objMOList@smallRNAseqSamples$samples) !=
       nrow(sampleDFSmallRNAseq)) {
     stop("The number of samples in the sample data frames does not match the
       number of samples in the MOList object.")
@@ -43,7 +43,7 @@ validateSampleDFs <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   }
   # Check for sample name matches
   if (!all(objMOList@RNAseqSamples$samples %in% rownames(sampleDFRNAseq)) ||
-    !all(objMOList@SmallRNAseqSamples$samples %in%
+    !all(objMOList@smallRNAseqSamples$samples %in%
       rownames(sampleDFSmallRNAseq))) {
     stop("The sample names in the sample data frames do not match the sample
     names in the MOList object.")
@@ -235,7 +235,7 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
   )
   sampleDF <- rbind(sampleDFRNAseq, sampleDFSmallRNAseq)
 
-  if (length(sampleDFRNAseq$groupBy) > 2) {
+  if (length(unique(sampleDFRNAseq$groupBy)) > 2) {
     sampleMatchDF <- matchContinuous(sampleDF)
   } else {
     sampleMatchDF <- matchBinary(sampleDF)
@@ -248,7 +248,7 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
   )
   indexSmallRNAseq <- match(
     sampleMatchDF$smallRNA,
-    objMOList@SmallRNAseqSamples$samples
+    objMOList@smallRNAseqSamples$samples
   )
   return(list(indexRNAseq = indexRNAseq, indexSmallRNAseq = indexSmallRNAseq))
 }
@@ -283,7 +283,7 @@ nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'         in the first vector is the index of the RNAseq sample, and the
 #'         corresponding element in the second vector is the index of the
 #'         matched small RNAseq sample. These indices match to the sample names
-#'         in the RNAseqSamples and SmallRNAseqSamples slots of the MOList
+#'         in the RNAseqSamples and smallRNAseqSamples slots of the MOList
 #'         object. The slot is a list under the following structure:
 #' \itemize{
 #' \item{indexRNAseq}{A numeric vector containing the indices of the RNAseq
@@ -346,7 +346,7 @@ matchSamplesRNAsmallRNA <- function(objMOList,
   }
 
   groupByRNA <- objMOList@RNAseqSamples$groupBy
-  groupBySmallRNA <- objMOList@SmallRNAseqSamples$groupBy
+  groupBySmallRNA <- objMOList@smallRNAseqSamples$groupBy
 
   # Only use sample information when both sampleDFRNAseq and
   # sampleDFSmallRNAseq are provided
@@ -384,7 +384,7 @@ matchSamplesRNAsmallRNA <- function(objMOList,
       rownames(sampleDFRNAseq)
     )
     indexSmallRNAMOList <- match(
-      objMOList@SmallRNAseqSamples$samples,
+      objMOList@smallRNAseqSamples$samples,
       rownames(sampleDFSmallRNAseq)
     )
     sampleDFRNAseq <- sampleDFRNAseq[indexRNAMOList, ]
@@ -469,7 +469,7 @@ exportMatchResult <- function(objMOList) {
     RNAseq = objMOList@RNAseqSamples$samples[
       objMOList$matchingRNAsmallRNA$indexRNAseq
     ],
-    SmallRNAseq = objMOList@SmallRNAseqSamples$samples[
+    SmallRNAseq = objMOList@smallRNAseqSamples$samples[
       objMOList$matchingRNAsmallRNA$indexSmallRNAseq
     ]
   )
@@ -537,7 +537,7 @@ runGENIE3 <- function(exprMatrix,
 
 
 #' Predict small RNA - mRNA interactions via tree-based ensemble learning
-#' 
+#'
 #' @keywords internal
 #'
 #' @description This function predicts small NC RNA - mRNA interactions via
@@ -563,7 +563,7 @@ runGENIE3 <- function(exprMatrix,
 #'                            element in the second vector is the index of the
 #'                            matched small RNAseq sample. These indices match
 #'                            to the sample names in the RNAseqSamples and
-#'                            SmallRNAseqSamples slots of the MOList object.
+#'                            smallRNAseqSamples slots of the MOList object.
 #' @param ntree The number of trees to be used in the ensemble learning.
 #' @param nthreads The number of threads to be used in the ensemble learning.
 #' @param treeMethod The tree method to be used in the ensemble learning, either

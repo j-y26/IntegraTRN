@@ -19,7 +19,9 @@ Suggests:
     BSgenome.Hsapiens.UCSC.hg38,
     ggpubr (>= 0.6.0),
     JASPAR2022,
+    knitr,
     org.Hs.eg.db,
+    rmarkdown,
     testthat (>= 3.0.0),
     TFBSTools,
     TxDb.Hsapiens.UCSC.hg38.knownGene
@@ -46,3 +48,4 @@ Imports:
     SummarizedExperiment
 URL: https://github.com/j-y26/IntegraTRN
 BugReports: https://github.com/j-y26/IntegraTRN/issues
+VignetteBuilder: knitr

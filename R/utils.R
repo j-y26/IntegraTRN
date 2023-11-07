@@ -51,14 +51,14 @@ getSampleNames <- function(countMatrix) {
 #' matchVecToMatrix(vec, mat)
 #'
 matchVecToMatrix <- function(vec, mat) {
-  if (is.null(vec) && is.null(mat)) {
+  if (!is.null(vec) && !is.null(mat)) {
+    if (length(vec) != ncol(mat)) {
+      return(FALSE)
+    } else {
+      # Do nothing
+    }
+  } else {
     # Do nothing
-  } else if (xor(is.null(vec), is.null(mat))) {
-    return(FALSE)
-  } else if (length(vec) != ncol(mat)) {
-    return(FALSE)
-  } else if (any(is.na(vec))) {
-    return(FALSE)
   }
   return(TRUE)
 }
@@ -102,13 +102,18 @@ matchResultToDF <- function(matchResult) {
     stop("Error generating matches.")
   }
   matchResult <- matchResult$match.matrix
-  sampleMatch <- data.frame()
   if (all(grepl(SRNA_SUFFIX, rownames(matchResult)))) {
-    sampleMatch$smallRNA <- gsub(SRNA_SUFFIX, "", rownames(matchResult))
-    sampleMatch$RNA <- matchResult[, 1]
+    smallRNA <- rownames(matchResult)
+    sampleMatch <- data.frame(
+      smallRNA = gsub(SRNA_SUFFIX, "", smallRNA),
+      RNA = matchResult[, 1]
+    )
   } else {
-    sampleMatch$smallRNA <- gsub(SRNA_SUFFIX, "", matchResult[, 1])
-    sampleMatch$RNA <- rownames(matchResult)
+    smallRNA <- matchResult[, 1]
+    sampleMatch <- data.frame(
+      smallRNA = gsub(SRNA_SUFFIX, "", smallRNA),
+      RNA = rownames(matchResult)
+    )
   }
   return(sampleMatch)
 }

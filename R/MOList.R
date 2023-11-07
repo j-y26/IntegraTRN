@@ -43,7 +43,7 @@ INTERACTION_FIELDS <- c("ID", "Target")
 #'
 #' Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
 #' by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
-#' https://doi-org.myaccess.library.utoronto.ca/10.1038/s41596-022-00692-9
+#' https://doi-org/10.1038/s41596-022-00692-9
 #'
 methods::setClass("MOList",
   # Inheritance
@@ -920,7 +920,7 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 })
 
 
-#' Retrieving the grouping information for a specific omics data
+#' Retrieving the sample information from the MOList object
 #'
 #' @keywords internal
 #'
@@ -928,7 +928,8 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 #' @param experiment A character string specifying the experiment type, must
 #'                   be one of "RNAseq", "smallRNAseq", and "proteomics"
 #'
-#' @return A vector of grouping information
+#' @return A list containing the sample names and grouping information for the
+#'         specified omics data
 #'
 #' @importFrom methods setGeneric setMethod
 #'
@@ -936,13 +937,13 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 #' \dontrun{
 #' # Assuming myMOList is a MOList object
 #'
-#' # Get the grouping information for the RNAseq data
+#' # Get the sample information for the RNAseq data
 #' getSampleInfo(myMOList, "RNAseq")
 #'
-#' # Get the grouping information for the smallRNAseq data
+#' # Get the sample information for the smallRNAseq data
 #' getSampleInfo(myMOList, "smallRNAseq")
 #'
-#' # Get the grouping information for the proteomics data
+#' # Get the sample information for the proteomics data
 #' getSampleInfo(myMOList, "proteomics")
 #' }
 #'
@@ -952,9 +953,9 @@ methods::setGeneric(
 )
 methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
   sampleInfo <- switch(experiment,
-    RNAseq = x@RNAseqSamples$groupBy,
-    smallRNAseq = x@smallRNAseqSamples$groupBy,
-    proteomics = x@proteomicsSamples$groupBy
+    RNAseq = x@RNAseqSamples,
+    smallRNAseq = x@smallRNAseqSamples,
+    proteomics = x@proteomicsSamples
   )
   return(sampleInfo)
 })

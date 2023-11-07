@@ -1,0 +1,19 @@
+---
+title: "Integrating_multi-omics_for_constructing_transcription_regulatory_networks"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Integrating_multi-omics_for_constructing_transcription_regulatory_networks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(IntegraTRN)
+```
