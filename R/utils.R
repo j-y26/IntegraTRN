@@ -187,4 +187,24 @@ motifNames <- function(enrichedMotifs, sel) {
 }
 
 
+#' Extract a list of names respectively for down and up regulated genes
+#' 
+#' @keywords internal
+#' 
+#' @param deTag A DETag object
+#' 
+#' @return A list of names respectively for down and up regulated genes
+#' 
+extractDirectionalGenes <- function(deTag) {
+  deResult <- exportDE(deTag)
+  downGenes <- deResult %>%
+    dplyr::filter(logFC < 0) %>%
+    rownames()
+  upGenes <- deResult %>%
+    dplyr::filter(logFC > 0) %>%
+    rownames()
+  return(list(down = downGenes, up = upGenes))
+}
+
+
 # [END]

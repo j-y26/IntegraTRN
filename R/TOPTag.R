@@ -91,6 +91,9 @@ methods::setClass("TOPTag",
 #'                DE genes based on logFCCutoff and pCutoff, then topGenes will
 #'                be set to the number of DE genes. Default to select the top
 #'                10% of differential genes.
+#' @param direction A character string indicating the direction of the
+#'                  differential expression. Default to "both". Other options
+#'                  include "up" and "down".
 #'
 #' @return A TOPTag object.
 #'
@@ -117,7 +120,11 @@ methods::setClass("TOPTag",
 #' topTag <- TOPTag(deTag, logFCCutoff = 2, pCutoff = 0.01, topGenes = 0.2)
 #' }
 #'
-TOPTag <- function(object, logFCCutoff = 1, pCutoff = 0.05, topGenes = 0.1) {
+TOPTag <- function(object, 
+                   logFCCutoff = 1, 
+                   pCutoff = 0.05, 
+                   topGenes = 0.1,
+                   direction = "both") {
   # Validating the inputs
   if (!is(object, "DETag")) {
     stop("The input object must be a DETag object.")
@@ -145,6 +152,15 @@ TOPTag <- function(object, logFCCutoff = 1, pCutoff = 0.05, topGenes = 0.1) {
       abs(logFC) >= logFCCutoff,
       padj <= pCutoff
     )
+  # Directional filtering
+  if (direction == "up") {
+    deGenes <- deGenes %>% dplyr::filter(logFC > 0)
+  } else if (direction == "down") {
+    deGenes <- deGenes %>% dplyr::filter(logFC < 0)
+  } else {
+    # Do nothing
+  }
+
   if (topGenes > 1 && topGenes > nrow(deGenes)) {
     warning("Selected number of top genes is greater than the number of DE
              genes. Selecting all DE genes.")

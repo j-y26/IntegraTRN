@@ -142,7 +142,8 @@ loadExtInteractions <- function(objMOList,
 #'              differential analysis process. Here, the cutoffs are set to
 #'              define a set of genes/miRNAs/TFs that are the key to such
 #'              differential regulation/expression, and only these genes/miRNAs/
-#'              TFs will be used to construct the network.
+#'              TFs will be used to construct the network. Any values set on
+#'              data that is not available will be ignored.
 #' 
 #' @param rnaAdjPval The adjusted p-value cutoff for the RNAseq data
 #' @param rnaLogFC The log fold change cutoff for the RNAseq data
@@ -276,19 +277,138 @@ print.OMICutoffs <- function(x, ...) {
 }
 
 
+
+#' Predict small RNA - mRNA interactions
+#' 
+#' @keywords internal
+#' 
+#' @description This function predicts the small RNA - mRNA interactions based
+#'              on the smallRNAseq data and the RNAseq data.
+#' 
+#' @param objMOList A MOList object containing the omics data
+#' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
+#'                   data
+#' @rnaTopTag A TOPTag object containing the top differential genes from the
+#'            RNAseq data
+#' @param smallRNATypes A character vector containing the small RNA types that
+#'                      the user wants to use to predict the interactions. The
+#'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
+#'                      "tRNA", and "circRNA".
+#' @param ntree The number of trees to grow in the random forest model
+#' @param nthreads The number of threads to use for parallel processing
+#' @param treeMethod The method to use for the random forest model. See the
+#'                  documentation for the randomForest package for details.
+#' @param seed The seed to use for the random forest model
+#' 
+#' @return a list of predicted interactions combined for all specified small
+#'         RNA types as the regulators
+#' 
+predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
+                                       smallRNATypes = SMALLRNA_CATEGORIES,
+                                       ntree = 1000, nthreads = 1,
+                                       treeMethod = "RF", seed = 91711) {
+  if (is.null(objMOList$matchingRNAsmallRNA)) {
+    stop("No sample matching between the RNAseq and smallRNAseq data. Please
+    perform sample matching before constructing the network.")
+  } else {
+    # Continue
+  }
+
+  # Generates a TOPTag object for the small RNAs
+  smallRNATopTag <- TOPTag(smallDETag,
+                           logFCCutoff = omiCutoffs$smallRNALogFC,
+                           pCutoff = omiCutoffs$smallRNAAdjPval,
+                           topGenes = omiCutoffs$smallRNATopGenes,
+                           direction = "both")
+
+  # Define annotations for small RNA
+  if (all(objMOList$annoSncRNA == HUMAN)) {
+    sncAnno <- SNCANNOLIST_HSAPIENS
+  } else {
+    sncAnno <- objMOList$annoSncRNA
+  }
+  
+  # Predict the interactions for each small RNA type
+  predInteract <- predictSmallRNAmRNAcoExpr(
+    mRNATopTag = rnaTopTag,
+    smallRNATopTag = smallRNATopTag,
+    smallRNATypes = smallRNATypes,
+    annoSncRNA = sncAnno,
+    matchingRNAsmallRNA = objMOList$matchingRNAsmallRNA,
+    ntree = ntree,
+    nthreads = nthreads,
+    treeMethod = treeMethod,
+    seed = seed
+  )
+
+  if ("miRNA" %in% smallRNATypes) {
+    # Extract only inverse small RNA - mRNA interactions
+    # i.e., downregulated small RNA - upregulated mRNA
+    genesmiRNA <- extractDirectionalGenes(objMOList$DEsmallRNAseq) %>%
+      intersect(., sncAnno[["miRNA"]])
+    genesRNA <- extractDirectionalGenes(objMOList$DERNAseq)
+
+    downregmiRNA <- genesmiRNA$down
+    upregmiRNA <- genesmiRNA$up
+    downregRNA <- genesRNA$down
+    upregRNA <- genesRNA$up
+
+    # Extract the predicted interactions
+    inverseRelation <- (predInteract$regulator %in% downregmiRNA &
+                        predInteract$target %in% upregRNA) |
+                       (predInteract$regulator %in% upregmiRNA &
+                        predInteract$target %in% downregRNA)
+    notmiRNA <- !(predInteract$regulator %in% sncAnno[["miRNA"]])
+    predInteract <- lapply(predInteract, 
+                            function(x) x[inverseRelation & notmiRNA])
+  } else {
+    # Do nothing
+  }
+
+  return(predInteract)
+}
+
+
 #' Construct a transcriptional regulatory network
 #' 
 #' @description This function constructs a transcriptional regulatory network
 #'              based on the omics data and the external interaction data
 #'              provided. The network is stored as an igraph object in the
-#'              TRNet S4 class.
+#'              TRNet S4 class, which is a mRNA-TF-smallRNA network.
 #' 
 #' @param objMOList A MOList object containing all omics data that the user
 #'                  wants to use to construct the network
+#' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
+#'                   data
+#' @param smallRNATypes A character vector containing the small RNA types that
+#'                      the user wants to use to construct the network. The
+#'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
+#'                     "tRNA", and "circRNA". If "all" is specified, then all
+#'                     the small RNA types will be used.
+#' @param targetDirection A character vector indicating the direction of the
+#'                        target genes. Default to "both". Other options include
+#'                       "up" and "down".
+#' @param predicted A logical value indicating whether to perform predicted
+#'                  inference of small RNA - mRNA interactions. Default to TRUE.
+#' @param ntree The number of trees to grow in the random forest model
+#' @param nthreads The number of threads to use for parallel processing
+#' @param treeMethod The method to use for the random forest model. Either "RF"
+#'                   or "ET". See the documentation for the GENIE3 package for
+#'                   details.
+#' @param seed The seed to use for the random forest model
 #' 
 #' 
-constructTRN <- function(objMOList
-                        ) {
+constructTRN <- function(objMOList, 
+                         omiCutoffs,
+                         smallRNAtypes = "all",
+
+                         targetDirection = c("up", "down", "both"),
+                         predicted = TRUE,
+                         ntree = 1000,
+                         nthreads = 1,
+                         treeMethod = "RF",
+                         seed = 91711
+                         ) {
   # Check the available omics data
   rnaSeq <- is.null(objMOList$DERNAseq)
   smallRNAseq <- is.null(objMOList$DEsmallRNAseq)
@@ -298,9 +418,49 @@ constructTRN <- function(objMOList
     is.null(objMOList$extInteractions$downregGenes2TF)
   extmiR2gene <- is.null(objMOList$extInteractions$upregGenes2miR) &&
     is.null(objMOList$extInteractions$downregGenes2miR)
-  
+
+  # Vlidate inputs
+  if (rnaSeq) {
+    stop("No differential RNAseq data provided. Must perform differential
+    analysis before constructing the network.")
+  } else if (length(targetDirection) != 1 || 
+             !targetDirection %in% c("up", "down", "both")) {
+    stop("The targetDirection must be one of \"up\", \"down\" or \"both\".")
+  } else if (!all(smallRNAtypes %in% c(SMALLRNA_CATEGORIES, "all"))) {
+    stop("Invalid small RNA type specification. See ?constructTRN for details.")
+  } else {
+    # Do nothing
+  }
+
   # Based on the availability of the data, different methods will be used to
   # construct the network
+
+  # Process the RNAseq data
+  rnaTopTag <- TOPTag(objMOList$DERNAseq,
+                      logFCCutoff = omiCutoffs$rnaLogFC,
+                      pCutoff = omiCutoffs$rnaAdjPval,
+                      topGenes = omiCutoffs$rnaTopGenes,
+                      direction = targetDirection)
   
+  # First, refine the small RNA - mRNA interactions
+  if (smallRNAtypes == "all") {
+    # Use all the small RNA types
+    smallRNAtypes <- SMALLRNA_CATEGORIES
+  } else {
+    # Do nothing
+  }
+  if (predicted == TRUE) {
+    # Perform predicted inference of small RNA - mRNA interactions
+    smallRNAmRNAPred <- predictSncmRNAInteractions(
+      objMOList = objMOList,
+      omiCutoffs = omiCutoffs,
+      rnaTopTag = rnaTopTag,
+      smallRNATypes = smallRNAtypes,
+      ntree = ntree,
+      nthreads = nthreads,
+      treeMethod = treeMethod,
+      seed = seed
+    )
+  }
 
 }

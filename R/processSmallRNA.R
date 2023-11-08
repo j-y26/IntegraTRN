@@ -8,6 +8,7 @@
 # Define global variables
 HUMAN <- "human"
 USERANNO <- "userAnno"
+SMALLRNA_CATEGORIES <- c("miRNA", "piRNA", "tRNA", "circRNA", "snRNA", "snoRNA")
 
 SNCANNOLIST_HSAPIENS <- list(
   miRNA = miRNAHsapiens,
@@ -246,7 +247,7 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'
 annotateSmallRNA <- function(objMOList, anno = "human") {
   # Construct annotation based on the input
-  if (anno == HUMAN) {
+  if (all(anno == HUMAN)) {
     # Use the internal annotation
     objMOList$annoSncRNA <- HUMAN
   } else {
@@ -267,10 +268,7 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
         stringsAsFactors = FALSE
       )
       # Check if header is present
-      noHeader <- userAnno[1, 2] %in% c(
-        "miRNA", "piRNA", "tRNA", "circRNA",
-        "snRNA", "snoRNA"
-      )
+      noHeader <- userAnno[1, 2] %in% SMALLRNA_CATEGORIES
       ifelse(noHeader, userAnno <- userAnno, userAnno <- userAnno[-1, ])
     } else {
       stop("File does not exist. Please provide a valid path to a tab-delimited

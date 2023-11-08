@@ -304,7 +304,7 @@ plotVolcanoSmallRNA <- function(objMOList,
 
   # Annotate the type of small RNA
   sncAnno <- objMOList$annoSncRNA
-  if (sncAnno == HUMAN) {
+  if (all(sncAnno == HUMAN)) {
     degSmallRNAseq <- annoSncList(degSmallRNAseq,
       annoList = SNCANNOLIST_HSAPIENS
     )
@@ -489,7 +489,7 @@ plotSmallRNAPCAs <- function(objMOList,
     getRawData("smallRNAseq") %>%
     as.data.frame()
   sncAnno <- objMOList$annoSncRNA
-  if (sncAnno == HUMAN) {
+  if (all(sncAnno == HUMAN)) {
     dfSncRNA <- annoSncList(dfSncRNA,
       annoList = SNCANNOLIST_HSAPIENS
     )

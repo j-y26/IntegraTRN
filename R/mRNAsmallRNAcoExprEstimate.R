@@ -538,7 +538,8 @@ runGENIE3 <- function(exprMatrix,
   weightedAdjList <- GENIE3::getLinkList(weightedMatrix,
                                          threshold = weightThreshold)
 
-  # Convert the weighted adjacency list to a data frame
+  # Rename the elements
+  names(weightedAdjList) <- c("regulator", "target", "weight")
   return(weightedAdjList)
 }
 
@@ -578,7 +579,7 @@ runGENIE3 <- function(exprMatrix,
 #'                   documentation of the GENIE3 package for details.
 #' @param seed The seed to be used in the ensemble learning for reproducibility.
 #'
-#' @return A data frame containing the predicted interactions, with the
+#' @return A list containing the predicted interactions, with the
 #'         following format:
 #' \itemize{
 #' \item{regulator}{The names of the small RNAs that are predicted to regulate
@@ -654,14 +655,10 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
 
   # Obtain the set of regulators for GENIE3
   if (smallRNATypes == "all") {
-    # Use all types of small RNAs
-    regulators <- unlist(annoSncRNA)
-  } else {
-    # Use only the specified types of small RNAs
-    regulators <- unlist(annoSncRNA[smallRNATypes])
+    smallRNATypes <- SMALLRNA_CATEGORIES
   }
-
-  regulators <- intersect(regulators, rownames(exprMatrixSmallRNA))
+  regulators <- unlist(annoSncRNA[smallRNATypes]) %>%
+      intersect(rownames(exprMatrixSmallRNA))
 
   # Run GENIE3 for predicted interactions
   weightedAdjList <- runGENIE3(
