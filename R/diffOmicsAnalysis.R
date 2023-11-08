@@ -650,7 +650,6 @@ diffOmics <- function(objMOList,
         program = program
       )
     }
-    
   }
 
   # Construct a master list of differentially accessible regions with merged
