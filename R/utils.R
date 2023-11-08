@@ -207,4 +207,29 @@ extractDirectionalGenes <- function(deTag) {
 }
 
 
+#' Annotate the type of gene
+#' 
+#' @keywords internal
+#' 
+#' @param geneName The name of a gene
+#' @param annotation A list, with the name of each element defined to be the 
+#'                   type of gene, and the content of each element defined to be
+#'                   a vector of gene names in that type
+#' 
+#' @return The type of the gene
+#' 
+findGeneType <- function(geneName, annotation) {
+  geneType <- NULL
+  for (i in seq_along(annotation)) {
+    if (geneName %in% annotation[[i]]) {
+      geneType <- names(annotation)[i]
+      break
+    } else {
+      # Do nothing
+    }
+  }
+  return(geneType)
+}
+
+
 # [END]

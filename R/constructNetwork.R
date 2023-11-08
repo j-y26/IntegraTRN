@@ -5,6 +5,10 @@
 # Bugs and Issues: None
 
 
+# Define global variables
+NETOWRK_FIELD <- c("regulator", "target", "regulatorType")
+
+
 #' Loading external interaction data into the MOList object
 #'
 #' @description This function loads external interaction data into the MOList
@@ -278,6 +282,57 @@ print.OMICutoffs <- function(x, ...) {
 
 
 
+
+#' Select miRNA inverse correlation
+#' 
+#' @description This function selects the miRNAs in which its expression is
+#'              inversely correlated with the expression of the target gene.
+#' 
+#' @param exprAdjList A list representing the regulator-target interactions
+#' \itemize{
+#' \item \code{regulator}: A character vector containing the regulators
+#' \item \code{target}: A character vector containing the targets
+#' }
+#' @param rnaDETag A DETag object containing the differential RNAseq data
+#' @param smallDETag A DETag object containing the differential smallRNAseq data
+#' @param smallRNATypes A character vector containing the small RNA types that
+#'                      the user wants to use to construct the network. The
+#'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
+#'                      "tRNA", and "circRNA".
+#' 
+#' @return A list with filtered regulator-target interactions
+#' 
+filtermiRNAinverseCorr <- function(exprAdjList, 
+                                   deResultRNA, 
+                                   deResultSmallRNA,
+                                   smallRNATypes = SMALLRNA_CATEGORIES) {
+  if ("miRNA" %in% smallRNATypes) {
+      # Extract only inverse small RNA - mRNA interactions
+      # i.e., downregulated small RNA - upregulated mRNA
+      genesmiRNA <- extractDirectionalGenes(smallDETag) %>%
+        intersect(., sncAnno[["miRNA"]])
+      genesRNA <- extractDirectionalGenes(rnaDETag)
+
+      downregmiRNA <- genesmiRNA$down
+      upregmiRNA <- genesmiRNA$up
+      downregRNA <- genesRNA$down
+      upregRNA <- genesRNA$up
+
+      # Extract the predicted interactions
+      inverseRelation <- (exprAdjList$regulator %in% downregmiRNA &
+                          exprAdjList$target %in% upregRNA) |
+                        (exprAdjList$regulator %in% upregmiRNA &
+                          exprAdjList$target %in% downregRNA)
+      notmiRNA <- !(exprAdjList$regulator %in% sncAnno[["miRNA"]])
+      exprAdjList <- lapply(exprAdjList, 
+                              function(x) x[inverseRelation | notmiRNA])
+    } else {
+      # Do nothing
+    }
+  return(exprAdjList)
+}
+
+
 #' Predict small RNA - mRNA interactions
 #' 
 #' @keywords internal
@@ -340,33 +395,40 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
     treeMethod = treeMethod,
     seed = seed
   )
-
-  if ("miRNA" %in% smallRNATypes) {
-    # Extract only inverse small RNA - mRNA interactions
-    # i.e., downregulated small RNA - upregulated mRNA
-    genesmiRNA <- extractDirectionalGenes(objMOList$DEsmallRNAseq) %>%
-      intersect(., sncAnno[["miRNA"]])
-    genesRNA <- extractDirectionalGenes(objMOList$DERNAseq)
-
-    downregmiRNA <- genesmiRNA$down
-    upregmiRNA <- genesmiRNA$up
-    downregRNA <- genesRNA$down
-    upregRNA <- genesRNA$up
-
-    # Extract the predicted interactions
-    inverseRelation <- (predInteract$regulator %in% downregmiRNA &
-                        predInteract$target %in% upregRNA) |
-                       (predInteract$regulator %in% upregmiRNA &
-                        predInteract$target %in% downregRNA)
-    notmiRNA <- !(predInteract$regulator %in% sncAnno[["miRNA"]])
-    predInteract <- lapply(predInteract, 
-                            function(x) x[inverseRelation & notmiRNA])
-  } else {
-    # Do nothing
-  }
-
   return(predInteract)
 }
+
+
+
+#' Intersect interaction lists
+#' 
+#' @description This function intersects two lists of interactions in 
+#'              adjacent list format.
+#' 
+#' @param adjList1 A list of interactions in adjacent list format
+#' \itemize{
+#' \item \code{regulator}: A character vector containing the regulators
+#' \item \code{target}: A character vector containing the targets
+#' }
+#' @param adjList2 A list of interactions in adjacent list format
+#' 
+#' @return A list of interactions in adjacent list format, with the interactions
+#'         that are common to both lists
+#' 
+intersectInteractions <- function(adjList1, adjList2) {
+  # Paired interactions only, so define a new element for easy comparison
+  adjList1$pair <- paste0(adjList1$regulator, "_", adjList1$target)
+  adjList2$pair <- paste0(adjList2$regulator, "_", adjList2$target)
+
+  # Intersect the interactions
+  commonInteract <- intersect(adjList1$pair, adjList2$pair)
+  intersectedList <- lapply(adjList1, function(x) x[x$pair %in% commonInteract])
+  intersectedList$pair <- NULL
+
+  return(intersectedList)  
+}
+
+
 
 
 #' Construct a transcriptional regulatory network
@@ -441,6 +503,14 @@ constructTRN <- function(objMOList,
                       pCutoff = omiCutoffs$rnaAdjPval,
                       topGenes = omiCutoffs$rnaTopGenes,
                       direction = targetDirection)
+  # Define a data frame that stores the final interactions
+  finalInteractions <- data.frame(
+    regulator = character(),
+    target = character(),
+    regulatorType = character(),
+    stringsAsFactors = FALSE
+  )
+
   
   # First, refine the small RNA - mRNA interactions
   if (smallRNAtypes == "all") {
@@ -461,6 +531,50 @@ constructTRN <- function(objMOList,
       treeMethod = treeMethod,
       seed = seed
     )
+
+    # Intersect with user-imported interactions if exist
+    if (extmiR2gene) {
+      # Do nothing
+    } else {
+      # Intersect with the user-imported interactions
+      extmiInteractions <- switch(targetDirection,
+      "up" = objMOList$extInteractions$upregGenes2miR,
+      "down" = objMOList$extInteractions$downregGenes2miR,
+      "both" = rbind(objMOList$extInteractions$upregGenes2miR,
+                     objMOList$extInteractions$downregGenes2miR)
+      )
+      extmiInteractions <- list(
+        regulator = extmiInteractions[INTERACTION_FIELDS[1]],
+        target = extmiInteractions[INTERACTION_FIELDS[2]])
+      
+      # Intersect the interactions
+      smallRNAInteract <- intersectInteractions(smallRNAmRNAPred,
+                                                extmiInteractions)
+      
+      # Filter for inverse correlation on miRNA - mRNA interactions
+      smallRNAInteract <- filtermiRNAinverseCorr(smallRNAInteract,
+                                                 objMOList$DERNAseq,
+                                                 objMOList$DEsmallRNAseq,
+                                                 smallRNATypes)
+      
+      # Annotate each type of small RNA, if exists
+      if (all(objMOList$annoSncRNA == HUMAN)) {
+        sncAnno <- SNCANNOLIST_HSAPIENS
+      } else {
+        sncAnno <- objMOList$annoSncRNA
+      }
+      smallRNAInteract$regulatorType <- sapply(
+        smallRNAInteract$regulator,
+        findGeneType, 
+        annotation = sncAnno
+      )
+      
+      # Add the interactions to the final interactions
+      finalInteractions <- rbind(finalInteractions,
+                                  smallRNAInteract %>%
+                                    as.data.frame() %>%
+                                    dplyr::select(INTERACTION_FIELDS))
+    }
   }
 
 }
