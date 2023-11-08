@@ -287,6 +287,8 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @importFrom IRanges width
 #' @importFrom monaLisa calcBinnedMotifEnrR
 #' @importClassesFrom TFBSTools PWMatrixList
+#' 
+#' @export 
 #'
 #' @examples
 #' # Suppose that myMOList is an object of class MOList with $DEATAC containing

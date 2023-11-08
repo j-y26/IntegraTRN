@@ -4,9 +4,11 @@
 \alias{nnRNAMatch}
 \title{Performing optimal pair matching for RNAseq and small RNAseq samples}
 \usage{
-nnRNAMatch(sampleDFRNAseq, sampleDFSmallRNAseq)
+nnRNAMatch(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq)
 }
 \arguments{
+\item{objMOList}{An object of class MOList}
+
 \item{sampleDFRNAseq}{A data frame containing the RNAseq sample information.
 Each sample is a row in the data frame, with row names
 being the sample names that correspond to the sample

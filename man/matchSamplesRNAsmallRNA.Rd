@@ -36,7 +36,7 @@ An object of class MOList with the matching information stored in
         in the first vector is the index of the RNAseq sample, and the
         corresponding element in the second vector is the index of the
         matched small RNAseq sample. These indices match to the sample names
-        in the RNAseqSamples and SmallRNAseqSamples slots of the MOList
+        in the RNAseqSamples and smallRNAseqSamples slots of the MOList
         object. The slot is a list under the following structure:
 \itemize{
 \item{indexRNAseq}{A numeric vector containing the indices of the RNAseq

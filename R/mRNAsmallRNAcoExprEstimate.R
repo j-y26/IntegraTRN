@@ -202,6 +202,7 @@ matchBinary <- function(sampleDF) {
 #'          forces the matching process to be within the same group, and then
 #'          performs optimal pair matching on other parameters.
 #'
+#' @param objMOList An object of class MOList
 #' @param sampleDFRNAseq A data frame containing the RNAseq sample information.
 #'                       Each sample is a row in the data frame, with row names
 #'                       being the sample names that correspond to the sample
@@ -220,7 +221,7 @@ matchBinary <- function(sampleDF) {
 #' @importFrom MatchIt matchit
 #' @import optmatch
 #'
-nnRNAMatch <- function(sampleDFRNAseq, sampleDFSmallRNAseq) {
+nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   # Check if the two sample data frames have the same number of variables
   if (ncol(sampleDFRNAseq) != ncol(sampleDFSmallRNAseq)) {
     stop("The two sample data frames do not have the same number of variables.")
@@ -414,6 +415,7 @@ matchSamplesRNAsmallRNA <- function(objMOList,
     }
 
     objMOList$matchingRNAsmallRNA <- nnRNAMatch(
+      objMOList,
       sampleDFRNAseq,
       sampleDFSmallRNAseq
     )
@@ -423,6 +425,7 @@ matchSamplesRNAsmallRNA <- function(objMOList,
     sampleDFRNAseq <- data.frame(groupBy = groupByRNA)
     sampleDFSmallRNAseq <- data.frame(groupBy = groupBySmallRNA)
     objMOList$matchingRNAsmallRNA <- nnRNAMatch(
+      objMOList,
       sampleDFRNAseq,
       sampleDFSmallRNAseq
     )
@@ -492,19 +495,20 @@ exportMatchResult <- function(objMOList) {
 #'                   documentation of the GENIE3 package for details.
 #' @param seed The seed to be used in the ensemble learning for reproducibility.
 #'
-#' @return A data frame containing the predicted interactions, with the
+#' @return A list containing the predicted interactions, with the
 #'        following format:
 #' \itemize{
-#' \item{regulator}{The names of the small RNAs that are predicted to regulate
-#'                  the target genes.}
-#' \item{target}{The names of the target genes that are predicted to be
-#'              regulated by the small RNAs.}
+#' \item{regulatoryGene}{The names of the small RNAs that are predicted to regulate
+#'                       the target genes.}
+#' \item{targetGene}{The names of the target genes that are predicted to be
+#'                   regulated by the small RNAs.}
 #' \item{weight}{The weight of the predicted interactions.}
 #' }
 #'
-#' @importFrom GENIE3 GENIE3
+#' @importFrom GENIE3 GENIE3 getLinkList
 #'
 runGENIE3 <- function(exprMatrix,
+                      regulators,
                       ntree = 1000,
                       nthreads = 1,
                       treeMethod = "RF",
@@ -519,19 +523,22 @@ runGENIE3 <- function(exprMatrix,
   set.seed(seed)
 
   # Run GENIE3
-  weightedAdjList <- GENIE3::GENIE3(
+  weightedMatrix <- GENIE3::GENIE3(
     exprMatrix,
     regulators = regulators,
     nTrees = ntree,
     nCores = nthreads,
-    treeMethod = treeMethod,
-    returnMatrix = FALSE
+    treeMethod = treeMethod
   )
   set.seed(NULL)
 
+  # The weighted matrix contains a weight for each regulator-target pair
+  # Consider the top 10% of the weights as the predicted interactions
+  weightThreshold <- quantile(weightedMatrix, 0.9)
+  weightedAdjList <- GENIE3::getLinkList(weightedMatrix,
+                                         threshold = weightThreshold)
+
   # Convert the weighted adjacency list to a data frame
-  weightedAdjList <- as.data.frame(weightedAdjList)
-  colnames(weightedAdjList) <- c("regulator", "target", "weight")
   return(weightedAdjList)
 }
 
@@ -584,7 +591,7 @@ runGENIE3 <- function(exprMatrix,
 #' @note The final result includes all predicted interactions, without any
 #'       filtering on the weight of the predicted interactions.
 #'
-#' @importFrom GENIE3 GENIE3
+#' @importFrom GENIE3 GENIE3 getLinkList
 #'
 #'
 predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
@@ -620,30 +627,30 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
   cat("  log2 fold change cutoff: ", mRNATopTag@logFCCutoff, "\n")
   cat("  adjusted p-value cutoff: ", mRNATopTag@pCutoff, "\n")
   if (mRNATopTag@topGenes > 1) {
-    cat("  top " + mRNATopTag@topGenes + " genes selected\n")
+    cat("  top", mRNATopTag@topGenes, " genes selected\n")
   } else {
-    cat("  top " + mRNATopTag@topGenes * 100 + "% genes selected\n")
+    cat("  top", mRNATopTag@topGenes * 100, "% genes selected\n")
   }
   cat("Criteria for defining the top differentially expressed small RNAs:\n")
   cat("  log2 fold change cutoff: ", smallRNATopTag@logFCCutoff, "\n")
   cat("  adjusted p-value cutoff: ", smallRNATopTag@pCutoff, "\n")
   if (smallRNATopTag@topGenes > 1) {
-    cat("  top " + smallRNATopTag@topGenes + " small RNAs selected\n")
+    cat("  top", smallRNATopTag@topGenes, " small RNAs selected\n")
   } else {
-    cat("  top " + smallRNATopTag@topGenes * 100 + "% small RNAs selected\n")
+    cat("  top", smallRNATopTag@topGenes * 100, "% small RNAs selected\n")
   }
 
   # Construct a master expression matrix
-  exprMatrixRNA <- mRNATopTag@normalizedCounts %>% select(
-    matchingRNAsmallRNA$indexRNAseq
-  )
-  exprMatrixSmallRNA <- smallRNATopTag@normalizedCounts %>% select(
-    matchingRNAsmallRNA$indexSmallRNAseq
-  )
-  sampleNames <- paste0("match_", seq_len(nrow(exprMatrixRNA)))
+  exprMatrixRNA <- mRNATopTag@normalizedCounts %>%
+      as.data.frame() %>%
+      dplyr::select(matchingRNAsmallRNA$indexRNAseq)
+  exprMatrixSmallRNA <- smallRNATopTag@normalizedCounts %>%
+      as.data.frame() %>%
+      dplyr::select(matchingRNAsmallRNA$indexSmallRNAseq)
+  sampleNames <- paste0("match_", seq_len(ncol(exprMatrixRNA)))
   colnames(exprMatrixRNA) <- sampleNames
   colnames(exprMatrixSmallRNA) <- sampleNames
-  exprMatrix <- cbind(exprMatrixRNA, exprMatrixSmallRNA)
+  exprMatrix <- rbind(exprMatrixRNA, exprMatrixSmallRNA) %>% as.matrix()
 
   # Obtain the set of regulators for GENIE3
   if (smallRNATypes == "all") {
@@ -653,6 +660,8 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
     # Use only the specified types of small RNAs
     regulators <- unlist(annoSncRNA[smallRNATypes])
   }
+
+  regulators <- intersect(regulators, rownames(exprMatrixSmallRNA))
 
   # Run GENIE3 for predicted interactions
   weightedAdjList <- runGENIE3(
@@ -668,13 +677,3 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
 }
 
 
-
-
-# Identify top genes that drive the differential expression of RNA or small RNAs
-# top genes that drive the most variance separating the samples?
-
-# use nearest neighbor matching to match the samples between the two groups
-# then match the normalized counts of the top DE/variance genes between the two groups
-# then use GENIE3 to predict the regulatory interactions between the top DE/variance genes and the small RNAs
-
-# ensure when matching, the normalized counts of the small RNAs and the genes are generated from the same method

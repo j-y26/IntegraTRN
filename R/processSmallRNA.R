@@ -290,14 +290,16 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
       snRNAanno = snRNAanno, snoRNAanno = snoRNAanno
     )
     objMOList$annoSncRNA <- annoSncRNA
-
-    # Check if the annotation covers all small RNA transcripts
     anno <- USERANNO
-    checkSmallAnnoCoverage(objMOList, anno)
-
-    # Return the object
-    return(objMOList)
   }
+
+  # Check if the annotation covers all small RNA transcripts
+  
+  checkSmallAnnoCoverage(objMOList, anno)
+
+  # Return the object
+  return(objMOList)
+  
 }
 
 

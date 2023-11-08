@@ -290,7 +290,7 @@ plotVolcanoSmallRNA <- function(objMOList,
                                 geneList = NULL,
                                 colScheme = "BuPu",
                                 title = NULL) {
-  if (is.null(objMOList$DESmallRNAseq)) {
+  if (is.null(objMOList$DEsmallRNAseq)) {
     stop("No differential expression results for small RNA. Please run
   diffOmics() first. See ?diffOmics for details.")
   } else if (is.null(objMOList$annoSncRNA)) {
@@ -300,7 +300,7 @@ plotVolcanoSmallRNA <- function(objMOList,
   }
 
   # Retrieve the differential expression results for small RNA
-  degSmallRNAseq <- objMOList$DESmallRNAseq %>% exportDE()
+  degSmallRNAseq <- objMOList$DEsmallRNAseq %>% exportDE()
 
   # Annotate the type of small RNA
   sncAnno <- objMOList$annoSncRNA
@@ -494,7 +494,7 @@ plotSmallRNAPCAs <- function(objMOList,
       annoList = SNCANNOLIST_HSAPIENS
     )
   } else if (is.list(sncAnno)) {
-    dfSncRNA <- annoSncList(degSmallRNAseq, sncAnno)
+    dfSncRNA <- annoSncList(dfSncRNA, sncAnno)
   } else {
     stop("Incompatible annotation for small RNA. Please check the annotation.")
   }
@@ -536,6 +536,7 @@ plotSmallRNAPCAs <- function(objMOList,
     cat("Performing PCA analysis for ", sncType, "...\n", sep = "")
     pcaPlotList[[sncType]] <- countPCA(
       matrix = matrixSncRNAList[[sncType]],
+      groupBy = objMOList@smallRNAseqSamples$groupBy,
       title = sncType
     )
   }

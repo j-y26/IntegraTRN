@@ -15,5 +15,165 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+# Load the package
 library(IntegraTRN)
 ```
+
+
+## Introduction
+
+
+
+## 
+
+### Generate MOList object using multi omics data
+
+```{r message = FALSE, tidy=TRUE}
+# Generate MOList object
+myMOList <- MOList(RNAseq = RNAseq_heart,
+                   RNAGroupBy = RNAseq_heart_samples$Age, 
+                   smallRNAseq = smallRNAseq_heart, 
+                   smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+```
+
+As long as a MOList object is constructed with RNAseq data, additional omics
+data can be added to the existing object using the same syntax. Any existing
+data can also be replaced by new data using the same syntax.
+
+```{r message = FALSE, tidy=TRUE}
+# Before appending ATACseq data, we first define the path to the peak files
+atacPeak1Path <- system.file("extdata", "peak1.bed")
+atacPeak2Path <- system.file("extdata", "peak2.bed")
+
+# Here we add the proteomics and ATACseq peaks data to the existing object
+myMOList <- MOList(myMOList, 
+                   proteomics = protein_heart, 
+                   proteomicsGroupBy = protein_heart_samples$Age, 
+                   pathATACpeak1 = atacPeak1Path, pathATACpeak2 = atacPeak2Path)
+                   
+```
+
+
+```{r message = FALSE, tidy=TRUE}
+# Perform differential analysis
+myMOList <- diffOmics(myMOList, 
+                      rnaseqBatch = RNAseq_heart_samples$Batch, 
+                      program = "DESeq2")
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Annotate small RNAs
+myMOList <- annotateSmallRNA(myMOList, anno = "human")
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Plot Volcano plot of RNAseq data
+plotVolcanoRNA(myMOList, log2FC = 0.1)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Plot Volcano plot of small RNAseq data
+plotVolcanoSmallRNA(myMOList, log2FC = 0)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# PCA plot of small RNAseq data
+pcaPlotList <- plotSmallRNAPCAs(myMOList)
+```
+
+
+
+```{r message = FALSE, tidy=TRUE}
+length(pcaPlotList)
+```
+
+In this case, we have 6 PCA plots, one for each small RNA type. We can plot
+the PCA plot for miRNA using the following command:
+
+```{r message = FALSE, tidy=TRUE}
+pcaPlotList$miRNA
+```
+
+Or, we can generate a combined PCA plot for all small RNA types using the
+following command:
+
+```{r message = FALSE, tidy=TRUE}
+# Use the ggpubr package to combine the PCA plots
+ggpubr::ggarrange(pcaPlotList$miRNA, 
+                  pcaPlotList$circRNA, 
+                  pcaPlotList$piRNA, 
+                  pcaPlotList$snoRNA, 
+                  pcaPlotList$snRNA, 
+                  pcaPlotList$tRNA, 
+                  ncol = 3, nrow = 2)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Prepare sample data frames for plotting
+rnaseqSampleDF <- RNAseq_heart_samples %>% as.data.frame()
+rownames(rnaseqSampleDF) <- rnaseqSampleDF$Sample
+rnaseqSampleDF <- rnaseqSampleDF[, -1]
+smallRNAseqSampleDF <- smallRNAseq_heart_samples %>% as.data.frame()
+rownames(smallRNAseqSampleDF) <- smallRNAseqSampleDF$Sample
+smallRNAseqSampleDF <- smallRNAseqSampleDF[, -1]
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Further match the RNAseq and small RNAseq data
+myMOList <- matchSamplesRNAsmallRNA(myMOList, 
+                                    sampleDFRNAseq = rnaseqSampleDF, 
+                                    sampleDFSmallRNAseq = smallRNAseqSampleDF)
+```
+
+```{r message = FALSE, tidy=TRUE}
+exportMatchResult(myMOList)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Annotate ATAC Peaks
+library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+library("org.Hs.eg.db")
+library("BSgenome.Hsapiens.UCSC.hg38")
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+annoDb <- "org.Hs.eg.db"
+bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+
+# Retrieve position weight matrices (PWMs) from JASPAR
+library("JASPAR2022")
+pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+   opts = list(
+     matrixtype = "PWM",
+     tax_group = "vertebrates"
+   )
+ )
+
+myMOList <- annotateATACPeaksMotif(myMOList, 
+                                   tssRegion = c(-3000, 3000),
+                                   TxDb = txdb, 
+                                   annoDb = annoDb, 
+                                   bsgenome = bsgenome,
+                                   pwmL = pwmL)
+```
+
+
+```{r message = FALSE, tidy=TRUE}
+# Plot annotation Pie chart of the ATACseq peaks
+plotATACAnno(myMOList)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Plot ATACseq Coverage
+plotATACCoverage(myMOList)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Plot ATACseq Motif Heatmaps
+plotATACMotifHeatmap(myMOList, pValue = 0.05)
+```
+
+```{r message = FALSE, tidy=TRUE}
+# Plot ATACseq profile plots
+plotATACProfileHeatmap(myMOList)
+```
+
+```{r message = FALSE, tidy=TRUE}

@@ -3,10 +3,19 @@
 \docType{class}
 \name{MOList-class}
 \alias{MOList-class}
+\alias{show,MOList-method}
 \title{Multi-Omics List (MOList) S4 class}
+\usage{
+\S4method{show}{MOList}(object)
+}
+\arguments{
+\item{object}{An object of the DETag class}
+}
 \description{
 This class is used to store the multi-omics data, including
              RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+
+This function prints the MOList object
 }
 \section{Slots}{
 
@@ -39,10 +48,19 @@ or a fixed-width approach, as indicated in Grandi et al. 2022}
 in the same way as a list}
 }}
 
+\examples{
+\dontrun{
+# Assuming myMOList is a MOList object
+print(myMOList)
+}
+
+}
 \references{
 Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
 
 Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
 by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
-https://doi-org.myaccess.library.utoronto.ca/10.1038/s41596-022-00692-9
+https://doi-org/10.1038/s41596-022-00692-9
+
+Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
 }

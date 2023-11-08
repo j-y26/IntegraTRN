@@ -40,7 +40,7 @@ index of the RNAseq sample, and the corresponding
 element in the second vector is the index of the
 matched small RNAseq sample. These indices match
 to the sample names in the RNAseqSamples and
-SmallRNAseqSamples slots of the MOList object.}
+smallRNAseqSamples slots of the MOList object.}
 
 \item{ntree}{The number of trees to be used in the ensemble learning.}
 

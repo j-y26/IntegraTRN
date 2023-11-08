@@ -1163,4 +1163,64 @@ loadExtInteractions <- function(objMOList,
 }
 
 
+#' @rdname MOList-class
+#'
+#' @method print DETag
+#'
+#' @description This function prints the MOList object
+#'
+#' @param object An object of the DETag class
+#'
+#' @return NULL
+#'
+#' @importFrom methods setGeneric setMethod
+#'
+#' @export
+#'
+#' @references
+#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' 
+#' @examples
+#' \dontrun{
+#' # Assuming myMOList is a MOList object
+#' print(myMOList)
+#' }
+#' 
+#' @export
+#' 
+methods::setMethod("show", "MOList", function(object) {
+  cat("MOList object with the following slots:\n")
+  cat("RNAseq with", nrow(object@RNAseq), "genes and",
+    ncol(object@RNAseq), "samples\n"
+  )
+  print(head(object@RNAseq))
+  cat("\n")
+
+  cat("Small RNAseq with", nrow(object@smallRNAseq), "genes and",
+    ncol(object@smallRNAseq), "samples\n"
+  )
+  print(head(object@smallRNAseq))
+  cat("\n")
+
+  cat("Proteomics with", nrow(object@proteomics), "genes and",
+    ncol(object@proteomics), "samples\n"
+  )
+  print(head(object@proteomics))
+  cat("\n")
+
+  cat("ATAC peaks with", nrow(object@ATACpeaks$peaksCond1), "peaks for
+    condition 1 and", nrow(object@ATACpeaks$peaksCond2), "peaks for 
+    condition 2\n"
+  )
+  cat("Peaks for condition 1:\n")
+  print(head(object@ATACpeaks$peaksCond1))
+  cat("\n")
+  cat("Peaks for condition 2:\n")
+  print(head(object@ATACpeaks$peaksCond2))
+  cat("\n")
+
+  return(invisible(NULL))
+})
+
+
 # [END]

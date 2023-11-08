@@ -2,7 +2,7 @@
 % Please edit documentation in R/MOList.R
 \name{getSampleInfo}
 \alias{getSampleInfo}
-\title{Retrieving the grouping information for a specific omics data}
+\title{Retrieving the sample information from the MOList object}
 \usage{
 getSampleInfo(x, experiment)
 }
@@ -13,22 +13,23 @@ getSampleInfo(x, experiment)
 be one of "RNAseq", "smallRNAseq", and "proteomics"}
 }
 \value{
-A vector of grouping information
+A list containing the sample names and grouping information for the
+        specified omics data
 }
 \description{
-Retrieving the grouping information for a specific omics data
+Retrieving the sample information from the MOList object
 }
 \examples{
 \dontrun{
 # Assuming myMOList is a MOList object
 
-# Get the grouping information for the RNAseq data
+# Get the sample information for the RNAseq data
 getSampleInfo(myMOList, "RNAseq")
 
-# Get the grouping information for the smallRNAseq data
+# Get the sample information for the smallRNAseq data
 getSampleInfo(myMOList, "smallRNAseq")
 
-# Get the grouping information for the proteomics data
+# Get the sample information for the proteomics data
 getSampleInfo(myMOList, "proteomics")
 }
 

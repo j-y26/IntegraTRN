@@ -6,6 +6,7 @@
 \usage{
 runGENIE3(
   exprMatrix,
+  regulators,
   ntree = 1000,
   nthreads = 1,
   treeMethod = "RF",
@@ -14,6 +15,8 @@ runGENIE3(
 }
 \arguments{
 \item{exprMatrix}{A numeric matrix containing the expression data.}
+
+\item{regulators}{A character vector containing the names of the regulators.}
 
 \item{ntree}{The number of trees to be used in the ensemble learning.}
 
@@ -24,17 +27,15 @@ runGENIE3(
 documentation of the GENIE3 package for details.}
 
 \item{seed}{The seed to be used in the ensemble learning for reproducibility.}
-
-\item{regulators}{A character vector containing the names of the regulators.}
 }
 \value{
-A data frame containing the predicted interactions, with the
+A list containing the predicted interactions, with the
        following format:
 \itemize{
-\item{regulator}{The names of the small RNAs that are predicted to regulate
-                 the target genes.}
-\item{target}{The names of the target genes that are predicted to be
-             regulated by the small RNAs.}
+\item{regulatoryGene}{The names of the small RNAs that are predicted to regulate
+                      the target genes.}
+\item{targetGene}{The names of the target genes that are predicted to be
+                  regulated by the small RNAs.}
 \item{weight}{The weight of the predicted interactions.}
 }
 }
