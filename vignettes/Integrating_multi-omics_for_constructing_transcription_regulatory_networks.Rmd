@@ -42,8 +42,8 @@ data can also be replaced by new data using the same syntax.
 
 ```{r message = FALSE, tidy=TRUE}
 # Before appending ATACseq data, we first define the path to the peak files
-atacPeak1Path <- system.file("extdata", "peak1.bed")
-atacPeak2Path <- system.file("extdata", "peak2.bed")
+atacPeak1Path <- system.file("extdata", "peak1.bed", package = "IntegraTRN")
+atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
 
 # Here we add the proteomics and ATACseq peaks data to the existing object
 myMOList <- MOList(myMOList, 
