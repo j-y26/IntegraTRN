@@ -1095,4 +1095,59 @@ methods::setMethod("show", "MOList", function(object) {
 })
 
 
+#' Setting conversion between protein and gene names
+#' 
+#' @rdname MOList-class
+#' 
+#' @description This function sets the conversion between protein and gene names
+#'              for the proteomics data. The user can provide a data frame
+#'              containing the conversion information. The data frame must
+#'              contain two columns, one for the protein names and the other
+#'              for the gene names. This must be provided to effectively utilize
+#'              the proteomics data. The users are responsible for the validity
+#'              of the conversion information.
+#' 
+#' @param x A MOList object containing the omics data
+#' @param conversion A data frame containing the conversion information between
+#'                   protein and gene names
+#' \itemize{
+#' \item \code{protein}: Name of the protein
+#' \item \code{gene}: Name of the gene
+#' }
+#' 
+#' @return An object of class MOList
+#' 
+#' @importFrom methods setGeneric setMethod
+#' 
+#' @export
+#' 
+#' @examples
+#' \dontrun{
+#' # Assuming myMOList is a MOList object
+#' # Assuming conversion is a data frame containing the conversion information
+#' # between protein and gene names
+#' 
+#' # Setting the conversion information
+#' setGene2Protein(myMOList, conversion)
+#' }
+#' 
+methods::setGeneric(
+  "setGene2Protein",
+  function(x, conversion) standardGeneric("setGene2Protein")
+)
+methods::setMethod("setGene2Protein", "MOList", function(x, conversion) {
+  if (is.null(x@proteomics)) {
+    stop("Please provide the proteomics data.")
+  } else if (!is.data.frame(conversion)) {
+    stop("The conversion information must be a data frame.")
+  } else if (!all(c("protein", "gene") %in% colnames(conversion))) {
+    stop("The conversion information must contain the protein and gene names.")
+  } else {
+    # Continue
+  }
+  x$gene2protein <- conversion
+  return(x)
+})
+
+
 # [END]

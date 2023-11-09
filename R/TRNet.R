@@ -5,6 +5,10 @@
 # Bugs and Issues: None
 
 
+# Register S3 igraph class
+methods::setOldClass("igraph")
+
+
 #' @title TRNet S4 class of transcriptional regulatory network
 #' 
 #' @keywords internal
@@ -29,9 +33,10 @@
 #' 
 #' @exportClass TRNet
 #' 
-#' @importFrom methods setClass
+#' @importFrom methods setClass setOldClass
+#' @importClassesFrom igraph graph
 #' 
-methods::sealClass("TRNet",
+methods::setClass("TRNet",
                     slots = c(network = "igraph",
                               TRNmetadata = "data.frame",
                               predicted = "logical",

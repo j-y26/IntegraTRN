@@ -41,7 +41,7 @@ Imports:
     IRanges,
     MatchIt (>= 4.4.0),
     methods (>= 3.6.0),
-    monaLisa (>= 1.7.1),
+    monaLisa (>= 1.6.0),
     optmatch (>= 0.10.6),
     RColorBrewer (>= 1.1-2),
     Repitools,
