@@ -1051,39 +1051,41 @@ exportDiffGenes <- function(objMOList, experiment, outPath,
 #'
 #' @references
 #' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming myMOList is a MOList object
 #' print(myMOList)
 #' }
-#' 
+#'
 #' @export
-#' 
+#'
 methods::setMethod("show", "MOList", function(object) {
   cat("MOList object with the following slots:\n")
-  cat("RNAseq with", nrow(object@RNAseq), "genes and",
+  cat(
+    "RNAseq with", nrow(object@RNAseq), "genes and",
     ncol(object@RNAseq), "samples\n"
   )
   print(head(object@RNAseq))
   cat("\n")
 
-  cat("Small RNAseq with", nrow(object@smallRNAseq), "genes and",
+  cat(
+    "Small RNAseq with", nrow(object@smallRNAseq), "genes and",
     ncol(object@smallRNAseq), "samples\n"
   )
   print(head(object@smallRNAseq))
   cat("\n")
 
-  cat("Proteomics with", nrow(object@proteomics), "genes and",
+  cat(
+    "Proteomics with", nrow(object@proteomics), "genes and",
     ncol(object@proteomics), "samples\n"
   )
   print(head(object@proteomics))
   cat("\n")
 
   cat("ATAC peaks with", nrow(object@ATACpeaks$peaksCond1), "peaks for
-    condition 1 and", nrow(object@ATACpeaks$peaksCond2), "peaks for 
-    condition 2\n"
-  )
+    condition 1 and", nrow(object@ATACpeaks$peaksCond2), "peaks for
+    condition 2\n")
   cat("Peaks for condition 1:\n")
   print(head(object@ATACpeaks$peaksCond1))
   cat("\n")
@@ -1096,9 +1098,9 @@ methods::setMethod("show", "MOList", function(object) {
 
 
 #' Setting conversion between protein and gene names
-#' 
+#'
 #' @rdname MOList-class
-#' 
+#'
 #' @description This function sets the conversion between protein and gene names
 #'              for the proteomics data. The user can provide a data frame
 #'              containing the conversion information. The data frame must
@@ -1106,7 +1108,7 @@ methods::setMethod("show", "MOList", function(object) {
 #'              for the gene names. This must be provided to effectively utilize
 #'              the proteomics data. The users are responsible for the validity
 #'              of the conversion information.
-#' 
+#'
 #' @param x A MOList object containing the omics data
 #' @param conversion A data frame containing the conversion information between
 #'                   protein and gene names
@@ -1114,23 +1116,23 @@ methods::setMethod("show", "MOList", function(object) {
 #' \item \code{protein}: Name of the protein
 #' \item \code{gene}: Name of the gene
 #' }
-#' 
+#'
 #' @return An object of class MOList
-#' 
+#'
 #' @importFrom methods setGeneric setMethod
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' # Assuming myMOList is a MOList object
 #' # Assuming conversion is a data frame containing the conversion information
 #' # between protein and gene names
-#' 
+#'
 #' # Setting the conversion information
 #' setGene2Protein(myMOList, conversion)
 #' }
-#' 
+#'
 methods::setGeneric(
   "setGene2Protein",
   function(x, conversion) standardGeneric("setGene2Protein")

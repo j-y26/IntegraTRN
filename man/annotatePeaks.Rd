@@ -47,3 +47,4 @@ The annotation is performed using the TxDb object and annotation
          human samples, and the TxDb.Mmusculus.UCSC.mm10.knownGene and
          org.Mm.eg.db packages for mouse samples.
 }
+\keyword{internal}

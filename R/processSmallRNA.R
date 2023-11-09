@@ -292,12 +292,11 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
   }
 
   # Check if the annotation covers all small RNA transcripts
-  
+
   checkSmallAnnoCoverage(objMOList, anno)
 
   # Return the object
   return(objMOList)
-  
 }
 
 

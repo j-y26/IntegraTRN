@@ -188,13 +188,13 @@ motifNames <- function(enrichedMotifs) {
 
 
 #' Extract a list of names respectively for down and up regulated genes
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @param deTag A DETag object
-#' 
+#'
 #' @return A list of names respectively for down and up regulated genes
-#' 
+#'
 extractDirectionalGenes <- function(deTag) {
   deResult <- exportDE(deTag)
   downGenes <- deResult %>%
@@ -208,16 +208,16 @@ extractDirectionalGenes <- function(deTag) {
 
 
 #' Annotate the type of gene
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @param geneName The name of a gene
-#' @param annotation A list, with the name of each element defined to be the 
+#' @param annotation A list, with the name of each element defined to be the
 #'                   type of gene, and the content of each element defined to be
 #'                   a vector of gene names in that type
-#' 
+#'
 #' @return The type of the gene
-#' 
+#'
 findGeneType <- function(geneName, annotation) {
   geneType <- NULL
   for (i in seq_along(annotation)) {

@@ -120,9 +120,9 @@ methods::setClass("TOPTag",
 #' topTag <- TOPTag(deTag, logFCCutoff = 2, pCutoff = 0.01, topGenes = 0.2)
 #' }
 #'
-TOPTag <- function(object, 
-                   logFCCutoff = 1, 
-                   pCutoff = 0.05, 
+TOPTag <- function(object,
+                   logFCCutoff = 1,
+                   pCutoff = 0.05,
                    topGenes = 0.1,
                    direction = "both") {
   # Validating the inputs
@@ -276,22 +276,22 @@ methods::setMethod(
 
 
 #' @rdname TOPTag-class
-#' 
+#'
 #' @title Filter genes by a names vector
-#' 
+#'
 #' @description This function filters the top differential genes by a names
 #'              vector. It is a convenient function for users to filter the
 #'              top differential genes by a list of genes of interest.
-#' 
+#'
 #' @param object A TOPTag object.
 #' @param names A character vector containing the names of the genes to be
 #'              filtered.
-#' 
+#'
 #' @return A TOPTag object.
-#' 
+#'
 #' @importFrom methods setGeneric
 #' @importFrom methods setMethod
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -300,14 +300,15 @@ methods::setMethod(
 #' # Filter the top differential genes by a list of genes of interest
 #' topTag <- filterGenes(topTag, c("gene1", "gene2", "gene3"))
 #' }
-#' 
+#'
 methods::setGeneric("filterGenes", function(object, names) {
   standardGeneric("filterGenes")
 })
 methods::setMethod("filterGenes", "TOPTag", function(object, names) {
   object@DEResult <- object@DEResult[rownames(object@DEResult) %in% names, ]
   object@normalizedCounts <- object@normalizedCounts[
-                                                    rownames(object@DEResult), ]
+    rownames(object@DEResult),
+  ]
   return(object)
 })
 

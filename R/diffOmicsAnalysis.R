@@ -60,8 +60,8 @@ validateDataAnno <- function(objMOList, annoList) {
   validateMOList(objMOList)
   # Check of annotations on the samples
   if (!matchVecToMatrix(annoList$RNAseq, objMOList@RNAseq) ||
-      !matchVecToMatrix(annoList$smallRNAseq, objMOList@smallRNAseq) ||
-      !matchVecToMatrix(annoList$proteomics, objMOList@proteomics)) {
+    !matchVecToMatrix(annoList$smallRNAseq, objMOList@smallRNAseq) ||
+    !matchVecToMatrix(annoList$proteomics, objMOList@proteomics)) {
     stop("The annotations on the samples do not match the omics data")
   } else {
     # Do nothing

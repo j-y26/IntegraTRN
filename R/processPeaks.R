@@ -90,7 +90,7 @@ processPeakOverlap <- function(objMOList) {
 
 
 #' Annotate peaks with genomic features
-#' 
+#'
 #' @keywords internal
 #'
 #' @description This function annotates the ATACseq peaks with genomic features
@@ -155,7 +155,7 @@ annotatePeaks <- function(objMOList,
 
 
 #' Perform motif enrichment analysis on peaks with binary conditions
-#' 
+#'
 #' @keywords internal
 #'
 #' @description This function performs motif enrichment analysis on peaks with
@@ -291,7 +291,7 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @importFrom IRanges width
 #' @importFrom monaLisa calcBinnedMotifEnrR
 #' @importClassesFrom TFBSTools PWMatrixList
-#' 
+#'
 #' @export
 #'
 #' @examples

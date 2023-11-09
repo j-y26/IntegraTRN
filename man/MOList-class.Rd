@@ -4,18 +4,41 @@
 \name{MOList-class}
 \alias{MOList-class}
 \alias{show,MOList-method}
+\alias{setGene2Protein}
 \title{Multi-Omics List (MOList) S4 class}
 \usage{
 \S4method{show}{MOList}(object)
+
+setGene2Protein(x, conversion)
 }
 \arguments{
 \item{object}{An object of the DETag class}
+
+\item{x}{A MOList object containing the omics data}
+
+\item{conversion}{A data frame containing the conversion information between
+                  protein and gene names
+\itemize{
+\item \code{protein}: Name of the protein
+\item \code{gene}: Name of the gene
+}}
+}
+\value{
+An object of class MOList
 }
 \description{
 This class is used to store the multi-omics data, including
              RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
 
 This function prints the MOList object
+
+This function sets the conversion between protein and gene names
+             for the proteomics data. The user can provide a data frame
+             containing the conversion information. The data frame must
+             contain two columns, one for the protein names and the other
+             for the gene names. This must be provided to effectively utilize
+             the proteomics data. The users are responsible for the validity
+             of the conversion information.
 }
 \section{Slots}{
 
@@ -52,6 +75,15 @@ in the same way as a list}
 \dontrun{
 # Assuming myMOList is a MOList object
 print(myMOList)
+}
+
+\dontrun{
+# Assuming myMOList is a MOList object
+# Assuming conversion is a data frame containing the conversion information
+# between protein and gene names
+
+# Setting the conversion information
+setGene2Protein(myMOList, conversion)
 }
 
 }

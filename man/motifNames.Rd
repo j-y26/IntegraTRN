@@ -4,7 +4,7 @@
 \alias{motifNames}
 \title{Get the names of enriched TFs}
 \usage{
-motifNames(enrichedMotifs, sel)
+motifNames(enrichedMotifs)
 }
 \arguments{
 \item{enrichedMotifs}{A SummarizedExperiment object containing the motif

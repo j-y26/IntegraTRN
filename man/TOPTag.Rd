@@ -4,7 +4,13 @@
 \alias{TOPTag}
 \title{Constructor for TOPTag class}
 \usage{
-TOPTag(object, logFCCutoff = 1, pCutoff = 0.05, topGenes = 0.1)
+TOPTag(
+  object,
+  logFCCutoff = 1,
+  pCutoff = 0.05,
+  topGenes = 0.1,
+  direction = "both"
+)
 }
 \arguments{
 \item{object}{A DETag object.}
@@ -21,6 +27,10 @@ genes. If the number specified is greater than the number of
 DE genes based on logFCCutoff and pCutoff, then topGenes will
 be set to the number of DE genes. Default to select the top
 10% of differential genes.}
+
+\item{direction}{A character string indicating the direction of the
+differential expression. Default to "both". Other options
+include "up" and "down".}
 }
 \value{
 A TOPTag object.

@@ -53,7 +53,7 @@ documentation of the GENIE3 package for details.}
 \item{seed}{The seed to be used in the ensemble learning for reproducibility.}
 }
 \value{
-A data frame containing the predicted interactions, with the
+A list containing the predicted interactions, with the
         following format:
 \itemize{
 \item{regulator}{The names of the small RNAs that are predicted to regulate

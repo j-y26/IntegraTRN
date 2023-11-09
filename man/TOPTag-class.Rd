@@ -4,12 +4,21 @@
 \name{TOPTag-class}
 \alias{TOPTag-class}
 \alias{show,TOPTag-method}
+\alias{filterGenes}
 \title{TOPTag S4 class for storing top differential genes}
 \usage{
 \S4method{show}{TOPTag}(object)
+
+filterGenes(object, names)
 }
 \arguments{
-\item{object}{An object of the DETag class}
+\item{object}{A TOPTag object.}
+
+\item{names}{A character vector containing the names of the genes to be
+filtered.}
+}
+\value{
+A TOPTag object.
 }
 \description{
 The TOPTag S4 class inherits the DETag class and is a more
@@ -19,6 +28,10 @@ The TOPTag S4 class inherits the DETag class and is a more
              way for users to access the top differential genes.
 
 The print method for the TOPTag class.
+
+This function filters the top differential genes by a names
+             vector. It is a convenient function for users to filter the
+             top differential genes by a list of genes of interest.
 }
 \section{Slots}{
 
@@ -69,6 +82,12 @@ print(topTag)
 # Or simply type the object name
 \dontrun{
 topTag
+}
+
+# Assuming that the object "topTag" is a TOPTag object
+\dontrun{
+# Filter the top differential genes by a list of genes of interest
+topTag <- filterGenes(topTag, c("gene1", "gene2", "gene3"))
 }
 
 }

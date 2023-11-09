@@ -10,16 +10,16 @@ NETOWRK_FIELD <- c("regulator", "target", "regulatorType")
 
 
 #' Validate external interaction data
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @description This function validates the external interaction data provided
 #'              by the user and returns a list of validated data.
-#' 
+#'
 #' @param adjList A list of interactions in adjacent list format
-#' 
+#'
 #' @return A list of validated interactions in adjacent list format
-#' 
+#'
 validateInteractionAdjList <- function(adjList) {
   if (!is.list(adjList) || length(adjList) < 2) {
     stop("The input must be a list of at least two elements.")
@@ -168,7 +168,7 @@ loadExtInteractions <- function(objMOList,
 
 
 #' Setting cutoffs for the omics data
-#' 
+#'
 #' @description This function sets the cutoffs for the omics data. The cutoffs
 #'              are used to determine the key differentially regulated/expressed
 #'              genes/miRNAs/TFs. The users can set the cutoffs based on their
@@ -178,10 +178,10 @@ loadExtInteractions <- function(objMOList,
 #'              differential regulation/expression, and only these genes/miRNAs/
 #'              TFs will be used to construct the network. Any values set on
 #'              data that is not available will be ignored.
-#' 
+#'
 #' @param rnaAdjPval The adjusted p-value cutoff for the RNAseq data
 #' @param rnaLogFC The log fold change cutoff for the RNAseq data
-#' @param rnaTopGenes A numeric value indicating either the fraction (0-1) of 
+#' @param rnaTopGenes A numeric value indicating either the fraction (0-1) of
 #'                    top differential genes or the number (1-Inf) of top
 #'                    differential genes. If the number specified is greater
 #'                    than the number of DE genes based on logFCCutoff and
@@ -196,7 +196,7 @@ loadExtInteractions <- function(objMOList,
 #'                         greater than the number of DE genes based on
 #'                         logFCCutoff and pCutoff, then topGenes will be set
 #'                         to the number of DE genes. This is to select the top
-#'                         differential small RNAs. To include all the 
+#'                         differential small RNAs. To include all the
 #'                         differential small RNAs, set this to 1.
 #' @param proteomicsAdjPval The adjusted p-value cutoff for the proteomics data
 #' @param proteomicsLogFC The log fold change cutoff for the proteomics data
@@ -208,33 +208,35 @@ loadExtInteractions <- function(objMOList,
 #'                      cutoff will be ignored.
 #' @param atacMotifLogFC The log2 fold enrichment cutoff for the ATACseq motif
 #'                       enrichment analysis.
-#' 
+#'
 #' @return An OMICutoffs object containing the cutoffs for the omics data. This
 #'         is essentially a list with defined elements. Once setOmicCutoffs is
 #'         called, users can freely access or modify the cutoffs by using the
 #'         $ operator. See the examples for details.
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' # Example 1: Set the cutoffs for the omics data
-#' omiCutoffs <- setOmicCutoffs(rnaAdjPval = 0.05, 
-#'                              rnaLogFC = 2,
-#'                              rnaTopGenes = 0.1,      # Top 10% of DE genes
-#'                              smallRNAAdjPval = 0.05,
-#'                              smallRNALogFC = 2,
-#'                              smallRNATopGenes = 200, # Top 200 DE small RNAs
-#'                              proteomicsAdjPval = 0.05,
-#'                              proteomicsLogFC = 1)
-#' 
+#' omiCutoffs <- setOmicCutoffs(
+#'   rnaAdjPval = 0.05,
+#'   rnaLogFC = 2,
+#'   rnaTopGenes = 0.1, # Top 10% of DE genes
+#'   smallRNAAdjPval = 0.05,
+#'   smallRNALogFC = 2,
+#'   smallRNATopGenes = 200, # Top 200 DE small RNAs
+#'   proteomicsAdjPval = 0.05,
+#'   proteomicsLogFC = 1
+#' )
+#'
 #' # Example 2: Access the cutoffs for the RNAseq data
 #' omiCutoffs$rnaAdjPval
 #' omiCutoffs$rnaLogFC
-#' 
+#'
 #' # Example 3: Modify the cutoffs for the proteomics data
 #' omiCutoffs$proteomicsAdjPval <- 0.01
 #' omiCutoffs$proteomicsLogFC <- 1.5
-#' 
+#'
 setOmicCutoffs <- function(rnaAdjPval = 0.05,
                            rnaLogFC = 1,
                            rnaTopGenes = 1,
@@ -247,10 +249,12 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
                            atacMotifPval = NULL,
                            atacMotifLogFC = NULL) {
   # Check the inputs
-  inputs <- c(rnaAdjPval, rnaLogFC, rnaTopGenes,
-              smallRNAAdjPval, smallRNALogFC, smallRNATopGenes,
-              proteomicsAdjPval, proteomicsLogFC,
-              atacMotifAdjPval)
+  inputs <- c(
+    rnaAdjPval, rnaLogFC, rnaTopGenes,
+    smallRNAAdjPval, smallRNALogFC, smallRNATopGenes,
+    proteomicsAdjPval, proteomicsLogFC,
+    atacMotifAdjPval
+  )
   if (!all(is.numeric(inputs))) {
     stop("The cutoffs must be numeric.")
   } else if (!all(inputs >= 0)) {
@@ -258,7 +262,7 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
   } else {
     # Continue
   }
-  
+
   # Setting the cutoffs
   omiCutoffs <- list(
     rnaAdjPval = rnaAdjPval,
@@ -273,28 +277,28 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
     atacMotifPval = atacMotifPval,
     atacMotifLogFC = atacMotifLogFC
   )
-  
+
   # Setting the class, an internal S3 class
   class(omiCutoffs) <- "OMICutoffs"
-  
+
   return(omiCutoffs)
 }
 
 
 #' Print method for the OMICutoffs object
-#' 
+#'
 #' @description This function prints the cutoffs for the omics data.
-#' 
+#'
 #' @param x An OMICutoffs object
 #' @param ... Other arguments passed to the print function
-#' 
+#'
 #' @return The cutoffs for the omics data
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' omiCutoffs <- setOmicCutoffs()
-#' 
+#'
 #' # The output will be:
 #' # RNAseq adjusted p-value cutoff: 0.05
 #' # RNAseq log fold change cutoff: 1
@@ -304,7 +308,7 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
 #' # smallRNAseq selecting top 100% of DE genes
 #' # Proteomics adjusted p-value cutoff: 0.05
 #' # Proteomics log fold change cutoff: 1
-#' 
+#'
 print.OMICutoffs <- function(x, ...) {
   cat("RNAseq adjusted p-value cutoff:", x$rnaAdjPval, "\n")
   cat("RNAseq log fold change cutoff:", x$rnaLogFC, "\n")
@@ -316,8 +320,10 @@ print.OMICutoffs <- function(x, ...) {
   cat("smallRNAseq adjusted p-value cutoff:", x$smallRNAAdjPval, "\n")
   cat("smallRNAseq log fold change cutoff:", x$smallRNALogFC, "\n")
   if (x$smallRNATopGenes <= 1) {
-    cat("smallRNAseq selecting top", x$smallRNATopGenes * 100, "% of DE genes", 
-    "\n")
+    cat(
+      "smallRNAseq selecting top", x$smallRNATopGenes * 100, "% of DE genes",
+      "\n"
+    )
   } else {
     cat("smallRNAseq selecting top", x$smallRNATopGenes, "DE genes", "\n")
   }
@@ -335,10 +341,10 @@ print.OMICutoffs <- function(x, ...) {
 
 
 #' Select miRNA inverse correlation
-#' 
+#'
 #' @description This function selects the miRNAs in which its expression is
 #'              inversely correlated with the expression of the target gene.
-#' 
+#'
 #' @param exprAdjList A list representing the regulator-target interactions
 #' \itemize{
 #' \item \code{regulator}: A character vector containing the regulators
@@ -350,52 +356,54 @@ print.OMICutoffs <- function(x, ...) {
 #'                      the user wants to use to construct the network. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
 #'                      "tRNA", and "circRNA".
-#' 
+#'
 #' @return A list with filtered regulator-target interactions
-#' 
-filtermiRNAinverseCorr <- function(exprAdjList, 
-                                   deResultRNA, 
+#'
+filtermiRNAinverseCorr <- function(exprAdjList,
+                                   deResultRNA,
                                    deResultSmallRNA,
                                    smallRNATypes = SMALLRNA_CATEGORIES) {
   if ("miRNA" %in% smallRNATypes) {
-      # Extract only inverse small RNA - mRNA interactions
-      # i.e., downregulated small RNA - upregulated mRNA
-      genesmiRNA <- extractDirectionalGenes(smallDETag) %>%
-        intersect(., sncAnno[["miRNA"]])
-      genesRNA <- extractDirectionalGenes(rnaDETag)
+    # Extract only inverse small RNA - mRNA interactions
+    # i.e., downregulated small RNA - upregulated mRNA
+    genesmiRNA <- extractDirectionalGenes(smallDETag) %>%
+      intersect(., sncAnno[["miRNA"]])
+    genesRNA <- extractDirectionalGenes(rnaDETag)
 
-      downregmiRNA <- genesmiRNA$down
-      upregmiRNA <- genesmiRNA$up
-      downregRNA <- genesRNA$down
-      upregRNA <- genesRNA$up
+    downregmiRNA <- genesmiRNA$down
+    upregmiRNA <- genesmiRNA$up
+    downregRNA <- genesRNA$down
+    upregRNA <- genesRNA$up
 
-      # Extract the predicted interactions
-      inverseRelation <- (exprAdjList$regulator %in% downregmiRNA &
-                          exprAdjList$target %in% upregRNA) |
-                        (exprAdjList$regulator %in% upregmiRNA &
-                          exprAdjList$target %in% downregRNA)
-      notmiRNA <- !(exprAdjList$regulator %in% sncAnno[["miRNA"]])
-      exprAdjList <- lapply(exprAdjList, 
-                              function(x) x[inverseRelation | notmiRNA])
-    } else {
-      # Do nothing
-    }
+    # Extract the predicted interactions
+    inverseRelation <- (exprAdjList$regulator %in% downregmiRNA &
+      exprAdjList$target %in% upregRNA) |
+      (exprAdjList$regulator %in% upregmiRNA &
+        exprAdjList$target %in% downregRNA)
+    notmiRNA <- !(exprAdjList$regulator %in% sncAnno[["miRNA"]])
+    exprAdjList <- lapply(
+      exprAdjList,
+      function(x) x[inverseRelation | notmiRNA]
+    )
+  } else {
+    # Do nothing
+  }
   return(exprAdjList)
 }
 
 
 #' Predict small RNA - mRNA interactions
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @description This function predicts the small RNA - mRNA interactions based
 #'              on the smallRNAseq data and the RNAseq data.
-#' 
+#'
 #' @param objMOList A MOList object containing the omics data
 #' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
 #'                   data
-#' @rnaTopTag A TOPTag object containing the top differential genes from the
-#'            RNAseq data
+#' @param rnaTopTag A TOPTag object containing the top differential genes from
+#'                  the RNAseq data
 #' @param smallRNATypes A character vector containing the small RNA types that
 #'                      the user wants to use to predict the interactions. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
@@ -405,10 +413,10 @@ filtermiRNAinverseCorr <- function(exprAdjList,
 #' @param treeMethod The method to use for the random forest model. See the
 #'                  documentation for the randomForest package for details.
 #' @param seed The seed to use for the random forest model
-#' 
+#'
 #' @return a list of predicted interactions combined for all specified small
 #'         RNA types as the regulators
-#' 
+#'
 predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
                                        smallRNATypes = SMALLRNA_CATEGORIES,
                                        ntree = 1000, nthreads = 1,
@@ -422,10 +430,11 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
 
   # Generates a TOPTag object for the small RNAs
   smallRNATopTag <- TOPTag(smallDETag,
-                           logFCCutoff = omiCutoffs$smallRNALogFC,
-                           pCutoff = omiCutoffs$smallRNAAdjPval,
-                           topGenes = omiCutoffs$smallRNATopGenes,
-                           direction = "both")
+    logFCCutoff = omiCutoffs$smallRNALogFC,
+    pCutoff = omiCutoffs$smallRNAAdjPval,
+    topGenes = omiCutoffs$smallRNATopGenes,
+    direction = "both"
+  )
 
   # Define annotations for small RNA
   if (all(objMOList$annoSncRNA == HUMAN)) {
@@ -433,7 +442,7 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
   } else {
     sncAnno <- objMOList$annoSncRNA
   }
-  
+
   # Predict the interactions for each small RNA type
   predInteract <- predictSmallRNAmRNAcoExpr(
     mRNATopTag = rnaTopTag,
@@ -452,22 +461,22 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
 
 
 #' Intersect interaction lists
-#' 
-#' @description This function intersects two lists of interactions in 
+#'
+#' @description This function intersects two lists of interactions in
 #'              adjacent list format.
-#' 
+#'
 #' @note At least one of the lists must be non-empty.
-#' 
+#'
 #' @param adjList1 A list of interactions in adjacent list format
 #' \itemize{
 #' \item \code{regulator}: A character vector containing the regulators
 #' \item \code{target}: A character vector containing the targets
 #' }
 #' @param adjList2 A list of interactions in adjacent list format
-#' 
+#'
 #' @return A list of interactions in adjacent list format, with the interactions
 #'         that are common to both lists
-#' 
+#'
 intersectInteractions <- function(adjList1, adjList2) {
   # Simply returns the other list if one of the list is empty
   if (is.null(adjList1)) {
@@ -487,19 +496,19 @@ intersectInteractions <- function(adjList1, adjList2) {
   intersectedList <- lapply(adjList1, function(x) x[x$pair %in% commonInteract])
   intersectedList$pair <- NULL
 
-  return(intersectedList)  
+  return(intersectedList)
 }
 
 
 #' Filter target genes by proteomics data
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @description This function filters the target genes by proteomics data.
 #'              Only genes that shows consistent expression changes in both
 #'              RNAseq and proteomics data will be used to construct the
 #'              network. This is to ensure high confidence in the target genes.
-#' 
+#'
 #' @param rnaTopTag A TOPTag object containing the top differential genes from
 #'                  the RNAseq data
 #' @param protTopTag A TOPTag object containing the top differential genes from
@@ -509,13 +518,15 @@ intersectInteractions <- function(adjList1, adjList2) {
 #' \item \code{gene}: A character vector containing the gene names
 #' \item \code{protein}: A character vector containing the protein names
 #' }
-#' 
+#'
 #' @return A TOPTag object containing the top differential genes from the
 #'         RNAseq data, with the target genes filtered by proteomics data
-#' 
+#'
 filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
   # Filter the target genes by proteomics data
-  validProteins <- protTopTag %>% exportDE() %>% rownames()
+  validProteins <- protTopTag %>%
+    exportDE() %>%
+    rownames()
   validTargets <- mapping$gene[mapping$protein %in% validProteins]
 
   # Redefine the target genes
@@ -526,12 +537,12 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 
 
 #' Construct a transcriptional regulatory network
-#' 
+#'
 #' @description This function constructs a transcriptional regulatory network
 #'              based on the omics data and the external interaction data
 #'              provided. The network is stored as an igraph object in the
 #'              TRNet S4 class, which is a mRNA-TF-smallRNA network.
-#' 
+#'
 #' @param objMOList A MOList object containing all omics data that the user
 #'                  wants to use to construct the network
 #' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
@@ -552,9 +563,9 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 #'                   or "ET". See the documentation for the GENIE3 package for
 #'                   details.
 #' @param seed The seed to use for the random forest model
-#' 
-#' 
-constructTRN <- function(objMOList, 
+#'
+#'
+constructTRN <- function(objMOList,
                          omiCutoffs,
                          smallRNAtypes = "all",
                          targetDirection = c("up", "down", "both"),
@@ -562,8 +573,7 @@ constructTRN <- function(objMOList,
                          ntree = 1000,
                          nthreads = 1,
                          treeMethod = "RF",
-                         seed = 91711
-                         ) {
+                         seed = 91711) {
   # Check the available omics data
   rnaSeq <- is.null(objMOList$DERNAseq)
   smallRNAseq <- is.null(objMOList$DEsmallRNAseq)
@@ -578,8 +588,8 @@ constructTRN <- function(objMOList,
   if (rnaSeq) {
     stop("No differential RNAseq data provided. Must perform differential
     analysis before constructing the network.")
-  } else if (length(targetDirection) != 1 || 
-             !targetDirection %in% c("up", "down", "both")) {
+  } else if (length(targetDirection) != 1 ||
+    !targetDirection %in% c("up", "down", "both")) {
     stop("The targetDirection must be one of \"up\", \"down\" or \"both\".")
   } else if (!all(smallRNAtypes %in% c(SMALLRNA_CATEGORIES, "all"))) {
     stop("Invalid small RNA type specification. See ?constructTRN for details.")
@@ -600,22 +610,25 @@ constructTRN <- function(objMOList,
     warning("No differential proteomics data or gene to protein mapping.")
     warning("Skipping filtering target genes by proteomics data.")
     rnaTopTag <- TOPTag(objMOList$DERNAseq,
-                        logFCCutoff = omiCutoffs$rnaLogFC,
-                        pCutoff = omiCutoffs$rnaAdjPval,
-                        topGenes = omiCutoffs$rnaTopGenes,
-                        direction = targetDirection)
+      logFCCutoff = omiCutoffs$rnaLogFC,
+      pCutoff = omiCutoffs$rnaAdjPval,
+      topGenes = omiCutoffs$rnaTopGenes,
+      direction = targetDirection
+    )
   } else {
     # Filter the target genes by proteomics data
     rnaTopTag <- TOPTag(objMOList$DERNAseq,
-                        logFCCutoff = omiCutoffs$rnaLogFC,
-                        pCutoff = omiCutoffs$rnaAdjPval,
-                        topGenes = omiCutoffs$rnaTopGenes,
-                        direction = targetDirection)
+      logFCCutoff = omiCutoffs$rnaLogFC,
+      pCutoff = omiCutoffs$rnaAdjPval,
+      topGenes = omiCutoffs$rnaTopGenes,
+      direction = targetDirection
+    )
     protTopTag <- TOPTag(objMOList$DEProteomics,
-                         logFCCutoff = omiCutoffs$proteomicsLogFC,
-                         pCutoff = omiCutoffs$proteomicsAdjPval,
-                         topGenes = 1,
-                         direction = targetDirection)
+      logFCCutoff = omiCutoffs$proteomicsLogFC,
+      pCutoff = omiCutoffs$proteomicsAdjPval,
+      topGenes = 1,
+      direction = targetDirection
+    )
     # Filter the target genes by proteomics data
     rnaTopTag <- filterTargetGenes(rnaTopTag, protTopTag)
     omic <- union(omic, PROTEIN)
@@ -660,8 +673,9 @@ constructTRN <- function(objMOList,
       "up" = objMOList$extInteractions$upregGenes2miR,
       "down" = objMOList$extInteractions$downregGenes2miR,
       "both" = mapply(c, objMOList$extInteractions$upregGenes2miR,
-                      objMOList$extInteractions$downregGenes2miR,
-                      SIMPLIFY = FALSE)
+        objMOList$extInteractions$downregGenes2miR,
+        SIMPLIFY = FALSE
+      )
     )
     omic <- union(omic, SMALLRNA)
   }
@@ -674,10 +688,12 @@ constructTRN <- function(objMOList,
     # Intersect the predicted and user-imported interactions
     smallRNAmRNA <- intersectInteractions(smallRNAmRNAPred, smallRNAmRNAExt)
     # Filter for inverse correlation on miRNA - mRNA interactions
-    smallRNAmRNA <- filtermiRNAinverseCorr(smallRNAmRNA,
-                                           objMOList$DERNAseq,
-                                           objMOList$DEsmallRNAseq,
-                                           smallRNAtypes)
+    smallRNAmRNA <- filtermiRNAinverseCorr(
+      smallRNAmRNA,
+      objMOList$DERNAseq,
+      objMOList$DEsmallRNAseq,
+      smallRNAtypes
+    )
     # Annotate the small RNA types
     if (all(objMOList$annoSncRNA == HUMAN)) {
       sncAnno <- SNCANNOLIST_HSAPIENS
@@ -686,7 +702,7 @@ constructTRN <- function(objMOList,
     }
     smallRNAmRNA$regulatorType <- sapply(
       smallRNAmRNA$regulator,
-      findGeneType, 
+      findGeneType,
       annotation = sncAnno
     )
   }
@@ -701,8 +717,9 @@ constructTRN <- function(objMOList,
       "up" = objMOList$extInteractions$upregGenes2TF,
       "down" = objMOList$extInteractions$downregGenes2TF,
       "both" = mapply(c, objMOList$extInteractions$upregGenes2TF,
-                      objMOList$extInteractions$downregGenes2TF,
-                      SIMPLIFY = FALSE)
+        objMOList$extInteractions$downregGenes2TF,
+        SIMPLIFY = FALSE
+      )
     )
     extTFmRNA$regulatorType <- rep("TF", length(extTFmRNA$regulator))
     # Filter by ATACseq-validated TFs if available
@@ -716,10 +733,12 @@ constructTRN <- function(objMOList,
       transcriptionFactormRNA <- extTFmRNA
     } else {
       # Filter TFs by ATACseq data
-      sel <- selectedMotifs(enrichedMotifs = objMOList$DEATAC,
-                            pValueAdj = omiCutoffs$atacMotifAdjPval,
-                            pValue = omiCutoffs$atacMotifPval,
-                            log2FEnrich = omiCutoffs$atacMotifLogFC)
+      sel <- selectedMotifs(
+        enrichedMotifs = objMOList$DEATAC,
+        pValueAdj = omiCutoffs$atacMotifAdjPval,
+        pValue = omiCutoffs$atacMotifPval,
+        log2FEnrich = omiCutoffs$atacMotifLogFC
+      )
       validTFs <- motifNames(objMOList$DEATAC[sel, ])
       transcriptionFactormRNA <- lapply(extTFmRNA, function(x) {
         x[x$regulator %in% validTFs]

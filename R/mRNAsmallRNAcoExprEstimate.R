@@ -536,7 +536,8 @@ runGENIE3 <- function(exprMatrix,
   # Consider the top 10% of the weights as the predicted interactions
   weightThreshold <- quantile(weightedMatrix, 0.9)
   weightedAdjList <- GENIE3::getLinkList(weightedMatrix,
-                                         threshold = weightThreshold)
+    threshold = weightThreshold
+  )
 
   # Rename the elements
   names(weightedAdjList) <- c("regulator", "target", "weight")
@@ -643,11 +644,11 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
 
   # Construct a master expression matrix
   exprMatrixRNA <- mRNATopTag@normalizedCounts %>%
-      as.data.frame() %>%
-      dplyr::select(matchingRNAsmallRNA$indexRNAseq)
+    as.data.frame() %>%
+    dplyr::select(matchingRNAsmallRNA$indexRNAseq)
   exprMatrixSmallRNA <- smallRNATopTag@normalizedCounts %>%
-      as.data.frame() %>%
-      dplyr::select(matchingRNAsmallRNA$indexSmallRNAseq)
+    as.data.frame() %>%
+    dplyr::select(matchingRNAsmallRNA$indexSmallRNAseq)
   sampleNames <- paste0("match_", seq_len(ncol(exprMatrixRNA)))
   colnames(exprMatrixRNA) <- sampleNames
   colnames(exprMatrixSmallRNA) <- sampleNames
@@ -658,7 +659,7 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
     smallRNATypes <- SMALLRNA_CATEGORIES
   }
   regulators <- unlist(annoSncRNA[smallRNATypes]) %>%
-      intersect(rownames(exprMatrixSmallRNA))
+    intersect(rownames(exprMatrixSmallRNA))
 
   # Run GENIE3 for predicted interactions
   weightedAdjList <- runGENIE3(
@@ -672,5 +673,3 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
 
   return(weightedAdjList)
 }
-
-
