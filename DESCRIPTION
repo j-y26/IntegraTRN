@@ -38,6 +38,7 @@ Imports:
     GenomicRanges (>= 1.52.0),
     GenomicTools.fileHandler (>= 0.1.5.9),
     ggplot2 (>= 3.4.0),
+    igraph (>= 0.7.0),
     IRanges,
     MatchIt (>= 4.4.0),
     methods (>= 3.6.0),
