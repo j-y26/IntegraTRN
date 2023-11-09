@@ -9,6 +9,35 @@
 NETOWRK_FIELD <- c("regulator", "target", "regulatorType")
 
 
+#' Validate external interaction data
+#' 
+#' @keywords internal
+#' 
+#' @description This function validates the external interaction data provided
+#'              by the user and returns a list of validated data.
+#' 
+#' @param adjList A list of interactions in adjacent list format
+#' 
+#' @return A list of validated interactions in adjacent list format
+#' 
+validateInteractionAdjList <- function(adjList) {
+  if (!is.list(adjList) || length(adjList) < 2) {
+    stop("The input must be a list of at least two elements.")
+  } else {
+    # Continue
+  }
+
+  if (!all(NETOWRK_FIELD[1:2] %in% names(adjList))) {
+    warning("Invalid element names provided.")
+    warning("Setting the first element as regulator and second as target.")
+    names(adjList)[1:2] <- NETOWRK_FIELD[1:2]
+  } else {
+    # Do nothing
+  }
+  return(adjList[, NETOWRK_FIELD])
+}
+
+
 #' Loading external interaction data into the MOList object
 #'
 #' @description This function loads external interaction data into the MOList
@@ -18,31 +47,33 @@ NETOWRK_FIELD <- c("regulator", "target", "regulatorType")
 #'              interactions of the target genes.
 #'
 #' @param objMOList A MOList object containing the omics data
-#' @param upregGenes2miR A data frame containing the upregulated genes and their
-#'                       regulatory miRNAs. Must contain the columns "ID"
-#'                       of the miRNAs and "Target" of the upregulated genes.
+#' @param upregGenes2miR A list containing the upregulated genes and their
+#'                       regulatory miRNAs. Must contain elements "regulator"
+#'                       for the miRNAs and "target" for the upregulated genes.
 #' \itemize{
-#'  \item \code{ID}: A column containing the miRNA names
-#'  \item \code{Target}: A column containing the target genes
+#'  \item \code{regulator}: A character vector containing the miRNAs
+#'  \item \code{target}: A character vector containing the upregulated genes
 #' }
-#' @param downregGenes2miR A data frame containing the downregulated genes and
+#' @param downregGenes2miR A list containing the downregulated genes and
 #'                         their regulatory miRNAs. See above format.
-#' @param upregGenes2TF A data frame containing the upregulated genes and their
+#' @param upregGenes2TF A list containing the upregulated genes and their
 #'                      regulatory transcription factors. See above format.
-#' @param downregGenes2TF A data frame containing the downregulated genes and
+#' @param downregGenes2TF A list containing the downregulated genes and
 #'                        their regulatory transcription factors. See above
 #'                        format.
 #'
 #' @return An object of class MOList, with a element "extInteractions" added,
-#'         which is a list of data frames
+#'         which is a list of lists. Each lower level list must follow the
+#'         format of the input data, i.e., must contain elements "regulator"
+#'        and "target". See the examples for details.
 #' \itemize{
-#' \item \code{upregGenes2miR}: A data frame containing the upregulated genes
+#' \item \code{upregGenes2miR}: A list containing the upregulated genes
 #'                              and their regulatory miRNAs
-#' \item \code{downregGenes2miR}: A data frame containing the downregulated
+#' \item \code{downregGenes2miR}: A list containing the downregulated
 #'                                genes and their regulatory miRNAs
-#' \item \code{upregGenes2TF}: A data frame containing the upregulated genes
+#' \item \code{upregGenes2TF}: A list containing the upregulated genes
 #'                             and their regulatory transcription factors
-#' \item \code{downregGenes2TF}: A data frame containing the downregulated
+#' \item \code{downregGenes2TF}: A list containing the downregulated
 #'                               genes and their regulatory transcription
 #'                               factors
 #' }
@@ -96,9 +127,12 @@ loadExtInteractions <- function(objMOList,
     is.null(upregGenes2TF) && is.null(downregGenes2TF)) {
     stop("Please provide at least one type of the interaction data.")
   } else if (xor(is.null(upregGenes2miR), is.null(downregGenes2miR))) {
+    # Both upregulated and downregulated genes must be provided, if any
+    # miRNA interactions are provided
     stop("Please provide both upregulated and downregulated genes to miRNA
     interactions.")
   } else if (xor(is.null(upregGenes2TF), is.null(downregGenes2TF))) {
+    # Same logic for TF interactions
     stop("Please provide both upregulated and downregulated genes to TF
     interactions.")
   } else {
@@ -106,31 +140,27 @@ loadExtInteractions <- function(objMOList,
   }
 
   if (!is.null(upregGenes2miR)) {
-    if (!(all(c("ID", "Target") %in% colnames(upregGenes2miR)) &&
-      all(c("ID", "Target") %in% colnames(downregGenes2miR)))) {
-      stop("Invalid column names provided. Must contain \"ID\" and \"Target\",
-      see ?loadExtInteractions for details.")
-    } else {
-      # Do nothing
-    }
-  } else if (!is.null(upregGenes2TF)) {
-    if (!(all(c("ID", "Target") %in% colnames(upregGenes2TF)) &&
-      all(c("ID", "Target") %in% colnames(downregGenes2TF)))) {
-      stop("Invalid column names provided. Must contain \"ID\" and \"Target\",
-      see ?loadExtInteractions for details.")
-    } else {
-      # Do nothing
-    }
+    # In case where the names of the elements of the list are not provided
+    # correctly, set the first element to be the regulator and the second
+    # element to be the target
+    upregGenes2miR <- validateInteractionAdjList(upregGenes2miR)
+    downregGenes2miR <- validateInteractionAdjList(downregGenes2miR)
+  } else {
+    # Do nothing
+  }
+  if (!is.null(upregGenes2TF)) {
+    upregGenes2TF <- validateInteractionAdjList(upregGenes2TF)
+    downregGenes2TF <- validateInteractionAdjList(downregGenes2TF)
   } else {
     # Do nothing
   }
 
   # Setting the external interactions to the MOList object
   objMOList$extInteractions <- list(
-    upregGenes2miR = upregGenes2miR[, INTERACTION_FIELDS],
-    downregGenes2miR = downregGenes2miR[, INTERACTION_FIELDS],
-    upregGenes2TF = upregGenes2TF[, INTERACTION_FIELDS],
-    downregGenes2TF = downregGenes2TF[, INTERACTION_FIELDS]
+    upregGenes2miR = upregGenes2miR,
+    downregGenes2miR = downregGenes2miR,
+    upregGenes2TF = upregGenes2TF,
+    downregGenes2TF = downregGenes2TF
   )
 
   return(objMOList)
@@ -575,6 +605,29 @@ constructTRN <- function(objMOList,
                                     as.data.frame() %>%
                                     dplyr::select(INTERACTION_FIELDS))
     }
+  } else {
+    # Do not perform predicted inference of small RNA - mRNA interactions
+    # Use the user-imported interactions if exist
+    if (extmiR2gene) {
+      # Do nothing
+    } else {
+      # Add the interactions to the final interactions
+      extmiInteractions <- switch(targetDirection,
+      "up" = objMOList$extInteractions$upregGenes2miR,
+      "down" = objMOList$extInteractions$downregGenes2miR,
+      "both" = rbind(objMOList$extInteractions$upregGenes2miR,
+                     objMOList$extInteractions$downregGenes2miR)
+      )
+
+      # Filter for inverse correlation on miRNA - mRNA interactions
+      extmiInteractions <- filtermiRNAinverseCorr(extmiInteractions,
+                                                  objMOList$DERNAseq,
+                                                  objMOList$DEsmallRNAseq,
+                                                  smallRNATypes)
+
+    }
+
+
   }
 
 }
