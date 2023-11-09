@@ -204,8 +204,8 @@ methods::setMethod(
 #'
 #' @return NULL
 #'
-#' @importFrom methods setMethod
-#' @importFrom graphics plot
+#' @importFrom methods setGeneric setMethod
+#' @importFrom igraph plot.igraph
 #'
 #' @export
 #'
@@ -221,12 +221,58 @@ methods::setMethod(
 #' trn <- TRNet(edges, FALSE, "RNA-seq")
 #'
 #' # Plot TRNet object
-#' plot(trn)
+#' plotNetwork(trn)
 #'
-methods::setMethod(
-  "plot", "TRNet",
+methods::setGeneric(
+  "plotNetwork",
   function(trn) {
-    graphics::plot(trn@network)
+    standardGeneric("plotNetwork")
+  }
+)
+methods::setMethod(
+  "plotNetwork", "TRNet",
+  function(trn) {
+    igraph::plot.igraph(trn@network)
+  }
+)
+
+
+#' @title Export an igraph object from TRNet object
+#'
+#' @description This function exports an igraph object from TRNet object
+#'
+#' @param trn A TRNet object
+#'
+#' @return An igraph object
+#'
+#' @importFrom methods setGeneric setMethod
+#'
+#' @export
+#'
+#' @examples
+#' # Define some example edges
+#' edges <- data.frame(
+#'   regulator = c("A", "B", "C"),
+#'   target = c("D", "E", "F"),
+#'   regulatorType = c("miRNA", "TF", "TF")
+#' )
+#'
+#' # Create TRNet object
+#' trn <- TRNet(edges, FALSE, "RNA-seq")
+#'
+#' # Export igraph object
+#' exportIgraph(trn)
+#'
+methods::setGeneric(
+  "exportIgraph",
+  function(trn) {
+    standardGeneric("exportIgraph")
+  }
+)
+methods::setMethod(
+  "exportIgraph", "TRNet",
+  function(trn) {
+    return(trn@network)
   }
 )
 

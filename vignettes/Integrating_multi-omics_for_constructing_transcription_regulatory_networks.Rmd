@@ -30,10 +30,12 @@ library(IntegraTRN)
 
 ```{r message = FALSE, tidy=TRUE}
 # Generate MOList object
-myMOList <- MOList(RNAseq = RNAseq_heart,
-                   RNAGroupBy = RNAseq_heart_samples$Age, 
-                   smallRNAseq = smallRNAseq_heart, 
-                   smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+myMOList <- MOList(
+  RNAseq = RNAseq_heart,
+  RNAGroupBy = RNAseq_heart_samples$Age,
+  smallRNAseq = smallRNAseq_heart,
+  smallRNAGroupBy = smallRNAseq_heart_samples$Age
+)
 ```
 
 As long as a MOList object is constructed with RNAseq data, additional omics
@@ -46,19 +48,20 @@ atacPeak1Path <- system.file("extdata", "peak1.bed", package = "IntegraTRN")
 atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
 
 # Here we add the proteomics and ATACseq peaks data to the existing object
-myMOList <- MOList(myMOList, 
-                   proteomics = protein_heart, 
-                   proteomicsGroupBy = protein_heart_samples$Age, 
-                   pathATACpeak1 = atacPeak1Path, pathATACpeak2 = atacPeak2Path)
-                   
+myMOList <- MOList(myMOList,
+  proteomics = protein_heart,
+  proteomicsGroupBy = protein_heart_samples$Age,
+  pathATACpeak1 = atacPeak1Path, pathATACpeak2 = atacPeak2Path
+)
 ```
 
 
 ```{r message = FALSE, tidy=TRUE}
 # Perform differential analysis
-myMOList <- diffOmics(myMOList, 
-                      rnaseqBatch = RNAseq_heart_samples$Batch, 
-                      program = "DESeq2")
+myMOList <- diffOmics(myMOList,
+  rnaseqBatch = RNAseq_heart_samples$Batch,
+  program = "DESeq2"
+)
 ```
 
 ```{r message = FALSE, tidy=TRUE}
@@ -99,30 +102,22 @@ following command:
 
 ```{r message = FALSE, tidy=TRUE}
 # Use the ggpubr package to combine the PCA plots
-ggpubr::ggarrange(pcaPlotList$miRNA, 
-                  pcaPlotList$circRNA, 
-                  pcaPlotList$piRNA, 
-                  pcaPlotList$snoRNA, 
-                  pcaPlotList$snRNA, 
-                  pcaPlotList$tRNA, 
-                  ncol = 3, nrow = 2)
-```
-
-```{r message = FALSE, tidy=TRUE}
-# Prepare sample data frames for plotting
-rnaseqSampleDF <- RNAseq_heart_samples %>% as.data.frame()
-rownames(rnaseqSampleDF) <- rnaseqSampleDF$Sample
-rnaseqSampleDF <- rnaseqSampleDF[, -1]
-smallRNAseqSampleDF <- smallRNAseq_heart_samples %>% as.data.frame()
-rownames(smallRNAseqSampleDF) <- smallRNAseqSampleDF$Sample
-smallRNAseqSampleDF <- smallRNAseqSampleDF[, -1]
+ggpubr::ggarrange(pcaPlotList$miRNA,
+  pcaPlotList$circRNA,
+  pcaPlotList$piRNA,
+  pcaPlotList$snoRNA,
+  pcaPlotList$snRNA,
+  pcaPlotList$tRNA,
+  ncol = 3, nrow = 2
+)
 ```
 
 ```{r message = FALSE, tidy=TRUE}
 # Further match the RNAseq and small RNAseq data
-myMOList <- matchSamplesRNAsmallRNA(myMOList, 
-                                    sampleDFRNAseq = rnaseqSampleDF, 
-                                    sampleDFSmallRNAseq = smallRNAseqSampleDF)
+myMOList <- matchSamplesRNAsmallRNA(myMOList,
+  sampleDFRNAseq = RNAseq_heart_samples,
+  sampleDFSmallRNAseq = smallRNAseq_heart_samples
+)
 ```
 
 ```{r message = FALSE, tidy=TRUE}
@@ -141,18 +136,19 @@ bsgenome <- BSgenome.Hsapiens.UCSC.hg38
 # Retrieve position weight matrices (PWMs) from JASPAR
 library("JASPAR2022")
 pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
-   opts = list(
-     matrixtype = "PWM",
-     tax_group = "vertebrates"
-   )
- )
+  opts = list(
+    matrixtype = "PWM",
+    tax_group = "vertebrates"
+  )
+)
 
-myMOList <- annotateATACPeaksMotif(myMOList, 
-                                   tssRegion = c(-3000, 3000),
-                                   TxDb = txdb, 
-                                   annoDb = annoDb, 
-                                   bsgenome = bsgenome,
-                                   pwmL = pwmL)
+myMOList <- annotateATACPeaksMotif(myMOList,
+  tssRegion = c(-3000, 3000),
+  TxDb = txdb,
+  annoDb = annoDb,
+  bsgenome = bsgenome,
+  pwmL = pwmL
+)
 ```
 
 
@@ -176,4 +172,3 @@ plotATACMotifHeatmap(myMOList, pValue = 0.05)
 plotATACProfileHeatmap(myMOList)
 ```
 
-```{r message = FALSE, tidy=TRUE}

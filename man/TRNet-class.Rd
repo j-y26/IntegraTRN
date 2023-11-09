@@ -5,14 +5,14 @@
 \alias{TRNet-class}
 \alias{generatePlot}
 \alias{parseVertexMetadata}
-\alias{plot}
+\alias{plotNetwork}
 \title{TRNet S4 class of transcriptional regulatory network}
 \usage{
 generatePlot(trn)
 
 parseVertexMetadata(trn)
 
-plot(trn)
+plotNetwork(trn)
 }
 \arguments{
 \item{trn}{A TRNet object}
@@ -94,7 +94,7 @@ edges <- data.frame(
 trn <- TRNet(edges, FALSE, "RNA-seq")
 
 # Plot TRNet object
-plot(trn)
+plotNetwork(trn)
 
 }
 \keyword{internal}

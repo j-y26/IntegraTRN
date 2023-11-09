@@ -226,7 +226,7 @@ TOPTag <- function(object,
 #'
 #' @description The print method for the TOPTag class.
 #'
-#' @inheritParams DETag-class
+#' @param object A TOPTag object.
 #'
 #' @return NULL
 #'
