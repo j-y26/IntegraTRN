@@ -511,7 +511,7 @@ constructTRN <- function(objMOList,
   extmiR2gene <- is.null(objMOList$extInteractions$upregGenes2miR) &&
     is.null(objMOList$extInteractions$downregGenes2miR)
 
-  # Vlidate inputs
+  # Validate inputs
   if (rnaSeq) {
     stop("No differential RNAseq data provided. Must perform differential
     analysis before constructing the network.")
@@ -533,13 +533,14 @@ constructTRN <- function(objMOList,
                       pCutoff = omiCutoffs$rnaAdjPval,
                       topGenes = omiCutoffs$rnaTopGenes,
                       direction = targetDirection)
-  # Define a data frame that stores the final interactions
+  # Define data structures that will be used for constructing the network
   finalInteractions <- data.frame(
     regulator = character(),
     target = character(),
     regulatorType = character(),
     stringsAsFactors = FALSE
   )
+  omics <- c(RNASE)
 
   
   # First, refine the small RNA - mRNA interactions
