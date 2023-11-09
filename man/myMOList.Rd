@@ -9,7 +9,7 @@ An S4 object of class MOList
 \describe{
 \item{RNAseq}{A matrix of RNAseq gene expression values}
 \item{smallRNAseq}{A matrix of small RNAseq gene expression values}
-\item{protein}{A matrix of proteomics gene expression values}
+\item{proteomics}{A matrix of proteomics gene expression values}
 \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
 }
 }

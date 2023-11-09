@@ -61,6 +61,7 @@
 #' progenitor gene expression and programs adult-onset heart disease
 #' susceptibility. Molecular Metabolism, 43.
 #' https://doi.org/10.1016/j.molmet.2020.101116
+#'
 "RNAseq_heart_samples"
 
 #' Expression of small RNA in fetal heart tissues
@@ -108,6 +109,7 @@
 #' \dontrun{
 #' smallRNA_heart_samples
 #' }
+#'
 "smallRNAseq_heart_samples"
 
 #' Protein abundance in fetal heart tissues
@@ -129,6 +131,7 @@
 #' \dontrun{
 #' protein_heart
 #' }
+#'
 "protein_heart"
 
 #' Sample information for proteomics of heart tissues
@@ -150,7 +153,116 @@
 #' \dontrun{
 #' protein_heart_samples
 #' }
+#'
 "protein_heart_samples"
+
+#' miRNet curated miRNA-target interactions on upregulated fetal heart mRNAs
+#'
+#' A list of miRNA-target interactions on upregulated fetal heart mRNAs
+#' curated from miRNet
+#'
+#' @format A list of 2 vectors of the same length. Each representing a pair of
+#'         miRNA-target interactions.
+#' \describe{\
+#' \item{regulator}{A vector of miRNAs}
+#' \item{target}{A vector of upregulated fetal heart mRNAs}
+#' }
+#'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+#'             network-based visual analytics for miRNA functional analysis and
+#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#'
+#' @examples
+#' \dontrun{
+#' upregmiR2gene
+#' }
+#'
+"upregmiR2gene"
+
+#' miRNet curated miRNA-target interactions on downregulated fetal heart mRNAs
+#'
+#' A list of miRNA-target interactions on downregulated fetal heart mRNAs
+#' curated from miRNet
+#'
+#' @format A list of 2 vectors of the same length. Each representing a pair of
+#'         miRNA-target interactions.
+#' \describe{\
+#' \item{regulator}{A vector of miRNAs}
+#' \item{target}{A vector of downregulated fetal heart mRNAs}
+#' }
+#'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+#'             network-based visual analytics for miRNA functional analysis and
+#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#'
+#' @examples
+#' \dontrun{
+#' downregmiR2gene
+#' }
+#'
+"downregmiR2gene"
+
+#' miRNet curated TF-mRNA interactions on upregulated fetal heart mRNAs
+#'
+#' A list of TF-mRNA interactions on upregulated fetal heart mRNAs curated from
+#' miRNet
+#'
+#' @format A list of 2 vectors of the same length. Each representing a pair of
+#'         TF-mRNA interactions.
+#' \describe{\
+#' \item{regulator}{A vector of TFs}
+#' \item{target}{A vector of upregulated fetal heart mRNAs}
+#' }
+#'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+#'             network-based visual analytics for miRNA functional analysis and
+#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#'
+#' @examples
+#' \dontrun{
+#' upregTF2gene
+#' }
+#'
+"upregTF2gene"
+
+#' miRNet curated TF-mRNA interactions on downregulated fetal heart mRNAs
+#'
+#' A list of TF-mRNA interactions on downregulated fetal heart mRNAs curated
+#' from miRNet
+#'
+#' @format A list of 2 vectors of the same length. Each representing a pair of
+#'         TF-mRNA interactions.
+#' \describe{\
+#' \item{regulator}{A vector of TFs}
+#' \item{target}{A vector of downregulated fetal heart mRNAs}
+#' }
+#'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+#'             network-based visual analytics for miRNA functional analysis and
+#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#'
+#' @examples
+#' \dontrun{
+#' downregTF2gene
+#' }
+#'
+"downregTF2gene"
 
 #' Example MOList S4 object
 #'
@@ -161,7 +273,7 @@
 #' \describe{
 #' \item{RNAseq}{A matrix of RNAseq gene expression values}
 #' \item{smallRNAseq}{A matrix of small RNAseq gene expression values}
-#' \item{protein}{A matrix of proteomics gene expression values}
+#' \item{proteomics}{A matrix of proteomics gene expression values}
 #' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
 #' }
 #'

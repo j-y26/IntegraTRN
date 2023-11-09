@@ -421,3 +421,32 @@ write.table(peak2, "./data-raw/peak2.bed",
   sep = "\t", quote = FALSE,
   row.names = FALSE, col.names = FALSE
 )
+
+
+# External interaction data
+upregmiR2gene <- read.csv("./data-raw/upreg_mrna_gene2mir.csv", header = TRUE)
+downregmiR2gene <- read.csv("./data-raw/downreg_mrna_gene2mir.csv", header = TRUE)
+upregTF2gene <- read.csv("./data-raw/upreg_mrna_gene2tf.csv", header = TRUE)
+downregTF2gene <- read.csv("./data-raw/downreg_mrna_gene2tf.csv", header = TRUE)
+
+upregmiR2gene <- list(
+  regulator = upregmiR2gene$regulator,
+  target = upregmiR2gene$target
+)
+downregmiR2gene <- list(
+  regulator = downregmiR2gene$regulator,
+  target = downregmiR2gene$target
+)
+upregTF2gene <- list(
+  regulator = upregTF2gene$regulator,
+  target = upregTF2gene$target
+)
+downregTF2gene <- list(
+  regulator = downregTF2gene$regulator,
+  target = downregTF2gene$target
+)
+
+usethis::use_data(upregmiR2gene, downregmiR2gene, upregTF2gene,
+  downregTF2gene,
+  overwrite = TRUE
+)

@@ -430,10 +430,6 @@ matchSamplesRNAsmallRNA <- function(objMOList,
       sampleDFSmallRNAseq
     )
   }
-
-  # Display the matching result to console
-  cat("The matching result is:\n")
-  print(exportMatchResult(objMOList))
   return(objMOList)
 }
 

@@ -211,6 +211,8 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
     # Continue
   }
 
+  cat("Performing motif enrichment analysis...this may take a while...\n")
+
   # Generate GRanges mobject
   peakGR <- GenomicRanges::makeGRangesFromDataFrame(peaks,
     keep.extra.columns = TRUE
@@ -236,6 +238,8 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
     bins = bins,
     pwmL = pwmL,
   )
+
+  cat("Done.\n")
 
   # Append the motif enrichment results to the MOList object
   objMOList$DEATAC$motifEnrichment <- enrichedMotifs

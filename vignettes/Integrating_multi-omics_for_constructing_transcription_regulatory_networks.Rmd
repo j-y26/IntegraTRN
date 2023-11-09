@@ -56,7 +56,7 @@ myMOList <- MOList(myMOList,
 ```
 
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Perform differential analysis
 myMOList <- diffOmics(myMOList,
   rnaseqBatch = RNAseq_heart_samples$Batch,
@@ -69,17 +69,17 @@ myMOList <- diffOmics(myMOList,
 myMOList <- annotateSmallRNA(myMOList, anno = "human")
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 1. Volcano plot of RNAseq data"}
 # Plot Volcano plot of RNAseq data
 plotVolcanoRNA(myMOList, log2FC = 0.1)
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of small RNAseq data"}
 # Plot Volcano plot of small RNAseq data
 plotVolcanoSmallRNA(myMOList, log2FC = 0)
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, echo=FALSE}
 # PCA plot of small RNAseq data
 pcaPlotList <- plotSmallRNAPCAs(myMOList)
 ```
@@ -93,14 +93,14 @@ length(pcaPlotList)
 In this case, we have 6 PCA plots, one for each small RNA type. We can plot
 the PCA plot for miRNA using the following command:
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 3. PCA plot of miRNA"}
 pcaPlotList$miRNA
 ```
 
 Or, we can generate a combined PCA plot for all small RNA types using the
 following command:
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=9, fig.height=6, fig.cap="Figure 4. Combined PCA plot of all small RNA types"}
 # Use the ggpubr package to combine the PCA plots
 ggpubr::ggarrange(pcaPlotList$miRNA,
   pcaPlotList$circRNA,
@@ -112,7 +112,7 @@ ggpubr::ggarrange(pcaPlotList$miRNA,
 )
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, echo=FALSE}
 # Further match the RNAseq and small RNAseq data
 myMOList <- matchSamplesRNAsmallRNA(myMOList,
   sampleDFRNAseq = RNAseq_heart_samples,
@@ -121,10 +121,11 @@ myMOList <- matchSamplesRNAsmallRNA(myMOList,
 ```
 
 ```{r message = FALSE, tidy=TRUE}
-exportMatchResult(myMOList)
+exportMatchResult(myMOList) %>%
+  DT::datatable(rownames = FALSE, options = list(pageLength = 5))
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Annotate ATAC Peaks
 library("TxDb.Hsapiens.UCSC.hg38.knownGene")
 library("org.Hs.eg.db")
@@ -152,23 +153,23 @@ myMOList <- annotateATACPeaksMotif(myMOList,
 ```
 
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 5. Annotations on ATACseq peaks"}
 # Plot annotation Pie chart of the ATACseq peaks
 plotATACAnno(myMOList)
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 6. ATACseq coverage"}
 # Plot ATACseq Coverage
 plotATACCoverage(myMOList)
 ```
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=8, fig.height=4, fig.cap="Figure 7. Motif enrichment on ATACseq peaks"}
 # Plot ATACseq Motif Heatmaps
-plotATACMotifHeatmap(myMOList, pValue = 0.05)
+plotATACMotifHeatmap(myMOList, pValue = 0.01)
 ```
 
-```{r message = FALSE, tidy=TRUE}
-# Plot ATACseq profile plots
-plotATACProfileHeatmap(myMOList)
-```
+Now we can construct the small RNA - TF - target gene network.
 
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+# Load external interaction data to the MOList object
+```

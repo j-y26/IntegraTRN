@@ -628,8 +628,7 @@ plotATACAnno <- function(objMOList) {
     # Continue
   }
   csAnno <- objMOList$DEATAC@annotatedPeaks
-  piePlot <- ChIPseeker::plotAnnoPie(csAnno)
-  return(piePlot)
+  ChIPseeker::plotAnnoPie(csAnno)
 }
 
 
@@ -751,11 +750,6 @@ plotATACMotifHeatmap <- function(objMOList,
     pValue = pValue,
     log2FEnrich = log2FEnrich
   )
-
-  # List of significant motifs
-  motifList <- motifNames(enrichedMotifs[sel, ])
-  cat("Significant motifs:\n")
-  cat(paste(motifList, collapse = ", "), "\n")
 
   # Define values to plot
   if (is.null(pValue)) {
