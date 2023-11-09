@@ -58,4 +58,28 @@ methods::setClass("TRNet",
 #' 
 #' @return A TRNet object
 #' 
-#' 
+TRNet <- function(TRNmetadata, predicted, omics) {
+  # Check if TRNmetadata is a data frame
+  if (!is.data.frame(TRNmetadata)) {
+    stop("TRNmetadata must be a data frame")
+  } else {
+    # Do nothing
+  }
+  
+  # Check if TRNmetadata contains the required columns
+  if (!all(NETOWRK_FIELD %in% colnames(TRNmetadata))) {
+    stop("TRNmetadata must contain all required fields")
+  } else {
+    # Do nothing
+  }
+  
+  # Create TRNet object
+  trn <- new("TRNet",
+               TRNmetadata = TRNmetadata,
+               predicted = predicted,
+               omics = omics)
+
+  # Create igraph object
+  trn <- generatePlot(trn)
+  return(trn)
+}

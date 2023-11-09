@@ -174,7 +174,7 @@ csAnnoToDF <- function(anno) {
 #'                       enrichment results
 #' @return A vector of enriched TF names
 #'
-motifNames <- function(enrichedMotifs, sel) {
+motifNames <- function(enrichedMotifs) {
   motifNames <- enrichedMotifs@elementMetadata@listData$motif.name
 
   # Some DNA binding elements are in the format of TF1::TF2 to indicate

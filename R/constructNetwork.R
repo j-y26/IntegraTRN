@@ -704,19 +704,52 @@ constructTRN <- function(objMOList,
                       objMOList$extInteractions$downregGenes2TF,
                       SIMPLIFY = FALSE)
     )
+    extTFmRNA$regulatorType <- rep("TF", length(extTFmRNA$regulator))
     # Filter by ATACseq-validated TFs if available
     if (atacSeq) {
       # Skip filtering TFs by ATACseq data silently
+      transcriptionFactormRNA <- extTFmRNA
     } else if (!inherits(objMOList$DEATAC, "PEAKTag")) {
       warning("ATACseq data has no annotated motifs. See ?annotateATACPeaksMotif
       for details.")
       warning("Skipping filtering TFs by ATACseq data.")
+      transcriptionFactormRNA <- extTFmRNA
     } else {
       # Filter TFs by ATACseq data
-      
-      
+      sel <- selectedMotifs(enrichedMotifs = objMOList$DEATAC,
+                            pValueAdj = omiCutoffs$atacMotifAdjPval,
+                            pValue = omiCutoffs$atacMotifPval,
+                            log2FEnrich = omiCutoffs$atacMotifLogFC)
+      validTFs <- motifNames(objMOList$DEATAC[sel, ])
+      transcriptionFactormRNA <- lapply(extTFmRNA, function(x) {
+        x[x$regulator %in% validTFs]
+      })
+      omic <- union(omic, TF)
     }
-
   }
 
+  # ====== PART 4: Combine all the interactions ================================
+  # Combine all the interactions
+  trnInteractions <- data.frame(
+    regulator = NULL,
+    target = NULL,
+    regulatorType = NULL
+  )
+  for (omicList in c(smallRNAmRNA, transcriptionFactormRNA)) {
+    if (is.null(omicList)) {
+      # Do nothing
+    } else {
+      trnInteractions <- rbind(trnInteractions, omicList)
+    }
+  }
+  # Access any potential duplicated interactions (potentially user-imported)
+  duplicatedInt <- duplicated(trnInteractions[, NETOWRK_FIELD[1:2]])
+  trnInteractions <- trnInteractions[!duplicatedInt, ]
+  # Construct the network
+  trnNetwork <- TRNet(
+    TRNmetadata = trnInteractions,
+    predicted = predicted,
+    omics = omic
+  )
+  return(trnNetwork)
 }
