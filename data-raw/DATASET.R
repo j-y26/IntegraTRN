@@ -41,10 +41,7 @@ write.csv(circRNAHsapiens, "./data-raw/circRNAHsapiens_COMPSRA.csv",
 
 
 # Saving internal data
-usethis::use_data(TFHsapiens, miRNAHsapiens, snoRNAHsapiens, snRNAHsapiens,
-  tRNAHsapiens, piRNAHsapiens, circRNAHsapiens,
-  internal = TRUE, overwrite = TRUE
-)
+usethis::use_data(SNCANNOLIST_HSAPIENS, internal = TRUE, overwrite = TRUE)
 
 
 # Exported Data

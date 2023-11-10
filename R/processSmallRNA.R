@@ -10,16 +10,6 @@ HUMAN <- "human"
 USERANNO <- "userAnno"
 SMALLRNA_CATEGORIES <- c("miRNA", "piRNA", "tRNA", "circRNA", "snRNA", "snoRNA")
 
-SNCANNOLIST_HSAPIENS <- list(
-  miRNA = miRNAHsapiens,
-  piRNA = piRNAHsapiens,
-  snoRNA = snoRNAHsapiens,
-  snRNA = snRNAHsapiens,
-  tRNA = tRNAHsapiens,
-  circRNA = circRNAHsapiens
-)
-
-
 #' Check annotation coverage
 #'
 #' @keywords internal

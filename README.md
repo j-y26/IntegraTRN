@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-![](./inst/extdata/IntegraTRN_header.png)
+# IntegraTRN
 
 ------------------------------------------------------------------------
 
@@ -62,7 +62,82 @@ data(package = "IntegraTRN")
 browseVignettes("IntegraTRN")
 ```
 
+To get started, the functionality of the package is primarily divided
+into two parts: (1) exploring differential expression or accessibility
+of genes and proteins, and (2) constructing a small RNA - transcription
+factor - gene regulatory network. The following is an overview of the
+functions in the package, in the order of use subjected to the types of
+omcis data available. `IntegraTRN` provides functions:
+
+1.  ***MOList*** for generating a `MOList` object that contains the
+    omics data and sample grouping information
+2.  ***diffOmics*** for performing differential analysis on the omics
+    data
+3.  ***annotateSmallRNA*** for annotating small RNA transcripts
+4.  ***plotVolcanoRNA*** for visualizing RNAseq differential expression
+5.  ***plotVolcanoSmallRNA*** for visualizing small RNAseq differential
+    expression
+6.  ***plotSmallRNAPCAs*** for visualizing small RNAseq principal
+    component analysis for each type of small RNA
+7.  ***annotateATACPeaksMotif*** for annotating ATACseq peaks with motif
+    enrichment analysis
+8.  ***plotATACAnno*** for visualizing the annotation of ATACseq peaks
+9.  ***plotATACCoverage*** for visualizing the coverage of ATACseq peaks
+10. ***plotATACMotifHeatmap*** for visualizing the motif enrichment
+    analysis as a heatmap comparing differentially enriched motifs
+    between the two testing conditions
+11. ***matchSamplesRNAsmallRNA*** for matching the samples between
+    RNAseq and small RNAseq data
+12. ***exportMatchResult*** for exporting the matching results to a data
+    frame
+13. ***loadExtInteractions*** for loading external interaction data for
+    small RNA - gene and TF - gene interactions
+14. ***setOmicCutoffs*** for setting the cutoffs for differential
+    expression and accessibility used to filter the key elements in the
+    TRN
+15. ***constructTRN*** for constructing the TRN
+16. ***plotNetwork*** for visualizing the TRN
+
 ## Contributions
+
+The author of the package is Jielin Yang. The author defined all data
+structures used in this package, including the S4 classes `MOList`,
+`DETag`, `TOPTag`, `PEAKTag`, and `TRNet`. The author wrote the `MOList`
+function to construct the key data structure and performs validations on
+the input omics data. The package `GenomicTools.fileHandler` is used to
+read bed files. The function `diffOmics` performs differential
+expression on RNAseq, small RNAseq, and proteomics data using a negative
+binomial model, which internally normalizes and performs differential
+analysis using the `DESeq2` or `edgeR` package. ATACseq peaks are
+handled as genomic coordinates using the `GenomicRanges` package. The
+author wrote the `annotateSmallRNA` function to annotate small RNA
+transcripts. The three plotting functions, `plotVolcanoRNA`,
+`plotVolcanoSmallRNA`, and `plotSmallRNAPCAs`, are supported by the
+`ggplot2` package, with PCA analysis supported by `DESeq2` on normalized
+expression. The `ChIPseeker` package is used to annotate ATACseq peaks
+with motif enrichment analysis and performs plotting on ATACseq peaks.
+The `matchSamplesRNAsmallRNA` function performs optimal matching based
+on mahalanobis distance between the sample information of the RNAseq and
+small RNAseq data. The calculation of the mahalanobis distance and
+selection of optimal pairs are supported by the `MatchIt` package. The
+author wrote the utility functions `exportMatchResult` and
+`loadExtInteractions` to export the matching results and load external
+interaction data. The author also wrote the `setOmicCutoffs` function as
+an easy way for the users to decide on the inclusion criteria for the
+key elements in the TRN. The author wrote the `constructTRN` function,
+with a logic defined to integrate the different omics data depending on
+their availability, as well as whether predicted inference is used. The
+inference of predicted small RNA - gene interactions is supported
+partially by the author’s discretion to generate a single coherent
+normalized expression matrix for both RNAseq and small RNAseq data that
+allows co-expression estimation. The inference of small RNA - gene
+interactions is performed by the `GENIE3` package, which internally uses
+a three-based algorithm to infer the interactions. The `igraph` package
+is used to visualize the TRN. Most data frame processing used internally
+in the functions is supported by the `dplyr` package. Generative AI tool
+was used to generate some unit test example data based on the author’s
+description. Generative AI results were incorporated into the tests at
+the author’s discretion.
 
 ## References
 
