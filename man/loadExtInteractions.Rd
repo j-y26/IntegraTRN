@@ -6,10 +6,10 @@
 \usage{
 loadExtInteractions(
   objMOList,
-  upregGenes2miR = NULL,
-  downregGenes2miR = NULL,
-  upregGenes2TF = NULL,
-  downregGenes2TF = NULL
+  upregmiR2Genes = NULL,
+  downregmiR2Genes = NULL,
+  upregTF2Genes = NULL,
+  downregTF2Genes = NULL
 )
 }
 \arguments{

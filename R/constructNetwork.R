@@ -34,7 +34,7 @@ validateInteractionAdjList <- function(adjList) {
   } else {
     # Do nothing
   }
-  return(adjList[, NETOWRK_FIELD])
+  return(adjList[NETOWRK_FIELD[1:2]])
 }
 
 
@@ -118,20 +118,20 @@ validateInteractionAdjList <- function(adjList) {
 #' )
 #'
 loadExtInteractions <- function(objMOList,
-                                upregGenes2miR = NULL,
-                                downregGenes2miR = NULL,
-                                upregGenes2TF = NULL,
-                                downregGenes2TF = NULL) {
+                                upregmiR2Genes = NULL,
+                                downregmiR2Genes = NULL,
+                                upregTF2Genes = NULL,
+                                downregTF2Genes = NULL) {
   # Check the input data
-  if (is.null(upregGenes2miR) && is.null(downregGenes2miR) &&
-    is.null(upregGenes2TF) && is.null(downregGenes2TF)) {
+  if (is.null(upregmiR2Genes) && is.null(downregmiR2Genes) &&
+    is.null(upregTF2Genes) && is.null(downregTF2Genes)) {
     stop("Please provide at least one type of the interaction data.")
-  } else if (xor(is.null(upregGenes2miR), is.null(downregGenes2miR))) {
+  } else if (xor(is.null(upregmiR2Genes), is.null(downregmiR2Genes))) {
     # Both upregulated and downregulated genes must be provided, if any
     # miRNA interactions are provided
     stop("Please provide both upregulated and downregulated genes to miRNA
     interactions.")
-  } else if (xor(is.null(upregGenes2TF), is.null(downregGenes2TF))) {
+  } else if (xor(is.null(upregTF2Genes), is.null(downregTF2Genes))) {
     # Same logic for TF interactions
     stop("Please provide both upregulated and downregulated genes to TF
     interactions.")
@@ -139,28 +139,28 @@ loadExtInteractions <- function(objMOList,
     # Continue
   }
 
-  if (!is.null(upregGenes2miR)) {
+  if (!is.null(upregmiR2Genes)) {
     # In case where the names of the elements of the list are not provided
     # correctly, set the first element to be the regulator and the second
     # element to be the target
-    upregGenes2miR <- validateInteractionAdjList(upregGenes2miR)
-    downregGenes2miR <- validateInteractionAdjList(downregGenes2miR)
+    upregGenes2miR <- validateInteractionAdjList(upregmiR2Genes)
+    downregGenes2miR <- validateInteractionAdjList(downregmiR2Genes)
   } else {
     # Do nothing
   }
-  if (!is.null(upregGenes2TF)) {
-    upregGenes2TF <- validateInteractionAdjList(upregGenes2TF)
-    downregGenes2TF <- validateInteractionAdjList(downregGenes2TF)
+  if (!is.null(upregTF2Genes)) {
+    upregGenes2TF <- validateInteractionAdjList(upregTF2Genes)
+    downregGenes2TF <- validateInteractionAdjList(downregTF2Genes)
   } else {
     # Do nothing
   }
 
   # Setting the external interactions to the MOList object
   objMOList$extInteractions <- list(
-    upregGenes2miR = upregGenes2miR,
-    downregGenes2miR = downregGenes2miR,
-    upregGenes2TF = upregGenes2TF,
-    downregGenes2TF = downregGenes2TF
+    upregGenes2miR = upregmiR2Genes,
+    downregGenes2miR = downregmiR2Genes,
+    upregGenes2TF = upregTF2Genes,
+    downregGenes2TF = downregTF2Genes
   )
 
   return(objMOList)
@@ -338,8 +338,6 @@ print.OMICutoffs <- function(x, ...) {
 }
 
 
-
-
 #' Select miRNA inverse correlation
 #'
 #' @description This function selects the miRNAs in which its expression is
@@ -429,7 +427,7 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
   }
 
   # Generates a TOPTag object for the small RNAs
-  smallRNATopTag <- TOPTag(smallDETag,
+  smallRNATopTag <- TOPTag(objMOList$DEsmallRNAseq,
     logFCCutoff = omiCutoffs$smallRNALogFC,
     pCutoff = omiCutoffs$smallRNAAdjPval,
     topGenes = omiCutoffs$smallRNATopGenes,
@@ -493,8 +491,10 @@ intersectInteractions <- function(adjList1, adjList2) {
 
   # Intersect the interactions
   commonInteract <- intersect(adjList1$pair, adjList2$pair)
-  intersectedList <- lapply(adjList1, function(x) x[x$pair %in% commonInteract])
-  intersectedList$pair <- NULL
+  sel <-adjList1$pair %in% commonInteract
+
+  intersectedList <- list(regulator = adjList1$regulator[sel],
+                          target = adjList1$target[sel])
 
   return(intersectedList)
 }
@@ -564,6 +564,19 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 #'                   details.
 #' @param seed The seed to use for the random forest model
 #'
+#' @return A TRNet object containing the transcriptional regulatory network
+#'
+#' @export
+#'
+#' @examples
+#' # Suppose we have a MOList object called myMOList, with the omics data
+#' # already loaded and contains the required omics data
+#'
+#' # Set the cutoffs for the omics data
+#' omiCutoffs <- setOmicCutoffs()   # use default cutoffs
+#'
+#' # Construct the network
+#' myTRNet <- constructTRN(myMOList, omiCutoffs)
 #'
 constructTRN <- function(objMOList,
                          omiCutoffs,
@@ -577,7 +590,7 @@ constructTRN <- function(objMOList,
   # Check the available omics data
   rnaSeq <- is.null(objMOList$DERNAseq)
   smallRNAseq <- is.null(objMOList$DEsmallRNAseq)
-  proteomics <- is.null(objMOList$DEProteomics)
+  proteomics <- is.null(objMOList$DEproteomics)
   atacSeq <- is.null(objMOList$DEATAC)
   extTF2gene <- is.null(objMOList$extInteractions$upregGenes2TF) &&
     is.null(objMOList$extInteractions$downregGenes2TF)
@@ -631,7 +644,7 @@ constructTRN <- function(objMOList,
     )
     # Filter the target genes by proteomics data
     rnaTopTag <- filterTargetGenes(rnaTopTag, protTopTag)
-    omic <- union(omic, PROTEIN)
+    omics <- union(omics, PROTEIN)
   }
 
   # ====== PART 2: small RNA - mRNA interactions ===============================
@@ -659,7 +672,7 @@ constructTRN <- function(objMOList,
         treeMethod = treeMethod,
         seed = seed
       )
-      omic <- union(omic, SMALLRNA)
+      omics <- union(omics, SMALLRNA)
     }
   } else {
     smallRNAmRNAPred <- NULL
@@ -677,7 +690,7 @@ constructTRN <- function(objMOList,
         SIMPLIFY = FALSE
       )
     )
-    omic <- union(omic, SMALLRNA)
+    omics <- union(omics, SMALLRNA)
   }
 
   # Finalize small RNA - mRNA interactions
@@ -743,7 +756,7 @@ constructTRN <- function(objMOList,
       transcriptionFactormRNA <- lapply(extTFmRNA, function(x) {
         x[x$regulator %in% validTFs]
       })
-      omic <- union(omic, TF)
+      omics <- union(omics, "TF")
     }
   }
 
@@ -768,7 +781,7 @@ constructTRN <- function(objMOList,
   trnNetwork <- TRNet(
     TRNmetadata = trnInteractions,
     predicted = predicted,
-    omics = omic
+    omics = omics
   )
   return(trnNetwork)
 }

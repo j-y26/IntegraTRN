@@ -46,9 +46,23 @@ details.}
 "tRNA", and "circRNA". If "all" is specified, then all
 the small RNA types will be used.}
 }
+\value{
+A TRNet object containing the transcriptional regulatory network
+}
 \description{
 This function constructs a transcriptional regulatory network
              based on the omics data and the external interaction data
              provided. The network is stored as an igraph object in the
              TRNet S4 class, which is a mRNA-TF-smallRNA network.
+}
+\examples{
+# Suppose we have a MOList object called myMOList, with the omics data
+# already loaded and contains the required omics data
+
+# Set the cutoffs for the omics data
+omiCutoffs <- setOmicCutoffs()   # use default cutoffs
+
+# Construct the network
+myTRNet <- constructTRN(myMOList, omiCutoffs)
+
 }

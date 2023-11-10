@@ -494,9 +494,9 @@ exportMatchResult <- function(objMOList) {
 #' @return A list containing the predicted interactions, with the
 #'        following format:
 #' \itemize{
-#' \item{regulatoryGene}{The names of the small RNAs that are predicted to regulate
+#' \item{regulator}{The names of the small RNAs that are predicted to regulate
 #'                       the target genes.}
-#' \item{targetGene}{The names of the target genes that are predicted to be
+#' \item{target}{The names of the target genes that are predicted to be
 #'                   regulated by the small RNAs.}
 #' \item{weight}{The weight of the predicted interactions.}
 #' }
@@ -529,14 +529,15 @@ runGENIE3 <- function(exprMatrix,
   set.seed(NULL)
 
   # The weighted matrix contains a weight for each regulator-target pair
-  # Consider the top 10% of the weights as the predicted interactions
-  weightThreshold <- quantile(weightedMatrix, 0.9)
-  weightedAdjList <- GENIE3::getLinkList(weightedMatrix,
-    threshold = weightThreshold
+  # Consider the top 50% of the weights as the predicted interactions
+  weightThreshold <- quantile(weightedMatrix, 0.5)
+  weightedAdjList <- GENIE3::getLinkList(weightedMatrix)
+  weightedAdjList <- list(
+    regulator = weightedAdjList[, 1],
+    target = weightedAdjList[, 2],
+    weight = weightedAdjList[, 3]
   )
 
-  # Rename the elements
-  names(weightedAdjList) <- c("regulator", "target", "weight")
   return(weightedAdjList)
 }
 
@@ -594,7 +595,9 @@ runGENIE3 <- function(exprMatrix,
 #'
 predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
                                       smallRNATopTag,
-                                      smallRNATypes = "all",
+                                      smallRNATypes = c("miRNA", "piRNA",
+                                                        "snRNA", "snoRNA",
+                                                        "circRNA", "tRNA"),
                                       annoSncRNA,
                                       matchingRNAsmallRNA,
                                       ntree = 1000,
@@ -651,9 +654,6 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
   exprMatrix <- rbind(exprMatrixRNA, exprMatrixSmallRNA) %>% as.matrix()
 
   # Obtain the set of regulators for GENIE3
-  if (smallRNATypes == "all") {
-    smallRNATypes <- SMALLRNA_CATEGORIES
-  }
   regulators <- unlist(annoSncRNA[smallRNATypes]) %>%
     intersect(rownames(exprMatrixSmallRNA))
 

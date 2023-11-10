@@ -172,4 +172,34 @@ Now we can construct the small RNA - TF - target gene network.
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Load external interaction data to the MOList object
+myMOList <- loadExtInteractions(myMOList,
+  upregmiR2Genes = upregmiR2gene,
+  downregmiR2Genes = downregmiR2gene,
+  upregTF2Genes = upregTF2gene,
+  downregTF2Genes = downregTF2gene
+)
+```
+
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+# Define the cutoffs for the omics data
+omiCutoffs <- setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0.1,
+  rnaTopGenes = 0.1,
+  smallRNAAdjPval = 0.05,
+  smallRNALogFC = 0.1,
+  smallRNATopGenes = 0.1,
+  atacMotifPval = 0.01
+)
+```
+
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+# Construct the small RNA - TF - target gene network
+myTRNet <- constructTRN(myMOList,
+  omiCutoffs = 
+)
+```
+
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+
 ```

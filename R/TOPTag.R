@@ -313,4 +313,32 @@ methods::setMethod("filterGenes", "TOPTag", function(object, names) {
 })
 
 
+#' @rdname TOPTag-class
+#' 
+#' @title Export the differential analysis results from a TopTag object
+#' 
+#' @description This function exports the differential analysis results from a
+#'              TopTag object. Overwrites the exportDE function in the DETag
+#'              class due to different nomenclature of the columns.
+#' 
+#' @inheritParams exportDE
+#' 
+#' @return A data frame containing the differential analysis results.
+#' 
+#' @importFrom methods setMethod
+#' 
+#' @export
+#' 
+#' @examples
+#' # Assuming that the object "topTag" is a TOPTag object
+#' \dontrun{
+#' exportDE(topTag)
+#' }
+#' 
+methods::setMethod("exportDE", "TOPTag", function(x, original = FALSE) {
+  # Ignore the original argument
+  return(x@DEResult)
+})
+
+
 # [END]
