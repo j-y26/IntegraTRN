@@ -4,10 +4,10 @@
 \alias{extractDirectionalGenes}
 \title{Extract a list of names respectively for down and up regulated genes}
 \usage{
-extractDirectionalGenes(deTag)
+extractDirectionalGenes(deResult)
 }
 \arguments{
-\item{deTag}{A DETag object}
+\item{deResult}{A data frame containing the differential expression results}
 }
 \value{
 A list of names respectively for down and up regulated genes

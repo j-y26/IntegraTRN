@@ -191,12 +191,11 @@ motifNames <- function(enrichedMotifs) {
 #'
 #' @keywords internal
 #'
-#' @param deTag A DETag object
+#' @param deResult A data frame containing the differential expression results
 #'
 #' @return A list of names respectively for down and up regulated genes
 #'
-extractDirectionalGenes <- function(deTag) {
-  deResult <- exportDE(deTag)
+extractDirectionalGenes <- function(deResult) {
   downGenes <- deResult %>%
     dplyr::filter(logFC < 0) %>%
     rownames()
@@ -215,6 +214,8 @@ extractDirectionalGenes <- function(deTag) {
 #' @param annotation A list, with the name of each element defined to be the
 #'                   type of gene, and the content of each element defined to be
 #'                   a vector of gene names in that type
+#' 
+#' @import base::Vectorize
 #'
 #' @return The type of the gene
 #'
@@ -230,6 +231,7 @@ findGeneType <- function(geneName, annotation) {
   }
   return(geneType)
 }
+findGeneType <- base::Vectorize(findGeneType, vectorize.args = "geneName")
 
 
 # [END]

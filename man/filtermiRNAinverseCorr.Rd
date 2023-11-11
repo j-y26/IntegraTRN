@@ -8,6 +8,7 @@ filtermiRNAinverseCorr(
   exprAdjList,
   deResultRNA,
   deResultSmallRNA,
+  sncAnno,
   smallRNATypes = SMALLRNA_CATEGORIES
 )
 }
@@ -18,14 +19,16 @@ filtermiRNAinverseCorr(
 \item \code{target}: A character vector containing the targets
 }}
 
+\item{deResultRNA}{A data frame containing the differential RNAseq data}
+
+\item{deResultSmallRNA}{A data frame containing the differential smallRNAseq}
+
+\item{sncAnno}{A list of annotations for small RNAs}
+
 \item{smallRNATypes}{A character vector containing the small RNA types that
 the user wants to use to construct the network. The
 available types are "miRNA", "piRNA", "snRNA", "snoRNA",
 "tRNA", and "circRNA".}
-
-\item{rnaDETag}{A DETag object containing the differential RNAseq data}
-
-\item{smallDETag}{A DETag object containing the differential smallRNAseq data}
 }
 \value{
 A list with filtered regulator-target interactions

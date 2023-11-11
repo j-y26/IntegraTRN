@@ -484,3 +484,8 @@ smallRNAseq_heart <- srna
 usethis::use_data(smallRNAseq_heart, overwrite = TRUE)
 
 
+
+# miR2Gene interaction data
+miR2Gene <- read.csv("./data-raw/gene2mir.csv", header = TRUE)
+set.seed(91711)
+mir2Gene <- miR2Gene[sample(1:nrow(miR2Gene), 2000), ]

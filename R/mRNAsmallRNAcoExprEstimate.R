@@ -544,8 +544,7 @@ runGENIE3 <- function(exprMatrix,
   # Convert the weighted adjacency list to a list of three vectors
   weightedAdjList <- list(
     regulator = weightedAdjList[, 1],
-    target = weightedAdjList[, 2],
-    weight = weightedAdjList[, 3]
+    target = weightedAdjList[, 2]
   )
 
   rm(weightedMatrix)

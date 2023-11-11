@@ -5,7 +5,7 @@
 \alias{smallRNAseq_heart}
 \title{Expression of small RNA in fetal heart tissues}
 \format{
-A data frame with 14227 rows (small RNA transcripts) and 37 columns
+A data frame with 1522 rows (small RNA transcripts) and 37 columns
 (samples)
 \describe{
  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6, sample_7,

@@ -312,8 +312,9 @@ print.OMICutoffs <- function(x, ...) {
 #' \item \code{regulator}: A character vector containing the regulators
 #' \item \code{target}: A character vector containing the targets
 #' }
-#' @param rnaDETag A DETag object containing the differential RNAseq data
-#' @param smallDETag A DETag object containing the differential smallRNAseq data
+#' @param deResultRNA A data frame containing the differential RNAseq data
+#' @param deResultSmallRNA A data frame containing the differential smallRNAseq
+#' @param sncAnno A list of annotations for small RNAs
 #' @param smallRNATypes A character vector containing the small RNA types that
 #'                      the user wants to use to construct the network. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
@@ -324,18 +325,21 @@ print.OMICutoffs <- function(x, ...) {
 filtermiRNAinverseCorr <- function(exprAdjList,
                                    deResultRNA,
                                    deResultSmallRNA,
+                                   sncAnno,
                                    smallRNATypes = SMALLRNA_CATEGORIES) {
   if ("miRNA" %in% smallRNATypes) {
     # Extract only inverse small RNA - mRNA interactions
     # i.e., downregulated small RNA - upregulated mRNA
-    genesmiRNA <- extractDirectionalGenes(smallDETag) %>%
-      intersect(., sncAnno[["miRNA"]])
-    genesRNA <- extractDirectionalGenes(rnaDETag)
+    genesmiRNA <- extractDirectionalGenes(deResultSmallRNA) %>%
+      lapply(intersect, sncAnno[["miRNA"]])
+    genesRNA <- extractDirectionalGenes(deResultRNA)
 
     downregmiRNA <- genesmiRNA$down
     upregmiRNA <- genesmiRNA$up
     downregRNA <- genesRNA$down
     upregRNA <- genesRNA$up
+
+    rm(genesmiRNA, genesRNA)
 
     # Extract the predicted interactions
     inverseRelation <- (exprAdjList$regulator %in% downregmiRNA &
@@ -498,41 +502,41 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 
 
 #' Combine small RNA - mRNA interactions from different sources
-#' 
+#'
 #' @keywords internal
-#' 
+#'
 #' @description This function combines the small RNA - mRNA interactions from
 #'              different sources, including the predicted interactions and the
 #'              curated interactions. The function also annotates the type of
 #'              the regulators. For miRNA only, the functions also filters the
 #'              interactions by inverse correlation.
-#' 
+#'
 #' @param predInteract A list of predicted interactions in adjacent list format
 #' \itemize{
 #' \item \code{regulator}: A character vector containing the regulators
 #' \item \code{target}: A character vector containing the targets
 #' }
-#' 
+#'
 #' @param extInteract A list of curated interactions in adjacent list format
 #' @param sncAnno A list of annotations for small RNAs
 #' @param deResultRNA A data frame containing the differential RNAseq data
 #' @param deResultSmallRNA A data frame containing the differential smallRNAseq
-#' 
+#'
 #' @return A list of interactions in adjacent list format, with the interactions
 #'         that are common to both lists, with the regulator type annotated,
 #'         and with the miRNA - mRNA interactions filtered. If only one type
 #'         of interactions is provided, then the function will return the
 #'         interactions directly.
-#' 
-combineSncInteractions <- function(predInteract, 
-                                   extInteract, 
+#'
+combineSncInteractions <- function(predInteract,
+                                   extInteract,
                                    sncAnno,
                                    deResultRNA,
                                    deResultSmallRNA,
                                    smallRNATypes = SMALLRNA_CATEGORIES) {
   predicted <- is.null(predInteract)
   external <- is.null(extInteract)
-  
+
   if (predicted && external) {
     return(NULL)
   } else if (predicted) {
@@ -556,15 +560,12 @@ combineSncInteractions <- function(predInteract,
   sncInteract <- filtermiRNAinverseCorr(
     exprAdjList = sncInteract,
     deResultRNA = deResultRNA,
+    sncAnno = sncAnno,
     deResultSmallRNA = deResultSmallRNA,
     smallRNATypes = smallRNATypes
   )
   # Annotate the small RNA types
-  sncInteract$regulatorType <- sapply(
-    sncInteract$regulator,
-    findGeneType,
-    annotation = sncAnno
-  )
+  sncInteract$regulatorType <- findGeneType(sncInteract$regulator, sncAnno)
   return(sncInteract)
 }
 
@@ -713,14 +714,7 @@ constructTRN <- function(objMOList,
     # No user-imported small RNA - mRNA interactions
     miRNAmRNAExt <- NULL
   } else {
-    miRNAmRNAExt <- switch(targetDirection,
-      "up" = objMOList$extInteractions$upregGenes2miR,
-      "down" = objMOList$extInteractions$downregGenes2miR,
-      "both" = mapply(c, objMOList$extInteractions$upregGenes2miR,
-        objMOList$extInteractions$downregGenes2miR,
-        SIMPLIFY = FALSE
-      )
-    )
+    miRNAmRNAExt <- objMOList$extInteractions$miR2Genes
     omics <- union(omics, SMALLRNA)
   }
 
