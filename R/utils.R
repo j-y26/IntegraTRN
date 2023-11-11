@@ -214,8 +214,6 @@ extractDirectionalGenes <- function(deResult) {
 #' @param annotation A list, with the name of each element defined to be the
 #'                   type of gene, and the content of each element defined to be
 #'                   a vector of gene names in that type
-#' 
-#' @import base::Vectorize
 #'
 #' @return The type of the gene
 #'
@@ -231,7 +229,7 @@ findGeneType <- function(geneName, annotation) {
   }
   return(geneType)
 }
-findGeneType <- base::Vectorize(findGeneType, vectorize.args = "geneName")
+findGeneType <- Vectorize(findGeneType, vectorize.args = "geneName")
 
 
 # [END]

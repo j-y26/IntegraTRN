@@ -161,7 +161,7 @@
 #' A list of miRNA-target interactions on fetal heart differentially expressed
 #' genes. The list contains 2 vectors of the same length. Each representing a
 #' pair of miRNA-target interactions. Curated partially from randomly selected
-#' miRNA-target interactions from miRNet 2.0.
+#' miRNA-target interactions from miRNet 2.0. Partially simulated.
 #'
 #' @format A list of 2 vectors of the same length. Each representing a pair of
 #'         miRNA-target interactions.
@@ -170,9 +170,7 @@
 #' \item{target}{A vector of upregulated fetal heart mRNAs}
 #' }
 #'
-#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
-#' ON, Canada
-#'
+#' 
 #' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
 #'             network-based visual analytics for miRNA functional analysis and
 #'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
@@ -180,10 +178,37 @@
 #'
 #' @examples
 #' \dontrun{
-#' miR2Gene
+#' miR2Genes
 #' }
 #'
-"miR2Gene"
+"miR2Genes"
+
+#' Example TF - mRNA interactions
+#' 
+#' A list of TF-target interactions on fetal heart differentially expressed
+#' genes. The list contains 2 vectors of the same length. Each representing a
+#' pair of TF-target interactions. Curated partially from randomly selected
+#' TF-target interactions from TRRUST v2 using miRNet 2.0. Partially simulated
+#' using simulated ATACseq peaks.
+#' 
+#' @format A list of 2 vectors of the same length. Each representing a pair of
+#'        TF-target interactions.
+#' \describe{\
+#' \item{regulator}{A vector of TFs}
+#' \item{target}{A vector of upregulated fetal heart mRNAs}
+#' }
+#' 
+#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+#'             network-based visual analytics for miRNA functional analysis and
+#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#' 
+#' @examples
+#' \dontrun{
+#' tf2Genes
+#' }
+#' 
+"tf2Genes"
 
 #' JASPAR curated position weight matrices of transcription factor binding sites
 #' for vertebrates based on database JASPAR CORE 2022

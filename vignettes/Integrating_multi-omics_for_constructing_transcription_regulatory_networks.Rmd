@@ -1,5 +1,5 @@
 ---
-title: "Integrating_multi-omics_for_constructing_transcription_regulatory_networks"
+title: "Integrating multi-omics for constructing transcriptional regulatory networks"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Integrating_multi-omics_for_constructing_transcription_regulatory_networks}
@@ -164,8 +164,8 @@ Now we can construct the small RNA - TF - target gene network.
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Load external interaction data to the MOList object
 myMOList <- loadExtInteractions(myMOList, 
-                                miR2Genes = ,
-                                tf2Genes = 
+                                miR2Genes = miR2Genes,
+                                tf2Genes = tf2Genes
 )
 ```
 
@@ -182,4 +182,33 @@ omiCutoffs <- setOmicCutoffs(
 )
 ```
 
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+# Construct the network
+myTRNet <- constructTRN(myMOList, 
+                        omiCutoffs = omiCutoffs,
+                        smallRNAtypes = "all",
+                        targetDirection = "both",
+                        predicted = TRUE)
+```
 
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
+# Plot the network
+plotNetwork(myTRNet, 
+            vertexSize - 5,
+            edgeArrowSize = 0.5)
+
+g <- myTRNet@network
+
+igraph::plot.igraph(g, 
+                    layout = igraph::layout_with_fr(g),
+                    vertex.size = 5,
+                    edge.arrow.size = 0.5,
+                    edge.curved = 0.2,
+                    edge.color = "grey",
+                    vertex.label.cex = 0.5,
+                    vertex.label.color = "black",
+                    vertex.label.family = "sans",
+                    vertex.label.font = 2,
+                    vertex.label.dist = 0.5)
+
+```

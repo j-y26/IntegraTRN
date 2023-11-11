@@ -748,29 +748,22 @@ constructTRN <- function(objMOList,
     } else {
       # Filter TFs by ATACseq data
       sel <- selectedMotifs(
-        enrichedMotifs = objMOList$DEATAC,
+        enrichedMotifs = objMOList$DEATAC$motifEnrichment,
         pValueAdj = omiCutoffs$atacMotifAdjPval,
         pValue = omiCutoffs$atacMotifPval,
         log2FEnrich = omiCutoffs$atacMotifLogFC
       )
-      validTFs <- motifNames(objMOList$DEATAC[sel, ])
-      tfmRNA <- lapply(extTFmRNA, function(x) {
-        x[x$regulator %in% validTFs]
-      })
+      validTFs <- motifNames(objMOList$DEATAC$motifEnrichment[sel, ])
+      # Filter to retain only valid interactions
+      sel <-extTFmRNA$regulator %in% validTFs
+      tfmRNA <- lapply(extTFmRNA, function(x) x[sel])
       omics <- union(omics, ATAC)
     }
   }
 
   # ====== PART 4: Combine all the interactions ================================
   # Combine all the interactions
-  trnInteractions <- data.frame(
-    regulator = NULL,
-    target = NULL,
-    regulatorType = NULL
-  )
-  for (omicList in c(smallRNAmRNA, tfmRNA)) {
-    trnInteractions <- rbind(trnInteractions, data.frame(omicList))
-  }
+  trnInteractions <- rbind(data.frame(smallRNAmRNA), data.frame(tfmRNA))
   # Access any potential duplicated interactions (potentially user-imported)
   duplicatedInt <- duplicated(trnInteractions[, NETWORK_FIELD[1:2]])
   trnInteractions <- trnInteractions[!duplicatedInt, ]

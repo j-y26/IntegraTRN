@@ -34,7 +34,7 @@
 methods::setClass("TRNet",
   contains = "list",
   slots = c(
-    network = "list",
+    network = "ANY",
     TRNmetadata = "data.frame",
     predicted = "logical",
     omics = "character"
@@ -82,11 +82,7 @@ TRNet <- function(TRNmetadata, predicted, omics) {
   # Create igraph object
   trn <- generatePlot(trn)
 
-  # Final validation
-  if (class(trn@network) != "igraph") {
-    stop("error in generating igraph object")
-    return(trn)
-  }
+  return(trn)
 }
 
 
@@ -100,7 +96,7 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #' @param trn A TRNet object
 #'
 #' @return A TRNet object with the igraph object in the network slot
-#'
+#' 
 #' @export
 #'
 #' @importFrom methods setGeneric setMethod
@@ -131,10 +127,13 @@ methods::setMethod(
     # Parse vertex metadata
     vertexMetadata <- parseVertexMetadata(trn)
     # Generate igraph object
-    network <- igraph::graph_from_data_frame(trn@TRNmetadata,
+    network <- igraph::graph_from_data_frame(trn@TRNmetadata[, 1:2],
       directed = TRUE,
       vertices = vertexMetadata
     )
+
+    trn@network <- network
+    return(trn)
   }
 )
 
@@ -180,7 +179,7 @@ methods::setMethod(
     edgeMetadata <- trn@TRNmetadata
     # Target vertices
     targetVertices <- data.frame(
-      name = unique(vertexMetadata$target),
+      name = unique(edgeMetadata$target),
       type = "gene"
     )
     # Regulator vertices
@@ -233,11 +232,14 @@ methods::setMethod(
   "plotNetwork", "TRNet",
   function(trn) {
     igraph::plot.igraph(trn@network)
+
   }
 )
 
 
 #' @title Export an igraph object from TRNet object
+#' 
+#' @rdname TRNet-class
 #'
 #' @description This function exports an igraph object from TRNet object
 #'
@@ -273,6 +275,118 @@ methods::setMethod(
   "exportIgraph", "TRNet",
   function(trn) {
     return(trn@network)
+  }
+)
+
+
+#' @title Export all network interactions from TRNet object
+#' 
+#' @rdname TRNet-class
+#' 
+#' @description This function exports all network interactions from TRNet object
+#'  
+#' @param trn A TRNet object
+#' 
+#' @return A data frame containing all network interactions
+#' 
+#' @importFrom methods setGeneric setMethod
+#' 
+#' @export
+#' 
+#' @examples
+#' # Define some example edges
+#' edges <- data.frame(
+#'  regulator = c("A", "B", "C"),
+#' target = c("D", "E", "F"),
+#' regulatorType = c("miRNA", "TF", "TF")
+#' )
+#' 
+#' # Create TRNet object
+#' trn <- TRNet(edges, FALSE, "RNA-seq")
+#' 
+#' # Export all network interactions
+#' exportEdgeSet(trn)
+#' 
+methods::setGeneric(
+  "exportEdgeSet",
+  function(trn) {
+    standardGeneric("exportEdgeSet")
+  }
+)
+methods::setMethod(
+  "exportEdgeSet", "TRNet",
+  function(trn) {
+    return(trn@TRNmetadata)
+  }
+)
+
+
+#' @title show method for TRNet object
+#' 
+#' @rdname TRNet-class
+#' 
+#' @description This function prints the TRNet object
+#' 
+#' @param object A TRNet object
+#' 
+#' @return NULL
+#' 
+#' @importFrom methods setMethod
+#' 
+#' @export
+#' 
+#' @examples
+#' # Define some example edges
+#' edges <- data.frame(
+#'  regulator = c("A", "B", "C"),
+#' target = c("D", "E", "F"),
+#' regulatorType = c("miRNA", "TF", "TF")
+#' )
+#' 
+#' # Create TRNet object
+#' trn <- TRNet(edges, FALSE, "RNA-seq")
+#' 
+#' # Print TRNet object
+#' trn
+#' 
+methods::setMethod(
+  "show", "TRNet",
+  function(object) {
+    nEdges <- igraph::ecount(object@network)
+    nVertices <- igraph::vcount(object@network)
+    cat("TRNet object with", nEdges, "edges and", nVertices, "vertices\n")
+    nTarget <- length(unique(object@TRNmetadata$target))
+    nRegulator <- length(unique(object@TRNmetadata$regulator))
+    regTypes <- unique(object@TRNmetadata$regulatorType)
+    cat("The network contains", nTarget, "target genes and", nRegulator,
+      "regulators\n")
+    cat("Including", length(regTypes), "types of regulators:\n")
+    for (regType in regTypes) {
+      # Find the number of regulatory interactions of each type
+      nRegType <- sum(object@TRNmetadata$regulatorType == regType)
+      cat("  ", regType, ":", nRegType, "regulatory interactions\n")
+    }
+    # Predicted interactions
+    if (object@predicted) {
+      cat("The network is strengthed by co-expression-based predictions\n")
+    } else {
+      # Do nothing
+    }
+    # Purely predicted interactions
+    predTypes <- setdiff(regTypes, c("miRNA", "TF"))
+    if (length(predTypes) > 0) {
+      cat("Note: The following types of interactions are purely predicted:\n")
+      cat("  ", paste(predTypes, collapse = ", "), "\n")
+    } else {
+      # Do nothing
+    }
+    # Omics data
+    cat("Omics data involved during network construction:", object@omics, "\n")
+    cat("\n")
+    cat("A snapshort of network interactions:\n")
+    print(head(object@TRNmetadata, 5))
+    cat("\n")
+    cat("To access all network interactions, use exportEdgeSet()\n")
   }
 )
 
