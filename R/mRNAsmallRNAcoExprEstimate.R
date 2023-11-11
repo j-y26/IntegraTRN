@@ -548,6 +548,8 @@ runGENIE3 <- function(exprMatrix,
     weight = weightedAdjList[, 3]
   )
 
+  rm(weightedMatrix)
+
   return(weightedAdjList)
 }
 

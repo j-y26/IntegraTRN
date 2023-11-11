@@ -6,7 +6,7 @@
 
 
 # Define global variables
-NETOWRK_FIELD <- c("regulator", "target", "regulatorType")
+NETWORK_FIELD <- c("regulator", "target", "regulatorType")
 
 
 #' Validate external interaction data
@@ -27,14 +27,14 @@ validateInteractionAdjList <- function(adjList) {
     # Continue
   }
 
-  if (!all(NETOWRK_FIELD[1:2] %in% names(adjList))) {
+  if (!all(NETWORK_FIELD[1:2] %in% names(adjList))) {
     warning("Invalid element names provided.")
     warning("Setting the first element as regulator and second as target.")
-    names(adjList)[1:2] <- NETOWRK_FIELD[1:2]
+    names(adjList)[1:2] <- NETWORK_FIELD[1:2]
   } else {
     # Do nothing
   }
-  return(adjList[NETOWRK_FIELD[1:2]])
+  return(adjList[NETWORK_FIELD[1:2]])
 }
 
 
@@ -421,7 +421,6 @@ predictSncmRNAInteractions <- function(objMOList, omiCutoffs, rnaTopTag,
 }
 
 
-
 #' Intersect interaction lists
 #'
 #' @description This function intersects two lists of interactions in
@@ -495,6 +494,78 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 
   # Redefine the target genes
   rnaTopTag <- filterGenes(rnaTopTag, validTargets)
+}
+
+
+#' Combine small RNA - mRNA interactions from different sources
+#' 
+#' @keywords internal
+#' 
+#' @description This function combines the small RNA - mRNA interactions from
+#'              different sources, including the predicted interactions and the
+#'              curated interactions. The function also annotates the type of
+#'              the regulators. For miRNA only, the functions also filters the
+#'              interactions by inverse correlation.
+#' 
+#' @param predInteract A list of predicted interactions in adjacent list format
+#' \itemize{
+#' \item \code{regulator}: A character vector containing the regulators
+#' \item \code{target}: A character vector containing the targets
+#' }
+#' 
+#' @param extInteract A list of curated interactions in adjacent list format
+#' @param sncAnno A list of annotations for small RNAs
+#' @param deResultRNA A data frame containing the differential RNAseq data
+#' @param deResultSmallRNA A data frame containing the differential smallRNAseq
+#' 
+#' @return A list of interactions in adjacent list format, with the interactions
+#'         that are common to both lists, with the regulator type annotated,
+#'         and with the miRNA - mRNA interactions filtered. If only one type
+#'         of interactions is provided, then the function will return the
+#'         interactions directly.
+#' 
+combineSncInteractions <- function(predInteract, 
+                                   extInteract, 
+                                   sncAnno,
+                                   deResultRNA,
+                                   deResultSmallRNA,
+                                   smallRNATypes = SMALLRNA_CATEGORIES) {
+  predicted <- is.null(predInteract)
+  external <- is.null(extInteract)
+  
+  if (predicted && external) {
+    return(NULL)
+  } else if (predicted) {
+    # No predicted interactions
+    sncInteract <- extInteract
+  } else if (external) {
+    # No curated interactions
+    sncInteract <- predInteract
+  } else {
+    # Identify miRNAs to intersect, while keeping the non-miRNA regulations
+    selmiRNA <- predInteract$regulator %in% sncAnno[["miRNA"]]
+    predmiRNA <- lapply(predInteract, function(x) x[selmiRNA])
+    predNonmiRNA <- lapply(predInteract, function(x) x[!selmiRNA])
+    # Intersect the miRNA - mRNA interactions
+    miRNAmRNA <- intersectInteractions(predmiRNA, extInteract)
+    # Then restore the list of interactions
+    sncInteract <- mapply(c, predNonmiRNA, miRNAmRNA, SIMPLIFY = FALSE)
+  }
+  # Executed only if some interactions are available
+  # Filter for inverse correlation on miRNA - mRNA interactions
+  sncInteract <- filtermiRNAinverseCorr(
+    exprAdjList = sncInteract,
+    deResultRNA = deResultRNA,
+    deResultSmallRNA = deResultSmallRNA,
+    smallRNATypes = smallRNATypes
+  )
+  # Annotate the small RNA types
+  sncInteract$regulatorType <- sapply(
+    sncInteract$regulator,
+    findGeneType,
+    annotation = sncAnno
+  )
+  return(sncInteract)
 }
 
 
@@ -579,23 +650,18 @@ constructTRN <- function(objMOList,
   # ====== PART 1: Filter target genes by proteomics data ======================
   # Only genes that shows consistent expression changes in both RNAseq and
   # proteomics data will be used to construct the network
+  # Note: target gene direction is initially filtered at rnaTOPTag construction
+  rnaTopTag <- TOPTag(objMOList$DERNAseq,
+        logFCCutoff = omiCutoffs$rnaLogFC,
+        pCutoff = omiCutoffs$rnaAdjPval,
+        topGenes = omiCutoffs$rnaTopGenes,
+        direction = targetDirection
+      )
   if (proteomics || is.null(objMOList$gene2protein)) {
     warning("No differential proteomics data or gene to protein mapping.")
     warning("Skipping filtering target genes by proteomics data.")
-    rnaTopTag <- TOPTag(objMOList$DERNAseq,
-      logFCCutoff = omiCutoffs$rnaLogFC,
-      pCutoff = omiCutoffs$rnaAdjPval,
-      topGenes = omiCutoffs$rnaTopGenes,
-      direction = targetDirection
-    )
   } else {
     # Filter the target genes by proteomics data
-    rnaTopTag <- TOPTag(objMOList$DERNAseq,
-      logFCCutoff = omiCutoffs$rnaLogFC,
-      pCutoff = omiCutoffs$rnaAdjPval,
-      topGenes = omiCutoffs$rnaTopGenes,
-      direction = targetDirection
-    )
     protTopTag <- TOPTag(objMOList$DEProteomics,
       logFCCutoff = omiCutoffs$proteomicsLogFC,
       pCutoff = omiCutoffs$proteomicsAdjPval,
@@ -613,6 +679,11 @@ constructTRN <- function(objMOList,
     smallRNAtypes <- SMALLRNA_CATEGORIES
   } else {
     # Do nothing
+  }
+  if (objMOList$annoSncRNA == HUMAN) {
+    sncAnno <- SNCANNOLIST_HSAPIENS
+  } else {
+    sncAnno <- objMOList$annoSncRNA
   }
 
   # Perform predicted inference of small RNA - mRNA interactions, if specified
@@ -640,9 +711,9 @@ constructTRN <- function(objMOList,
   # User imported small RNA - mRNA interactions
   if (extmiR2gene) {
     # No user-imported small RNA - mRNA interactions
-    smallRNAmRNAExt <- NULL
+    miRNAmRNAExt <- NULL
   } else {
-    smallRNAmRNAExt <- switch(targetDirection,
+    miRNAmRNAExt <- switch(targetDirection,
       "up" = objMOList$extInteractions$upregGenes2miR,
       "down" = objMOList$extInteractions$downregGenes2miR,
       "both" = mapply(c, objMOList$extInteractions$upregGenes2miR,
@@ -654,56 +725,32 @@ constructTRN <- function(objMOList,
   }
 
   # Finalize small RNA - mRNA interactions
-  if (is.null(smallRNAmRNAPred) && is.null(smallRNAmRNAExt)) {
-    # No small RNA - mRNA interactions
-    smallRNAmRNA <- NULL
-  } else {
-    # Intersect the predicted and user-imported interactions
-    smallRNAmRNA <- intersectInteractions(smallRNAmRNAPred, smallRNAmRNAExt)
-    # Filter for inverse correlation on miRNA - mRNA interactions
-    smallRNAmRNA <- filtermiRNAinverseCorr(
-      smallRNAmRNA,
-      objMOList$DERNAseq,
-      objMOList$DEsmallRNAseq,
-      smallRNAtypes
-    )
-    # Annotate the small RNA types
-    if (all(objMOList$annoSncRNA == HUMAN)) {
-      sncAnno <- SNCANNOLIST_HSAPIENS
-    } else {
-      sncAnno <- objMOList$annoSncRNA
-    }
-    smallRNAmRNA$regulatorType <- sapply(
-      smallRNAmRNA$regulator,
-      findGeneType,
-      annotation = sncAnno
-    )
-  }
+  smallRNAmRNA <- combineSncInteractions(
+    predInteract = smallRNAmRNAPred,
+    extInteract = miRNAmRNAExt,
+    sncAnno = sncAnno,
+    deResultRNA = objMOList$DERNAseq %>% exportDE(),
+    deResultSmallRNA = objMOList$DEsmallRNAseq %>% exportDE(),
+    smallRNATypes = smallRNAtypes
+  )
 
   # ====== PART 3: TF - mRNA interactions ======================================
   # Check if the user has provided TF - mRNA interactions
   if (extTF2gene) {
     # No user-imported TF - mRNA interactions, skip TF - mRNA interactions
-    transcriptionFactormRNA <- NULL
+    tfmRNA <- NULL
   } else {
-    extTFmRNA <- switch(targetDirection,
-      "up" = objMOList$extInteractions$upregGenes2TF,
-      "down" = objMOList$extInteractions$downregGenes2TF,
-      "both" = mapply(c, objMOList$extInteractions$upregGenes2TF,
-        objMOList$extInteractions$downregGenes2TF,
-        SIMPLIFY = FALSE
-      )
-    )
+    extTFmRNA <- objMOList$extInteractions$tf2Genes
     extTFmRNA$regulatorType <- rep("TF", length(extTFmRNA$regulator))
-    # Filter by ATACseq-validated TFs if available
+    # If ATACseq data is available, filter TFs by enriched motifs
     if (atacSeq) {
-      # Skip filtering TFs by ATACseq data silently
-      transcriptionFactormRNA <- extTFmRNA
+      # Skip filtering silently since no ATACseq data
+      tfmRNA <- extTFmRNA
     } else if (!inherits(objMOList$DEATAC, "PEAKTag")) {
       warning("ATACseq data has no annotated motifs. See ?annotateATACPeaksMotif
       for details.")
       warning("Skipping filtering TFs by ATACseq data.")
-      transcriptionFactormRNA <- extTFmRNA
+      tfmRNA <- extTFmRNA
     } else {
       # Filter TFs by ATACseq data
       sel <- selectedMotifs(
@@ -713,10 +760,10 @@ constructTRN <- function(objMOList,
         log2FEnrich = omiCutoffs$atacMotifLogFC
       )
       validTFs <- motifNames(objMOList$DEATAC[sel, ])
-      transcriptionFactormRNA <- lapply(extTFmRNA, function(x) {
+      tfmRNA <- lapply(extTFmRNA, function(x) {
         x[x$regulator %in% validTFs]
       })
-      omics <- union(omics, "TF")
+      omics <- union(omics, ATAC)
     }
   }
 
@@ -727,15 +774,11 @@ constructTRN <- function(objMOList,
     target = NULL,
     regulatorType = NULL
   )
-  for (omicList in c(smallRNAmRNA, transcriptionFactormRNA)) {
-    if (is.null(omicList)) {
-      # Do nothing
-    } else {
-      trnInteractions <- rbind(trnInteractions, omicList)
-    }
+  for (omicList in c(smallRNAmRNA, tfmRNA)) {
+    trnInteractions <- rbind(trnInteractions, data.frame(omicList))
   }
   # Access any potential duplicated interactions (potentially user-imported)
-  duplicatedInt <- duplicated(trnInteractions[, NETOWRK_FIELD[1:2]])
+  duplicatedInt <- duplicated(trnInteractions[, NETWORK_FIELD[1:2]])
   trnInteractions <- trnInteractions[!duplicatedInt, ]
   # Construct the network
   trnNetwork <- TRNet(
@@ -745,3 +788,6 @@ constructTRN <- function(objMOList,
   )
   return(trnNetwork)
 }
+
+
+# [END]

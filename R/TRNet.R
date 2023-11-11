@@ -66,7 +66,7 @@ TRNet <- function(TRNmetadata, predicted, omics) {
   }
 
   # Check if TRNmetadata contains the required columns
-  if (!all(NETOWRK_FIELD %in% colnames(TRNmetadata))) {
+  if (!all(NETWORK_FIELD %in% colnames(TRNmetadata))) {
     stop("TRNmetadata must contain all required fields")
   } else {
     # Do nothing

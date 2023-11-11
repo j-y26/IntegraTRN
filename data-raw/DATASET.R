@@ -459,3 +459,28 @@ jasparVertebratePWM <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
 )
 
 usethis::use_data(jasparVertebratePWM, overwrite = TRUE)
+
+
+# Down sample RNAseq and small RNAseq data
+# RNAseq
+# Randomly select 5000 genes
+set.seed(91711)
+selGenes <- sample(1:nrow(RNAseq_heart), 5000)
+rna <- RNAseq_heart[selGenes, ]
+RNAseq_heart <- rna
+usethis::use_data(RNAseq_heart, overwrite = TRUE)
+
+# Small RNAseq
+# Randomly select 5000 genes
+# There are too many circRNAs in the small RNAseq data, so we will
+# randomly select 1000 circRNAs and 5000 other genes
+circIndex <- which(rownames(smallRNAseq_heart) %in% SNCANNOLIST_HSAPIENS$circRNA)
+otherIndex <- which(!rownames(smallRNAseq_heart) %in% SNCANNOLIST_HSAPIENS$circRNA)
+selCirc <- sample(circIndex, 100)
+selOther <- sample(otherIndex, 0.7 * length(otherIndex))
+selGenes <- c(selCirc, selOther)
+srna <- smallRNAseq_heart[selGenes, ]
+smallRNAseq_heart <- srna
+usethis::use_data(smallRNAseq_heart, overwrite = TRUE)
+
+
