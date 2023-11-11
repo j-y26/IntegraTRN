@@ -498,8 +498,6 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 }
 
 
-
-
 #' Construct a transcriptional regulatory network
 #'
 #' @description This function constructs a transcriptional regulatory network
@@ -556,10 +554,8 @@ constructTRN <- function(objMOList,
   smallRNAseq <- is.null(objMOList$DEsmallRNAseq)
   proteomics <- is.null(objMOList$DEproteomics)
   atacSeq <- is.null(objMOList$DEATAC)
-  extTF2gene <- is.null(objMOList$extInteractions$upregGenes2TF) &&
-    is.null(objMOList$extInteractions$downregGenes2TF)
-  extmiR2gene <- is.null(objMOList$extInteractions$upregGenes2miR) &&
-    is.null(objMOList$extInteractions$downregGenes2miR)
+  extTF2gene <- is.null(objMOList$extInteractions$tf2Genes)
+  extmiR2gene <- is.null(objMOList$extInteractions$miR2Genes)
 
   # Validate inputs
   if (rnaSeq) {

@@ -32,9 +32,9 @@ documentation of the GENIE3 package for details.}
 A list containing the predicted interactions, with the
        following format:
 \itemize{
-\item{regulatoryGene}{The names of the small RNAs that are predicted to regulate
+\item{regulator}{The names of the small RNAs that are predicted to regulate
                       the target genes.}
-\item{targetGene}{The names of the target genes that are predicted to be
+\item{target}{The names of the target genes that are predicted to be
                   regulated by the small RNAs.}
 \item{weight}{The weight of the predicted interactions.}
 }

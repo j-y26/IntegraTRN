@@ -156,32 +156,32 @@
 #'
 "protein_heart_samples"
 
-#' miRNet curated miRNA-target interactions on upregulated fetal heart mRNAs
-#'
-#' A list of miRNA-target interactions on upregulated fetal heart mRNAs
-#' curated from miRNet
-#'
-#' @format A list of 2 vectors of the same length. Each representing a pair of
-#'         miRNA-target interactions.
-#' \describe{\
-#' \item{regulator}{A vector of miRNAs}
-#' \item{target}{A vector of upregulated fetal heart mRNAs}
-#' }
-#'
-#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
-#' ON, Canada
-#'
-#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
-#'             network-based visual analytics for miRNA functional analysis and
-#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
-#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
-#'
-#' @examples
-#' \dontrun{
-#' upregmiR2gene
-#' }
-#'
-"upregmiR2gene"
+# #' miRNet curated miRNA-target interactions on upregulated fetal heart mRNAs
+# #'
+# #' A list of miRNA-target interactions on upregulated fetal heart mRNAs
+# #' curated from miRNet
+# #'
+# #' @format A list of 2 vectors of the same length. Each representing a pair of
+# #'         miRNA-target interactions.
+# #' \describe{\
+# #' \item{regulator}{A vector of miRNAs}
+# #' \item{target}{A vector of upregulated fetal heart mRNAs}
+# #' }
+# #'
+# #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+# #' ON, Canada
+# #'
+# #' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
+# #'             network-based visual analytics for miRNA functional analysis and
+# #'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
+# #'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+# #'
+# #' @examples
+# #' \dontrun{
+# #' upregmiR2gene
+# #' }
+# #'
+# "upregmiR2gene"
 
 #' JASPAR curated position weight matrices of transcription factor binding sites
 #' for vertebrates based on database JASPAR CORE 2022

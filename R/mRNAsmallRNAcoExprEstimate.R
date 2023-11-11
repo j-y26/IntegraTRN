@@ -529,9 +529,19 @@ runGENIE3 <- function(exprMatrix,
   set.seed(NULL)
 
   # The weighted matrix contains a weight for each regulator-target pair
-  # Consider the top 50% of the weights as the predicted interactions
-  weightThreshold <- quantile(weightedMatrix, 0.5)
   weightedAdjList <- GENIE3::getLinkList(weightedMatrix)
+
+  # Remove any predicted target genes which are also regulators
+  weightedAdjList <- weightedAdjList %>% dplyr::filter(
+    !(targetGene %in% regulators)
+  )
+
+  # Consider only the top 20% of the predicted interactions
+  weightedAdjList <- weightedAdjList %>% dplyr::filter(
+    weight >= quantile(weight, 0.8)
+  )
+
+  # Convert the weighted adjacency list to a list of three vectors
   weightedAdjList <- list(
     regulator = weightedAdjList[, 1],
     target = weightedAdjList[, 2],
@@ -610,14 +620,6 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
   } else if (is.null(matchingRNAsmallRNA)) {
     stop("The matching information of RNAseq and small RNAseq samples is not
       provided.")
-  } else {
-    # Do nothing
-  }
-  # Check to be valid TOPTag objects
-  if (!inherits(mRNATopTag, "TOPTag")) {
-    stop("The mRNATopTag object is not a valid TOPTag object.")
-  } else if (!inherits(smallRNATopTag, "TOPTag")) {
-    stop("The smallRNATopTag object is not a valid TOPTag object.")
   } else {
     # Do nothing
   }

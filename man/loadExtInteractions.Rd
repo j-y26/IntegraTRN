@@ -4,18 +4,12 @@
 \alias{loadExtInteractions}
 \title{Loading external interaction data into the MOList object}
 \usage{
-loadExtInteractions(
-  objMOList,
-  upregmiR2Genes = NULL,
-  downregmiR2Genes = NULL,
-  upregTF2Genes = NULL,
-  downregTF2Genes = NULL
-)
+loadExtInteractions(objMOList, miR2Genes = NULL, tf2Genes = NULL)
 }
 \arguments{
 \item{objMOList}{A MOList object containing the omics data}
 
-\item{upregGenes2miR}{A list containing the upregulated genes and their
+\item{miR2Genes}{A list containing the target genes and their
                       regulatory miRNAs. Must contain elements "regulator"
                       for the miRNAs and "target" for the upregulated genes.
 \itemize{
@@ -23,15 +17,8 @@ loadExtInteractions(
  \item \code{target}: A character vector containing the upregulated genes
 }}
 
-\item{downregGenes2miR}{A list containing the downregulated genes and
-their regulatory miRNAs. See above format.}
-
-\item{upregGenes2TF}{A list containing the upregulated genes and their
+\item{tf2Genes}{A list containing the target genes and their
 regulatory transcription factors. See above format.}
-
-\item{downregGenes2TF}{A list containing the downregulated genes and
-their regulatory transcription factors. See above
-format.}
 }
 \value{
 An object of class MOList, with a element "extInteractions" added,
@@ -39,15 +26,10 @@ An object of class MOList, with a element "extInteractions" added,
         format of the input data, i.e., must contain elements "regulator"
        and "target". See the examples for details.
 \itemize{
-\item \code{upregGenes2miR}: A list containing the upregulated genes
+\item \code{miR2Genes}: A list containing the target genes
                              and their regulatory miRNAs
-\item \code{downregGenes2miR}: A list containing the downregulated
-                               genes and their regulatory miRNAs
-\item \code{upregGenes2TF}: A list containing the upregulated genes
+\item \code{tf2Genes}: A list containing the target genes
                             and their regulatory transcription factors
-\item \code{downregGenes2TF}: A list containing the downregulated
-                              genes and their regulatory transcription
-                              factors
 }
 }
 \description{
@@ -68,30 +50,19 @@ RNAGroupBy <- rep(c("A", "B"), each = 5)
 myMOList <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 
 # Generate some example interaction data
-upregGenes2miR <- data.frame(
-  ID = paste0("miR_", seq_len(10)),
-  Target = paste0("gene_", seq_len(10))
+miR2Genes <- list(
+ regulator = c("miR_1", "miR_2", "miR_3", "miR_4", "miR_5"),
+ target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 )
-downregGenes2miR <- data.frame(
-  ID = paste0("miR_", seq(11, 20)),
-  Target = paste0("gene_", seq(11, 20))
+tf2Genes <- list(
+regulator = c("TF_1", "TF_2", "TF_3", "TF_4", "TF_5"),
+target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 )
-upregGenes2TF <- data.frame(
-  ID = paste0("TF_", seq(21, 30)),
-  Target = paste0("gene_", seq(21, 30))
-)
-downregGenes2TF <- data.frame(
-  ID = paste0("TF_", seq(31, 40)),
-  Target = paste0("gene_", seq(31, 40))
-)
-
 # Load the external interaction data into the MOList object
 myMOList <- loadExtInteractions(
-  myMOList,
-  upregGenes2miR = upregGenes2miR,
-  downregGenes2miR = downregGenes2miR,
-  upregGenes2TF = upregGenes2TF,
-  downregGenes2TF = downregGenes2TF
+ myMOList,
+miR2Genes = miR2Genes,
+tf2Genes = tf2Genes
 )
 
 }

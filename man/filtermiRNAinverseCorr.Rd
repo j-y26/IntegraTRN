@@ -33,4 +33,5 @@ A list with filtered regulator-target interactions
 \description{
 This function selects the miRNAs in which its expression is
              inversely correlated with the expression of the target gene.
+             Regulators that are not miRNAs will be retained.
 }

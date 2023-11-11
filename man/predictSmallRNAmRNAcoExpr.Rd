@@ -7,7 +7,7 @@
 predictSmallRNAmRNAcoExpr(
   mRNATopTag,
   smallRNATopTag,
-  smallRNATypes = "all",
+  smallRNATypes = c("miRNA", "piRNA", "snRNA", "snoRNA", "circRNA", "tRNA"),
   annoSncRNA,
   matchingRNAsmallRNA,
   ntree = 1000,

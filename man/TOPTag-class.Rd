@@ -5,20 +5,32 @@
 \alias{TOPTag-class}
 \alias{show,TOPTag-method}
 \alias{filterGenes}
+\alias{exportDE,TOPTag-method}
 \title{TOPTag S4 class for storing top differential genes}
 \usage{
 \S4method{show}{TOPTag}(object)
 
 filterGenes(object, names)
+
+\S4method{exportDE}{TOPTag}(x, original = FALSE)
 }
 \arguments{
 \item{object}{A TOPTag object.}
 
 \item{names}{A character vector containing the names of the genes to be
 filtered.}
+
+\item{x}{An object of the DETag class}
+
+\item{original}{A boolean indicating whether to return the original results.
+If FALSE, the results will be converted to a data frame with
+the following columns: logFC, pvalue, padj
+(default: FALSE)}
 }
 \value{
 A TOPTag object.
+
+A data frame containing the differential analysis results.
 }
 \description{
 The TOPTag S4 class inherits the DETag class and is a more
@@ -32,6 +44,10 @@ The print method for the TOPTag class.
 This function filters the top differential genes by a names
              vector. It is a convenient function for users to filter the
              top differential genes by a list of genes of interest.
+
+This function exports the differential analysis results from a
+             TopTag object. Overwrites the exportDE function in the DETag
+             class due to different nomenclature of the columns.
 }
 \section{Slots}{
 
@@ -88,6 +104,11 @@ topTag
 \dontrun{
 # Filter the top differential genes by a list of genes of interest
 topTag <- filterGenes(topTag, c("gene1", "gene2", "gene3"))
+}
+
+# Assuming that the object "topTag" is a TOPTag object
+\dontrun{
+exportDE(topTag)
 }
 
 }
