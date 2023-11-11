@@ -447,3 +447,15 @@ usethis::use_data(upregmiR2gene, downregmiR2gene, upregTF2gene,
   downregTF2gene,
   overwrite = TRUE
 )
+
+
+# Serialize JASPAR position weight matrices
+library("JASPAR2022")
+jasparVertebratePWM <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+  opts = list(
+    matrixtype = "PWM",
+    tax_group = "vertebrates"
+  )
+)
+
+usethis::use_data(jasparVertebratePWM, overwrite = TRUE)

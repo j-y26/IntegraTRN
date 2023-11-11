@@ -29,7 +29,7 @@ Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
     Biostrings (>= 2.56.0),
-    ChIPseeker (>= 1.35.1),
+    ChIPseeker,
     DESeq2 (>= 1.39.7),
     doRNG (>= 1.8.6),
     dplyr (>= 1.0.7),

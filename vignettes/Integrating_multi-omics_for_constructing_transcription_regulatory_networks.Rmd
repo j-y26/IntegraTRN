@@ -49,8 +49,6 @@ atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
 
 # Here we add the proteomics and ATACseq peaks data to the existing object
 myMOList <- MOList(myMOList,
-  proteomics = protein_heart,
-  proteomicsGroupBy = protein_heart_samples$Age,
   pathATACpeak1 = atacPeak1Path, pathATACpeak2 = atacPeak2Path
 )
 ```
@@ -121,8 +119,7 @@ myMOList <- matchSamplesRNAsmallRNA(myMOList,
 ```
 
 ```{r message = FALSE, tidy=TRUE}
-exportMatchResult(myMOList) %>%
-  DT::datatable(rownames = FALSE, options = list(pageLength = 5))
+exportMatchResult(myMOList) %>% head(5)     # For the first 5 matches
 ```
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
@@ -135,20 +132,14 @@ annoDb <- "org.Hs.eg.db"
 bsgenome <- BSgenome.Hsapiens.UCSC.hg38
 
 # Retrieve position weight matrices (PWMs) from JASPAR
-library("JASPAR2022")
-pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
-  opts = list(
-    matrixtype = "PWM",
-    tax_group = "vertebrates"
-  )
-)
+
 
 myMOList <- annotateATACPeaksMotif(myMOList,
   tssRegion = c(-3000, 3000),
   TxDb = txdb,
   annoDb = annoDb,
   bsgenome = bsgenome,
-  pwmL = pwmL
+  pwmL = jasparVertebratePWM
 )
 ```
 
