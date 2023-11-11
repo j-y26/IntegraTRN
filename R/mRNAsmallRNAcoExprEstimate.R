@@ -606,9 +606,11 @@ runGENIE3 <- function(exprMatrix,
 #'
 predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
                                       smallRNATopTag,
-                                      smallRNATypes = c("miRNA", "piRNA",
-                                                        "snRNA", "snoRNA",
-                                                        "circRNA", "tRNA"),
+                                      smallRNATypes = c(
+                                        "miRNA", "piRNA",
+                                        "snRNA", "snoRNA",
+                                        "circRNA", "tRNA"
+                                      ),
                                       annoSncRNA,
                                       matchingRNAsmallRNA,
                                       ntree = 1000,

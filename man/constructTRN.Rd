@@ -60,7 +60,7 @@ This function constructs a transcriptional regulatory network
 # already loaded and contains the required omics data
 
 # Set the cutoffs for the omics data
-omiCutoffs <- setOmicCutoffs()   # use default cutoffs
+omiCutoffs <- setOmicCutoffs() # use default cutoffs
 
 # Construct the network
 myTRNet <- constructTRN(myMOList, omiCutoffs)

@@ -82,18 +82,18 @@ validateInteractionAdjList <- function(adjList) {
 #'
 #' # Generate some example interaction data
 #' miR2Genes <- list(
-#'  regulator = c("miR_1", "miR_2", "miR_3", "miR_4", "miR_5"),
-#'  target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
+#'   regulator = c("miR_1", "miR_2", "miR_3", "miR_4", "miR_5"),
+#'   target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 #' )
 #' tf2Genes <- list(
-#' regulator = c("TF_1", "TF_2", "TF_3", "TF_4", "TF_5"),
-#' target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
+#'   regulator = c("TF_1", "TF_2", "TF_3", "TF_4", "TF_5"),
+#'   target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 #' )
 #' # Load the external interaction data into the MOList object
 #' myMOList <- loadExtInteractions(
-#'  myMOList,
-#' miR2Genes = miR2Genes,
-#' tf2Genes = tf2Genes
+#'   myMOList,
+#'   miR2Genes = miR2Genes,
+#'   tf2Genes = tf2Genes
 #' )
 #'
 loadExtInteractions <- function(objMOList,
@@ -458,10 +458,12 @@ intersectInteractions <- function(adjList1, adjList2) {
 
   # Intersect the interactions
   commonInteract <- intersect(adjList1$pair, adjList2$pair)
-  sel <-adjList1$pair %in% commonInteract
+  sel <- adjList1$pair %in% commonInteract
 
-  intersectedList <- list(regulator = adjList1$regulator[sel],
-                          target = adjList1$target[sel])
+  intersectedList <- list(
+    regulator = adjList1$regulator[sel],
+    target = adjList1$target[sel]
+  )
 
   return(intersectedList)
 }
@@ -607,7 +609,7 @@ combineSncInteractions <- function(predInteract,
 #' # already loaded and contains the required omics data
 #'
 #' # Set the cutoffs for the omics data
-#' omiCutoffs <- setOmicCutoffs()   # use default cutoffs
+#' omiCutoffs <- setOmicCutoffs() # use default cutoffs
 #'
 #' # Construct the network
 #' myTRNet <- constructTRN(myMOList, omiCutoffs)
@@ -653,11 +655,11 @@ constructTRN <- function(objMOList,
   # proteomics data will be used to construct the network
   # Note: target gene direction is initially filtered at rnaTOPTag construction
   rnaTopTag <- TOPTag(objMOList$DERNAseq,
-        logFCCutoff = omiCutoffs$rnaLogFC,
-        pCutoff = omiCutoffs$rnaAdjPval,
-        topGenes = omiCutoffs$rnaTopGenes,
-        direction = targetDirection
-      )
+    logFCCutoff = omiCutoffs$rnaLogFC,
+    pCutoff = omiCutoffs$rnaAdjPval,
+    topGenes = omiCutoffs$rnaTopGenes,
+    direction = targetDirection
+  )
   if (proteomics || is.null(objMOList$gene2protein)) {
     warning("No differential proteomics data or gene to protein mapping.")
     warning("Skipping filtering target genes by proteomics data.")
@@ -755,7 +757,7 @@ constructTRN <- function(objMOList,
       )
       validTFs <- motifNames(objMOList$DEATAC$motifEnrichment[sel, ])
       # Filter to retain only valid interactions
-      sel <-extTFmRNA$regulator %in% validTFs
+      sel <- extTFmRNA$regulator %in% validTFs
       tfmRNA <- lapply(extTFmRNA, function(x) x[sel])
       omics <- union(omics, ATAC)
     }

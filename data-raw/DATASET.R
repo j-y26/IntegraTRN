@@ -458,6 +458,7 @@ jasparVertebratePWM <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
   )
 )
 
+
 usethis::use_data(jasparVertebratePWM, overwrite = TRUE)
 
 

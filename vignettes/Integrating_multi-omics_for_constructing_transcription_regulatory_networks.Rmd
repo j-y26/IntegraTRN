@@ -119,7 +119,7 @@ myMOList <- matchSamplesRNAsmallRNA(myMOList,
 ```
 
 ```{r message = FALSE, tidy=TRUE}
-exportMatchResult(myMOList) %>% head(5)     # For the first 5 matches
+exportMatchResult(myMOList) %>% head(5) # For the first 5 matches
 ```
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
@@ -149,7 +149,7 @@ myMOList <- annotateATACPeaksMotif(myMOList,
 plotATACAnno(myMOList)
 ```
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 6. ATACseq coverage"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 6. ATACseq coverage"}
 # Plot ATACseq Coverage
 plotATACCoverage(myMOList)
 ```
@@ -163,9 +163,9 @@ Now we can construct the small RNA - TF - target gene network.
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Load external interaction data to the MOList object
-myMOList <- loadExtInteractions(myMOList, 
-                                miR2Genes = miR2Genes,
-                                tf2Genes = tf2Genes
+myMOList <- loadExtInteractions(myMOList,
+  miR2Genes = miR2Genes,
+  tf2Genes = tf2Genes
 )
 ```
 
@@ -174,41 +174,42 @@ myMOList <- loadExtInteractions(myMOList,
 omiCutoffs <- setOmicCutoffs(
   rnaAdjPval = 0.05,
   rnaLogFC = 0.1,
-  rnaTopGenes = 100,
+  rnaTopGenes = 50,
   smallRNAAdjPval = 0.05,
   smallRNALogFC = 0.1,
-  smallRNATopGenes = 100,
+  smallRNATopGenes = 50,
   atacMotifPval = 0.01
 )
 ```
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Construct the network
-myTRNet <- constructTRN(myMOList, 
-                        omiCutoffs = omiCutoffs,
-                        smallRNAtypes = "all",
-                        targetDirection = "both",
-                        predicted = TRUE)
+myTRNet <- constructTRN(myMOList,
+  omiCutoffs = omiCutoffs,
+  smallRNAtypes = "all",
+  targetDirection = "both",
+  predicted = TRUE
+)
+```
+
+```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 8. The Transcriptional Regulatory Network"}
+# Plot the network
+plotNetwork(myTRNet, interactive = TRUE)
 ```
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
-# Plot the network
-plotNetwork(myTRNet, 
-            vertexSize - 5,
-            edgeArrowSize = 0.5)
-
-g <- myTRNet@network
-
-igraph::plot.igraph(g, 
-                    layout = igraph::layout_with_fr(g),
-                    vertex.size = 5,
-                    edge.arrow.size = 0.5,
-                    edge.curved = 0.2,
-                    edge.color = "grey",
-                    vertex.label.cex = 0.5,
-                    vertex.label.color = "black",
-                    vertex.label.family = "sans",
-                    vertex.label.font = 2,
-                    vertex.label.dist = 0.5)
-
+# Make a smaller network with only upregulated genes and miRNA
+myTRNet2 <- constructTRN(myMOList,
+  omiCutoffs = omiCutoffs,
+  smallRNAtypes = "miRNA",
+  targetDirection = "up",
+  predicted = TRUE
+)
 ```
+
+```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 9. The Transcriptional Regulatory Network of Up-regulated Genes"}
+# Plot the network
+plotNetwork(myTRNet2, vertex.size = 10)
+```
+
+

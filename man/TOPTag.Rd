@@ -42,16 +42,19 @@ The constructor for the TOPTag class.
 # Assuming that the object "deTag" is a DETag object
 
 # Example 1: Select the top 20\% of differential genes with default cutoffs
+
 \dontrun{
 topTag <- TOPTag(deTag, topGenes = 0.2)
 }
 
 # Example 2: Select the top 100 differential genes with default cutoffs
+
 \dontrun{
 topTag <- TOPTag(deTag, topGenes = 100)
 }
 
 # Example 3: Select the top 20\% of differential genes with custom cutoffs
+
 \dontrun{
 topTag <- TOPTag(deTag, logFCCutoff = 2, pCutoff = 0.01, topGenes = 0.2)
 }

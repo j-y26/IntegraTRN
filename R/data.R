@@ -170,7 +170,7 @@
 #' \item{target}{A vector of upregulated fetal heart mRNAs}
 #' }
 #'
-#' 
+#'
 #' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
 #'             network-based visual analytics for miRNA functional analysis and
 #'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
@@ -184,59 +184,59 @@
 "miR2Genes"
 
 #' Example TF - mRNA interactions
-#' 
+#'
 #' A list of TF-target interactions on fetal heart differentially expressed
 #' genes. The list contains 2 vectors of the same length. Each representing a
 #' pair of TF-target interactions. Curated partially from randomly selected
 #' TF-target interactions from TRRUST v2 using miRNet 2.0. Partially simulated
 #' using simulated ATACseq peaks.
-#' 
+#'
 #' @format A list of 2 vectors of the same length. Each representing a pair of
 #'        TF-target interactions.
 #' \describe{\
 #' \item{regulator}{A vector of TFs}
 #' \item{target}{A vector of upregulated fetal heart mRNAs}
 #' }
-#' 
+#'
 #' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
 #'             network-based visual analytics for miRNA functional analysis and
 #'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
 #'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' tf2Genes
 #' }
-#' 
+#'
 "tf2Genes"
 
 #' JASPAR curated position weight matrices of transcription factor binding sites
 #' for vertebrates based on database JASPAR CORE 2022
-#' 
+#'
 #' A PWMatrixList object containing the position weight matrices of
 #' transcription factor binding sites for vertebrates based on database JASPAR
 #' CORE 2022. This list is extracted from the JASPAR2022 package using the
 #' function \code{getMatrixSet()} from the \code{TFBSTools} package.
-#' 
+#'
 #' @format A list of 841 position weight matrices of transcription factor
 #' binding sites for vertebrates, as a PWMatrixList object
-#' 
+#'
 #' @source JASPAR2022 package
-#' 
+#'
 #' @references
-#' Baranasic D (2022). _JASPAR2022: Data package for JASPAR database 
-#' (version 2022)_. doi:10.18129/B9.bioc.JASPAR2022 
-#' <https://doi.org/10.18129/B9.bioc.JASPAR2022>, R package version 0.99.7, 
+#' Baranasic D (2022). _JASPAR2022: Data package for JASPAR database
+#' (version 2022)_. doi:10.18129/B9.bioc.JASPAR2022
+#' <https://doi.org/10.18129/B9.bioc.JASPAR2022>, R package version 0.99.7,
 #' <https://bioconductor.org/packages/JASPAR2022>.
-#' 
-#' Tan, G., and Lenhard, B. (2016). TFBSTools: an R/bioconductor package for 
+#'
+#' Tan, G., and Lenhard, B. (2016). TFBSTools: an R/bioconductor package for
 #' transcription actor binding site analysis. Bioinformatics 32, 1555-1556.
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' jasparVertebratePWM
 #' }
-#' 
+#'
 "jasparVertebratePWM"
 
 

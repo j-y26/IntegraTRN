@@ -96,7 +96,7 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #' @param trn A TRNet object
 #'
 #' @return A TRNet object with the igraph object in the network slot
-#' 
+#'
 #' @export
 #'
 #' @importFrom methods setGeneric setMethod
@@ -200,11 +200,20 @@ methods::setMethod(
 #' @description This function plots the TRNet object
 #'
 #' @param trn A TRNet object
+#' @param interactive A logical value indicating whether the plot should be
+#'                    interactive. If TRUE, an interactive plot will be
+#'                    plotted using the networkD3 package. If FALSE, a static
+#'                    plot will be plotted using the igraph package.
+#' @param ... Additional arguments passed to the plot function for plotting
+#'            a static plot using the igraph package, or the forceNetwork
+#'            function for interactive plots using the networkD3. See the
+#'            respective package documentation for details.
 #'
 #' @return NULL
 #'
 #' @importFrom methods setGeneric setMethod
-#' @importFrom igraph plot.igraph
+#' @importFrom igraph plot.igraph layout_with_drl categorical_pal
+#' @importFrom networkD3 igraph_to_networkD3 forceNetwork
 #'
 #' @export
 #'
@@ -222,23 +231,65 @@ methods::setMethod(
 #' # Plot TRNet object
 #' plotNetwork(trn)
 #'
+#' # Plot interactive TRNet object
+#' plotNetwork(trn, interactive = TRUE)
+#'
 methods::setGeneric(
   "plotNetwork",
-  function(trn) {
+  function(trn, interactive = FALSE, ...) {
     standardGeneric("plotNetwork")
   }
 )
 methods::setMethod(
   "plotNetwork", "TRNet",
-  function(trn) {
-    igraph::plot.igraph(trn@network)
-
+  function(trn, interactive = FALSE, ...) {
+    network <- trn@network
+    # Label vertices with their type
+    vertexMetadata <- parseVertexMetadata(trn)
+    vertexMetadata <- setNames(vertexMetadata$type, vertexMetadata$name)
+    # Plot network
+    if (interactive == TRUE) {
+      # Convert igraph object to networkD3 object
+      network <- networkD3::igraph_to_networkD3(network, group = vertexMetadata)
+      networkD3::forceNetwork(
+        Links = network$links,
+        Nodes = network$nodes,
+        Source = "source",
+        Target = "target",
+        NodeID = "name",
+        Group = "group",
+        opacity = 0.8,
+        zoom = TRUE,
+        ...
+      )
+    } else {
+      # Assign vertex color based on type of gene/transcript/TF
+      colors <- igraph::categorical_pal(length(unique(vertexMetadata)))
+      colors <- setNames(colors, unique(vertexMetadata))
+      igraph::V(network)$color <- colors[igraph::V(network)$type]
+      # Define layout
+      layout <- igraph::layout_with_drl(network)
+      # Plot static network
+      igraph::plot.igraph(network,
+        layout = layout,
+        vertex.color = igraph::V(network)$color,
+        vertex.label = igraph::V(network)$name,
+        vertex.label.color = "black",
+        vertex.label.cex = 0.8,
+        vertex.label.dist = 0.5,
+        edge.arrow.size = 0.3,
+        edge.arrow.width = 0.3,
+        edge.width = 0.5,
+        edge.color = "grey",
+        ...
+      )
+    }
   }
 )
 
 
 #' @title Export an igraph object from TRNet object
-#' 
+#'
 #' @rdname TRNet-class
 #'
 #' @description This function exports an igraph object from TRNet object
@@ -280,33 +331,33 @@ methods::setMethod(
 
 
 #' @title Export all network interactions from TRNet object
-#' 
+#'
 #' @rdname TRNet-class
-#' 
+#'
 #' @description This function exports all network interactions from TRNet object
-#'  
+#'
 #' @param trn A TRNet object
-#' 
+#'
 #' @return A data frame containing all network interactions
-#' 
+#'
 #' @importFrom methods setGeneric setMethod
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' # Define some example edges
 #' edges <- data.frame(
-#'  regulator = c("A", "B", "C"),
-#' target = c("D", "E", "F"),
-#' regulatorType = c("miRNA", "TF", "TF")
+#'   regulator = c("A", "B", "C"),
+#'   target = c("D", "E", "F"),
+#'   regulatorType = c("miRNA", "TF", "TF")
 #' )
-#' 
+#'
 #' # Create TRNet object
 #' trn <- TRNet(edges, FALSE, "RNA-seq")
-#' 
+#'
 #' # Export all network interactions
 #' exportEdgeSet(trn)
-#' 
+#'
 methods::setGeneric(
   "exportEdgeSet",
   function(trn) {
@@ -322,33 +373,34 @@ methods::setMethod(
 
 
 #' @title show method for TRNet object
-#' 
+#'
 #' @rdname TRNet-class
-#' 
+#'
 #' @description This function prints the TRNet object
-#' 
+#'
 #' @param object A TRNet object
-#' 
+#'
 #' @return NULL
-#' 
+#'
 #' @importFrom methods setMethod
-#' 
+#' @importFrom igraph ecount vcount
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' # Define some example edges
 #' edges <- data.frame(
-#'  regulator = c("A", "B", "C"),
-#' target = c("D", "E", "F"),
-#' regulatorType = c("miRNA", "TF", "TF")
+#'   regulator = c("A", "B", "C"),
+#'   target = c("D", "E", "F"),
+#'   regulatorType = c("miRNA", "TF", "TF")
 #' )
-#' 
+#'
 #' # Create TRNet object
 #' trn <- TRNet(edges, FALSE, "RNA-seq")
-#' 
+#'
 #' # Print TRNet object
 #' trn
-#' 
+#'
 methods::setMethod(
   "show", "TRNet",
   function(object) {
@@ -358,8 +410,10 @@ methods::setMethod(
     nTarget <- length(unique(object@TRNmetadata$target))
     nRegulator <- length(unique(object@TRNmetadata$regulator))
     regTypes <- unique(object@TRNmetadata$regulatorType)
-    cat("The network contains", nTarget, "target genes and", nRegulator,
-      "regulators\n")
+    cat(
+      "The network contains", nTarget, "target genes and", nRegulator,
+      "regulators\n"
+    )
     cat("Including", length(regTypes), "types of regulators:\n")
     for (regType in regTypes) {
       # Find the number of regulatory interactions of each type

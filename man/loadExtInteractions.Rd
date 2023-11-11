@@ -51,18 +51,18 @@ myMOList <- MOList(RNAseq = RNAseq, RNAGroupBy = RNAGroupBy)
 
 # Generate some example interaction data
 miR2Genes <- list(
- regulator = c("miR_1", "miR_2", "miR_3", "miR_4", "miR_5"),
- target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
+  regulator = c("miR_1", "miR_2", "miR_3", "miR_4", "miR_5"),
+  target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 )
 tf2Genes <- list(
-regulator = c("TF_1", "TF_2", "TF_3", "TF_4", "TF_5"),
-target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
+  regulator = c("TF_1", "TF_2", "TF_3", "TF_4", "TF_5"),
+  target = c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5")
 )
 # Load the external interaction data into the MOList object
 myMOList <- loadExtInteractions(
- myMOList,
-miR2Genes = miR2Genes,
-tf2Genes = tf2Genes
+  myMOList,
+  miR2Genes = miR2Genes,
+  tf2Genes = tf2Genes
 )
 
 }
