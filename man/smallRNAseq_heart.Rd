@@ -31,5 +31,9 @@ A small RNAseq experiment conducted on fetal ventricular heart tissues from
 \dontrun{
 smallRNA_heart
 }
+
+}
+\references{
+\insertRef{adar2023integrate}{IntegraTRN}
 }
 \keyword{datasets}

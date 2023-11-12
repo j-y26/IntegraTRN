@@ -28,9 +28,6 @@ miR2Genes
 
 }
 \references{
-Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
-            network-based visual analytics for miRNA functional analysis and
-            systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
-            July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+\insertRef{chang2020mirnet}{IntegraTRN}
 }
 \keyword{datasets}

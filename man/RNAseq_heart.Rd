@@ -36,10 +36,6 @@ RNAseq_heart
 
 }
 \references{
-Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., &
-Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac
-progenitor gene expression and programs adult-onset heart disease
-susceptibility. Molecular Metabolism, 43.
-https://doi.org/10.1016/j.molmet.2020.101116
+\insertRef{ahmed2021maternal}{IntegraTRN}
 }
 \keyword{datasets}

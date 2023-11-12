@@ -28,12 +28,7 @@ jasparVertebratePWM
 
 }
 \references{
-Baranasic D (2022). _JASPAR2022: Data package for JASPAR database
-(version 2022)_. doi:10.18129/B9.bioc.JASPAR2022
-<https://doi.org/10.18129/B9.bioc.JASPAR2022>, R package version 0.99.7,
-<https://bioconductor.org/packages/JASPAR2022>.
-
-Tan, G., and Lenhard, B. (2016). TFBSTools: an R/bioconductor package for
-transcription actor binding site analysis. Bioinformatics 32, 1555-1556.
+\insertRef{castro2022jaspar}{IntegraTRN}
+\insertRef{tan2016tfbstools}{IntegraTRN}
 }
 \keyword{datasets}

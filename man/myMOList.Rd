@@ -13,10 +13,6 @@ An S4 object of class MOList
 \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
 }
 }
-\source{
-Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
-ON, Canada
-}
 \usage{
 myMOList
 }
@@ -28,5 +24,6 @@ and ATACseq peaks
 \dontrun{
 myMOList
 }
+
 }
 \keyword{datasets}

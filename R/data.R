@@ -25,11 +25,8 @@
 #' }
 #'
 #' @references
-#' Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., &
-#' Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac
-#' progenitor gene expression and programs adult-onset heart disease
-#' susceptibility. Molecular Metabolism, 43.
-#' https://doi.org/10.1016/j.molmet.2020.101116
+#' \insertRef{ahmed2021maternal}{IntegraTRN}
+#'
 "RNAseq_heart"
 
 #' Sample information for RNAseq of heart tissues
@@ -56,11 +53,7 @@
 #' }
 #'
 #' @references
-#' Ahmed, A., Liang, M., Chi, L., Zhou, Y. Q., Sled, J. G., Wilson, M. D., &
-#' Delgado-Olguín, P. (2021). Maternal obesity persistently alters cardiac
-#' progenitor gene expression and programs adult-onset heart disease
-#' susceptibility. Molecular Metabolism, 43.
-#' https://doi.org/10.1016/j.molmet.2020.101116
+#' \insertRef{ahmed2021maternal}{IntegraTRN}
 #'
 "RNAseq_heart_samples"
 
@@ -87,6 +80,10 @@
 #' \dontrun{
 #' smallRNA_heart
 #' }
+#'
+#' @references
+#' \insertRef{adar2023integrate}{IntegraTRN}
+#'
 "smallRNAseq_heart"
 
 #' Sample information for small RNAseq of heart tissues
@@ -110,6 +107,9 @@
 #' smallRNA_heart_samples
 #' }
 #'
+#' @references
+#' \insertRef{adar2023integrate}{IntegraTRN}
+#'
 "smallRNAseq_heart_samples"
 
 #' Protein abundance in fetal heart tissues
@@ -131,6 +131,9 @@
 #' \dontrun{
 #' protein_heart
 #' }
+#'
+#' @references
+#' \insertRef{adar2023integrate}{IntegraTRN}
 #'
 "protein_heart"
 
@@ -154,6 +157,9 @@
 #' protein_heart_samples
 #' }
 #'
+#' @references
+#' \insertRef{adar2023integrate}{IntegraTRN}
+#'
 "protein_heart_samples"
 
 #' Example miRNA - mRNA interactions
@@ -171,10 +177,8 @@
 #' }
 #'
 #'
-#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
-#'             network-based visual analytics for miRNA functional analysis and
-#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
-#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#' @references
+#' \insertRef{chang2020mirnet}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{
@@ -198,10 +202,8 @@
 #' \item{target}{A vector of upregulated fetal heart mRNAs}
 #' }
 #'
-#' @references Le Chang, Guangyan Zhou, Othman Soufan, Jianguo Xia, miRNet 2.0:
-#'             network-based visual analytics for miRNA functional analysis and
-#'             systems biology, Nucleic Acids Research, Volume 48, Issue W1, 02
-#'             July 2020, Pages W244–W251, https://doi.org/10.1093/nar/gkaa467
+#' @references
+#' \insertRef{chang2020mirnet}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{
@@ -224,13 +226,9 @@
 #' @source JASPAR2022 package
 #'
 #' @references
-#' Baranasic D (2022). _JASPAR2022: Data package for JASPAR database
-#' (version 2022)_. doi:10.18129/B9.bioc.JASPAR2022
-#' <https://doi.org/10.18129/B9.bioc.JASPAR2022>, R package version 0.99.7,
-#' <https://bioconductor.org/packages/JASPAR2022>.
-#'
-#' Tan, G., and Lenhard, B. (2016). TFBSTools: an R/bioconductor package for
-#' transcription actor binding site analysis. Bioinformatics 32, 1555-1556.
+#' \insertRef{castro2022jaspar}{IntegraTRN}
+#' 
+#' \insertRef{tan2016tfbstools}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{
@@ -253,13 +251,12 @@
 #' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
 #' }
 #'
-#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
-#' ON, Canada
 #'
 #' @examples
 #' \dontrun{
 #' myMOList
 #' }
+#'
 "myMOList"
 
 

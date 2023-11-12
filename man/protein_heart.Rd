@@ -29,4 +29,7 @@ protein_heart
 }
 
 }
+\references{
+\insertRef{adar2023integrate}{IntegraTRN}
+}
 \keyword{datasets}

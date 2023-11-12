@@ -322,6 +322,8 @@ print.OMICutoffs <- function(x, ...) {
 #'
 #' @return A list with filtered regulator-target interactions
 #'
+#' @importFrom dplyr filter %>%
+#'
 filtermiRNAinverseCorr <- function(exprAdjList,
                                    deResultRNA,
                                    deResultSmallRNA,
@@ -491,6 +493,8 @@ intersectInteractions <- function(adjList1, adjList2) {
 #' @return A TOPTag object containing the top differential genes from the
 #'         RNAseq data, with the target genes filtered by proteomics data
 #'
+#' @importFrom dplyr %>%
+#'
 filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
   # Filter the target genes by proteomics data
   validProteins <- protTopTag %>%
@@ -603,6 +607,18 @@ combineSncInteractions <- function(predInteract,
 #' @return A TRNet object containing the transcriptional regulatory network
 #'
 #' @export
+#'
+#' @importFrom dplyr %>%
+#' @importFrom Rdpack reprompt
+#' @importFrom igraph graph_from_data_frame
+#' @importFrom GENIE3 GENIE3
+#'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
+#' 
+#' \insertRef{csardi2006igraph}{IntegraTRN}
+#' 
+#' \insertRef{huynh2010inferring}{IntegraTRN}
 #'
 #' @examples
 #' # Suppose we have a MOList object called myMOList, with the omics data

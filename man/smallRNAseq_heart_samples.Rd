@@ -30,4 +30,7 @@ smallRNA_heart_samples
 }
 
 }
+\references{
+\insertRef{adar2023integrate}{IntegraTRN}
+}
 \keyword{datasets}

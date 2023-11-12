@@ -5,7 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Integrating multi-omics for constructing transcriptional regulatory networks}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: `r system.file("REFERENCES.bib", package = "IntegraTRN")`
+bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
   @chang2020mirnet, @villanueva2019ggplot2, @dplyr
 ---
@@ -74,9 +74,9 @@ Here is an overview
 of the basic omics data used in this package:
 
 ```{r message = FALSE, tidy=TRUE}
-data("RNAseq_heart")            # RNAseq count matrix
-data("RNAseq_heart_samples")    # RNAseq sample information
-data("smallRNAseq_heart")       # small RNAseq count matrix
+data("RNAseq_heart") # RNAseq count matrix
+data("RNAseq_heart_samples") # RNAseq sample information
+data("smallRNAseq_heart") # small RNAseq count matrix
 data("smallRNAseq_heart_samples") # small RNAseq sample information
 ```
 
@@ -147,7 +147,7 @@ append the ATACseq data.
 
 ```{r message = FALSE}
 myMOList <- MOList(myMOList,
-  pathATACpeak1 = atacPeak1Path, 
+  pathATACpeak1 = atacPeak1Path,
   pathATACpeak2 = atacPeak2Path
 )
 ```
@@ -232,10 +232,10 @@ For publication purposes, we can also label some genes that we are interested in
 on the volcano plot. Let's first retrieve a few differentially expressed genes
 
 ```{r message = FALSE}
-genesToLabel <- exportDE(myRNADETag) %>% 
-                  dplyr::filter(padj < 0.05, abs(logFC) > 0.1) %>%
-                  head(3) %>%
-                  rownames()
+genesToLabel <- exportDE(myRNADETag) %>%
+  dplyr::filter(padj < 0.05, abs(logFC) > 0.1) %>%
+  head(3) %>%
+  rownames()
 ```
 
 Then we again plot the volcano plot, with some genes labeled.
@@ -253,12 +253,13 @@ A path to a tab-delimited file could also work.
 The following is an example:
 
 ```{r message = FALSE}
-smallRNAAnnotation <- data.frame(miRNA = c("hsa-mir-365b", "hsa-mir-365a"),
-                                 circRNA = c("NM_024116", "NM_000126"),
-                                 piRNA = c("hsa_piR_022874", "hsa_piR_019239"),
-                                 snoRNA = c("SNORD45", "SNORA30B"),
-                                 snRNA = c("RNU4-5P", "RNU2-44P"),
-                                 tRNA = c("chr6.trna81", "chr16.trna19")
+smallRNAAnnotation <- data.frame(
+  miRNA = c("hsa-mir-365b", "hsa-mir-365a"),
+  circRNA = c("NM_024116", "NM_000126"),
+  piRNA = c("hsa_piR_022874", "hsa_piR_019239"),
+  snoRNA = c("SNORD45", "SNORA30B"),
+  snRNA = c("RNU4-5P", "RNU2-44P"),
+  tRNA = c("chr6.trna81", "chr16.trna19")
 )
 ```
 
@@ -303,7 +304,7 @@ can assess the contribution of each type of small RNA to the differences
 observed between samples. To do so, we can perform a principal component
 analysis (PCA) on each type of small RNA separately.
 
-```{r message = FALSE, tidy=TRUE, echo=FALSE}
+```{r message = FALSE, tidy=TRUE, results='hide'}
 pcaPlotList <- plotSmallRNAPCAs(myMOList)
 ```
 
@@ -517,9 +518,10 @@ target.
 ```{r message = FALSE, tidy=TRUE}
 data("miR2Genes")
 data("tf2Genes")
-myMOList <- loadExtInteractions(myMOList, 
-                                miR2Genes = miR2Genes, 
-                                tf2Genes = tf2Genes)
+myMOList <- loadExtInteractions(myMOList,
+  miR2Genes = miR2Genes,
+  tf2Genes = tf2Genes
+)
 ```
 
 ### Setting cutoffs for omics data
@@ -561,7 +563,7 @@ When predicted interactions are used, we can make the process faster by
 using multiple threads, and a random seed can be specified or reproducibility
 [@huynh2010inferring].
 
-```{r message = FALSE, warning=FALSE}
+```{r message = FALSE, warning=FALSE, results='hide'}
 myTRNet <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   smallRNAtypes = "all",
@@ -597,7 +599,7 @@ omiCutoffs2$rnaLogFC <- 0.2
 
 Let us construct a new TRN.
 
-```{r message = FALSE, warning=FALSE}
+```{r message = FALSE, warning=FALSE, results='hide'}
 myTRNet2 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs2,
   smallRNAtypes = "miRNA",
@@ -628,5 +630,5 @@ exportIgraph(myTRNet2)
 ## Session information
 
 ```{r message = FALSE, tidy=TRUE}
-sessionInfo()
+sessionInfo("IntegraTRN")
 ```
