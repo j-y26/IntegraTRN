@@ -43,11 +43,14 @@ Imports:
     MatchIt (>= 4.4.0),
     methods (>= 3.6.0),
     monaLisa (>= 1.6.0),
+    networkD3,
     optmatch (>= 0.10.6),
     RColorBrewer (>= 1.1-2),
+    Rdpack,
     Repitools,
     S4Vectors (>= 0.38.0),
     SummarizedExperiment
+RdMacros: Rdpack
 URL: https://github.com/j-y26/IntegraTRN
 BugReports: https://github.com/j-y26/IntegraTRN/issues
 VignetteBuilder: knitr
