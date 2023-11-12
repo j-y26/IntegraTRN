@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 bibliography: `r system.file("REFERENCES.bib", package = "IntegraTRN")`
 nocite: |
-  @chang2020mirnet, @villanueva2019ggplot2
+  @chang2020mirnet, @villanueva2019ggplot2, @dplyr
 ---
 
 ```{r, include = FALSE}
@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 # Load the package
 library(IntegraTRN)
+library(dplyr)
 ```
 
 
@@ -355,12 +356,14 @@ expressed genes.
 To do so, we first need additional annotation information. Here, we make use of 
 the annotation database from the `TxDb.Hsapiens.UCSC.hg38.knownGene` package,
 which is a `TxDb` object that contains the genomic coordinates of all known
-genes in the `hg38` genome assembly. We also need to provide a more general
+genes in the `hg38` genome assembly [@TxDb.Hsapiens.UCSC.hg38.knownGene]. 
+We also need to provide a more general
 annotation database, which is the `org.Hs.eg.db` package to extract the gene
-information. Finally, scanning the open chromatin regions for TF binding motifs
+information [@org.Hs.eg.db]. 
+Finally, scanning the open chromatin regions for TF binding motifs
 requires identifying the sequence of the open chromatin regions. 
-Here, we use the corresponding genome
-FASTA database from the `BSgenome.Hsapiens.UCSC.hg38` package. 
+Here, we use the corresponding genome FASTA database from the
+ `BSgenome.Hsapiens.UCSC.hg38` package [@BSgenome.Hsapiens.UCSC.hg38]. 
 
 ```{r message = FALSE, tidy=TRUE, echo=FALSE, warning=FALSE}
 # Annotate ATAC Peaks
@@ -384,10 +387,11 @@ following command:
 data("jasparVertebratePWM")
 ```
 
-This is a `PWMatrixList` object defined in the `TFBSTools` package. This package
+This is a `PWMatrixList` object defined in the `TFBSTools` package 
+[@tan2016tfbstools]. This package
 also provides additional functionality to retrieve PWMs from other databases or
 tools, such as HOMER etc. Here, we will use our package-provided PWMs from
-`JASPAR2022`.
+`JASPAR2022` [@castro2022jaspar].
 
 The `annotateATACPeaksMotif` function performs both peak annotation and motif
 enrichment analysis via a single call. Here, we define the promoter region as
@@ -462,7 +466,7 @@ between genes and small RNAs [@huynh2010inferring].
 However, this algorithm requires that the samples
 between the RNAseq and small RNAseq data are matched so that co-expression
 profiles can be extracted. Therefore, we need to match the samples between the
-RNAseq and small RNAseq data.
+RNAseq and small RNAseq data [@stuart2011matchit].
 
 We can perform an one-to-one optimal matching between the samples using the
 `matchSamplesRNAsmallRNA` function. When we have further information about the 
@@ -497,7 +501,8 @@ nrow(exportMatchResult(myMOList))
 Depending on the biological question, we may want to use externally curated
 interactions to be part of the TRN. For example, the miRNet tools provides
 a comprehensive database of miRNA-target interactions, but the information
-are usually not tissue-specific or all relevant to the biological question.
+are usually not tissue-specific or all relevant to the biological question 
+[@chang2020mirnet].
 However, `IntegraTRN` provides a flexibility to allow users to import
 externally curated interactions, and during the construction of the TRN,
 these external interactions are intersected with the predicted interactions
@@ -553,7 +558,8 @@ also need to specify whether we want to use the predicted interactions or not.
 Here, we construct a network using both predicted and curated interactions, for
 all differentially expressed genes that are both up- and down-regulated. 
 When predicted interactions are used, we can make the process faster by
-using multiple threads, and a random seed can be specified or reproducibility.
+using multiple threads, and a random seed can be specified or reproducibility
+[@huynh2010inferring].
 
 ```{r message = FALSE, warning=FALSE}
 myTRNet <- constructTRN(myMOList,
@@ -568,7 +574,7 @@ myTRNet <- constructTRN(myMOList,
 
 We can easily plot the network using the `plotNetwork` function. We can decide
 whether we want an interactive network. For large networks, the interactive
-network provides a better way to explore the interactions.
+network provides a better way to explore the interactions [@networkd3].
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 9. The Transcriptional Regulatory Network"}
 plotNetwork(myTRNet, interactive = TRUE)
@@ -600,7 +606,7 @@ myTRNet2 <- constructTRN(myMOList,
 )
 ```
 
-Then we can plot the network as a static figure.
+Then we can plot the network as a static figure [@csardi2006igraph].
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 10. The Transcriptional Regulatory Network of Up-regulated Genes"}
 plotNetwork(myTRNet2, vertex.size = 10)
@@ -609,7 +615,7 @@ plotNetwork(myTRNet2, vertex.size = 10)
 Some times it is hard to use the default parameters to plot a publication-level
 network. However, users can easily customize the network using the `igraph`
 package. We can extract the network as an `igraph` object and performs 
-further customization.
+further customization [@csardi2006igraph].
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
 exportIgraph(myTRNet2)
