@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+```{r setup, message=FALSE, warning=FALSE}
 # Load the package
 library(IntegraTRN)
 library(dplyr)
@@ -77,10 +77,10 @@ Here is an overview
 of the basic omics data used in this package:
 
 ```{r message = FALSE, tidy=TRUE}
-data("RNAseq_heart", package = "IntegraTRN") # RNAseq count matrix
-data("RNAseq_heart_samples", package = "IntegraTRN") # RNAseq sample information
-data("smallRNAseq_heart", package = "IntegraTRN") # small RNAseq count matrix
-data("smallRNAseq_heart_samples", package = "IntegraTRN") # small RNAseq sample information
+data("RNAseq_heart") # RNAseq count matrix
+data("RNAseq_heart_samples") # RNAseq sample information
+data("smallRNAseq_heart") # small RNAseq count matrix
+data("smallRNAseq_heart_samples") # small RNAseq sample information
 ```
 
 Please use `?<dataset>` to see the details of each dataset.

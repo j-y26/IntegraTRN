@@ -143,11 +143,11 @@ PEAKTag <- function(objDETag,
 
 #' print PEAKTag
 #'
-#' @aliases print,PEAKTag-method
+#' @aliases show,PEAKTag-method
 #'
 #' @description The print method for the PEAKTag class.
-#'
-#' @inheritParams DETag-class
+#' 
+#' @param object A PEAKTag object
 #'
 #' @return NULL
 #'

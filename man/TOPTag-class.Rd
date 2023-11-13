@@ -15,7 +15,7 @@ filterGenes(object, names)
 filtered.}
 }
 \value{
-A TOPTag object
+A TOPTag object with the filtered genes.
 }
 \description{
 The TOPTag S4 class inherits the DETag class and is a more
@@ -67,20 +67,6 @@ DE genes based on logFCCutoff and pCutoff, then topGenes will
 be set to the number of DE genes.}
 }}
 
-\examples{
-# Use the package provided example data
-data("expMOList")
-
-# Extract an DETag object from RNA-seq data
-deTag <- expMOList$DERNAseq
-
-# Create a TOPTag object
-topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
-
-# Filter the top differential genes by a names vector
-topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
-
-}
 \references{
 \insertRef{love2014moderated}{IntegraTRN}
 

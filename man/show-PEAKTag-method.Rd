@@ -2,10 +2,12 @@
 % Please edit documentation in R/PEAKTag.R
 \name{show,PEAKTag-method}
 \alias{show,PEAKTag-method}
-\alias{print,PEAKTag-method}
 \title{print PEAKTag}
 \usage{
 \S4method{show}{PEAKTag}(object)
+}
+\arguments{
+\item{object}{A PEAKTag object}
 }
 \description{
 The print method for the PEAKTag class.

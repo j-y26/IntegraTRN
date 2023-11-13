@@ -897,8 +897,6 @@ setMethod("show", "MOList", function(object) {
 #'
 #' @return An object of class MOList
 #'
-#' @export
-#'
 #' @examples
 #' # Create example RNAseq and proteomics data
 #' rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)

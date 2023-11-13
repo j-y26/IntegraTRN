@@ -297,20 +297,7 @@ setMethod(
 #' @param names A character vector containing the names of the genes to be
 #'              filtered.
 #'
-#' @return A TOPTag object
-#'
-#' @examples
-#' # Use the package provided example data
-#' data("expMOList")
-#'
-#' # Extract an DETag object from RNA-seq data
-#' deTag <- expMOList$DERNAseq
-#'
-#' # Create a TOPTag object
-#' topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
-#'
-#' # Filter the top differential genes by a names vector
-#' topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
+#' @return A TOPTag object with the filtered genes.
 #'
 setGeneric("filterGenes", function(object, names) {
   standardGeneric("filterGenes")
