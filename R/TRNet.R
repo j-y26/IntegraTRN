@@ -114,20 +114,6 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #' @references
 #' \insertRef{csardi2006igraph}{IntegraTRN}
 #'
-#' @examples
-#' # Define some example edges
-#' edges <- data.frame(
-#'   regulator = c("A", "B", "C"),
-#'   target = c("D", "E", "F"),
-#'   regulatorType = c("miRNA", "TF", "TF")
-#' )
-#'
-#' # Create TRNet object
-#' trn <- TRNet(edges, FALSE, "RNA-seq")
-#'
-#' # Generate igraph object
-#' generatePlot(trn)
-#'
 setGeneric(
   "generatePlot",
   function(trn) {

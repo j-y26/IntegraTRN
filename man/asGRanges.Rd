@@ -21,6 +21,8 @@ Convert to a GRanges object
 data(expMOList)
 
 # Convert the object to a GRanges object
+\dontrun{
 asGRanges(expMOList$DEATAC)
+}
 
 }

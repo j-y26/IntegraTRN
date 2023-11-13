@@ -7,3 +7,5 @@
 /temp/*
 /temp
 ^data-raw$
+^doc$
+^Meta$

@@ -212,7 +212,9 @@ setMethod(
 #' data(expMOList)
 #'
 #' # Convert the object to a GRanges object
+#' \dontrun{
 #' asGRanges(expMOList$DEATAC)
+#' }
 #'
 setGeneric(
   "asGRanges",
@@ -257,7 +259,9 @@ setMethod(
 #' data(expMOList)
 #'
 #' # Convert the object to a data frame
+#' \dontrun{
 #' as.data.frame(expMOList$DEATAC)
+#' }
 #'
 setMethod(
   "as.data.frame",

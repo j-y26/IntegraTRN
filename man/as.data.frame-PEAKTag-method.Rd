@@ -20,6 +20,8 @@ Convert to a data frame
 data(expMOList)
 
 # Convert the object to a data frame
+\dontrun{
 as.data.frame(expMOList$DEATAC)
+}
 
 }

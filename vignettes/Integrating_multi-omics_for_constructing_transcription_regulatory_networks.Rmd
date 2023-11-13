@@ -590,7 +590,7 @@ myTRNet <- constructTRN(myMOList,
   smallRNAtypes = "all",
   targetDirection = "both",
   predicted = TRUE,
-  nthreads = 4,
+  nthreads = 1,
   seed = 123
 )
 ```
