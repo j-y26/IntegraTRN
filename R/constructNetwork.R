@@ -270,15 +270,15 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
 #' print(omiCutoffs)
 #'
 print.OMICutoffs <- function(x, ...) {
-  cat("RNAseq adjusted p-value cutoff:", x$rnaAdjPval, "\n")
-  cat("RNAseq log fold change cutoff:", x$rnaLogFC, "\n")
+  cat("RNAseq adjusted p-value cutoff: <", x$rnaAdjPval, "\n")
+  cat("RNAseq log fold change cutoff: >", x$rnaLogFC, "\n")
   if (x$rnaTopGenes <= 1) {
     cat("RNAseq selecting top", x$rnaTopGenes * 100, "% of DE genes", "\n")
   } else {
     cat("RNAseq selecting top", x$rnaTopGenes, "DE genes", "\n")
   }
-  cat("smallRNAseq adjusted p-value cutoff:", x$smallRNAAdjPval, "\n")
-  cat("smallRNAseq log fold change cutoff:", x$smallRNALogFC, "\n")
+  cat("smallRNAseq adjusted p-value cutoff: <", x$smallRNAAdjPval, "\n")
+  cat("smallRNAseq log fold change cutoff: >", x$smallRNALogFC, "\n")
   if (x$smallRNATopGenes <= 1) {
     cat(
       "smallRNAseq selecting top", x$smallRNATopGenes * 100, "% of DE genes",
@@ -287,14 +287,15 @@ print.OMICutoffs <- function(x, ...) {
   } else {
     cat("smallRNAseq selecting top", x$smallRNATopGenes, "DE genes", "\n")
   }
-  cat("Proteomics adjusted p-value cutoff:", x$proteomicsAdjPval, "\n")
-  cat("Proteomics log fold change cutoff:", x$proteomicsLogFC, "\n")
+  cat("Proteomics adjusted p-value cutoff: <", x$proteomicsAdjPval, "\n")
+  cat("Proteomics log fold change cutoff: >", x$proteomicsLogFC, "\n")
   if (is.null(x$atacMotifPval)) {
-    cat("ATACseq motif adjusted p-value cutoff:", x$atacMotifAdjPval, "\n")
+    cat("ATACseq motif adjusted p-value cutoff: <", x$atacMotifAdjPval, "\n")
   } else {
-    cat("ATACseq motif p-value cutoff:", x$atacMotifPval, "\n")
+    cat("ATACseq motif p-value cutoff: <", x$atacMotifPval, "\n")
   }
-  cat("ATACseq motif log fold enrichment cutoff:", x$atacMotifLogFC, "\n")
+  atacFE <- ifelse(is.null(x$atacMotifLogFC), 0, x$atacMotifLogFC)
+  cat("ATACseq motif log fold enrichment cutoff: >", atacFE, "\n")
 }
 
 

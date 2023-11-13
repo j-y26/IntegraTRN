@@ -24,7 +24,18 @@ A TRNet object
 \description{
 This function is a constructor of the TRNet object
 }
+\examples{
+# Define some example edges
+edges <- data.frame(
+  regulator = c("A", "B", "C"),
+  target = c("D", "E", "F"),
+  regulatorType = c("miRNA", "TF", "TF")
+)
+
+# Create TRNet object
+trn <- TRNet(edges, FALSE, "RNA-seq")
+
+}
 \references{
 \insertRef{csardi2006igraph}{IntegraTRN}
 }
-\keyword{internal}
