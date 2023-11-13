@@ -114,6 +114,5 @@ objMOList3 <- MOList(objMOList3, RNAseq = RNAseq3, RNAGroupBy = RNAGroupBy)
 
 }
 \references{
-Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
-analysis.
+\insertRef{genomictools}{IntegraTRN}
 }

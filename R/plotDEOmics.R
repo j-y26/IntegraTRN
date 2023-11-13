@@ -11,6 +11,8 @@ NOANNO <- "Unannotated"
 
 #' Annotate by expression
 #'
+#' @keywords internal
+#'
 #' @description This function annotates whether a gene is up-regulated,
 #'              down-regulated, or not differentially expressed
 #'
@@ -18,6 +20,11 @@ NOANNO <- "Unannotated"
 #'            results, must follow the described format in DETag-class
 #' @param log2FC The cutoff for log2 fold change, a positive number
 #' @param adjP The cutoff for adjusted p-value
+#'
+#' @return A data frame containing the differential expression analysis with
+#'         the expression annotated in the "expr" column
+#'
+#' @importFrom dplyr mutate case_when %>%
 #'
 annoExpr <- function(deg, log2FC, adjP) {
   deg <- deg %>%
@@ -51,6 +58,13 @@ annoExpr <- function(deg, log2FC, adjP) {
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
 #' @importFrom ggrepel geom_label_repel
+#'
+#' @references
+#' \insertRef{villanueva2019ggplot2}{IntegraTRN}
+#'
+#' \insertRef{ggrepel}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
 #'
 plotVolcano <- function(deg,
                         log2FC = 1,
@@ -124,28 +138,31 @@ plotVolcano <- function(deg,
 #' @importFrom dplyr mutate case_when
 #' @importFrom ggrepel geom_label_repel
 #'
+#' @references
+#' \insertRef{villanueva2019ggplot2}{IntegraTRN}
+#'
+#' \insertRef{ggrepel}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
+#'
 #' @export
 #'
 #' @examples
-#' # Suppose that we have an MOList object called objMOList, which contains the
-#' # differential expression results for mRNA as an element named DERNAseq.
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
 #'
 #' # Example 1: Generate the volcano plot by default parameters
-#' \dontrun{
-#' plotVolcanoRNA(objMOList)
-#' }
+#' plotVolcanoRNA(expMOList)
 #'
 #' # Example 2: Generate the volcano plot with custom parameters
-#' \dontrun{
-#' plotVolcanoRNA(objMOList,
-#'   log2FC = 2,
+#' plotVolcanoRNA(expMOList,
+#'   log2FC = 0,
 #'   adjP = 0.01,
 #'   geneList = c("MYH7B", "NELFCD", "KDM8"),
 #'   upColor = "purple",
 #'   downColor = "green",
 #'   title = "Volcano plot for DE mRNA"
 #' )
-#' }
 #'
 plotVolcanoRNA <- function(objMOList,
                            log2FC = 1,
@@ -206,6 +223,8 @@ plotVolcanoRNA <- function(objMOList,
 
 #' Annotate the type of small RNA in the differential expression results
 #'
+#' @keywords internal
+#'
 #' @description This function annotates the type of small RNA in the
 #'              differential expression results.
 #'
@@ -217,6 +236,9 @@ plotVolcanoRNA <- function(objMOList,
 #'         the type of small RNA annotated.
 #'
 #' @importFrom dplyr mutate case_when %>%
+#'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
 #'
 annoSncList <- function(deg, annoList) {
   deg <- deg %>% dplyr::mutate(type = dplyr::case_when(
@@ -249,7 +271,8 @@ annoSncList <- function(deg, annoList) {
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
 #' @param geneList A vector of genes to highlight in the plot.
 #' @param colScheme A RColorBrewer color scheme for color-coding each type of
-#'                  small RNAs. Default is "BuPu".
+#'                  small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
+#'                  for details.
 #' @param title The title for the plot. Default is NULL.
 #'
 #' @return A ggplot object
@@ -263,26 +286,30 @@ annoSncList <- function(deg, annoList) {
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{villanueva2019ggplot2}{IntegraTRN}
+#'
+#' \insertRef{ggrepel}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
+#'
+#' \insertRef{RColorBrewer}{IntegraTRN}
+#'
 #' @examples
-#' # Suppose that we have an MOList object called objMOList, which contains the
-#' # differential expression results for small RNAs as an element named
-#' DESmallRNAseq
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
 #'
 #' # Example 1: Generate the volcano plot by default parameters
-#' \dontrun{
-#' plotVolcanoSmallRNA(objMOList)
-#' }
+#' plotVolcanoSmallRNA(expMOList)
 #'
 #' # Example 2: Generate the volcano plot with custom parameters
-#' \dontrun{
-#' plotVolcanoSmallRNA(objMOList,
-#'   log2FC = 2,
+#' plotVolcanoSmallRNA(expMOList,
+#'   log2FC = 0,
 #'   adjP = 0.01,
 #'   geneList = c("hsa-miR-1-3p", "hsa-miR-2-3p"),
-#'   colScheme = "magma",
+#'   colScheme = "YlOrRd",
 #'   title = "Volcano plot for DE small RNA"
 #' )
-#' }
 #'
 plotVolcanoSmallRNA <- function(objMOList,
                                 log2FC = 1,
@@ -374,7 +401,36 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'
 #' @return A ggplot object
 #'
+#' @references
+#' \insertRef{villanueva2019ggplot2}{IntegraTRN}
+#'
+#' \insertRef{ggrepel}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
+#'
+#' \insertRef{love2014moderated}{IntegraTRN}
+#'
 #' @export
+#'
+#' @examples
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
+#'
+#' # Extract the information needed for PCA analysis for example RNAseq data
+#' matrixRNAseq <- getRawData(expMOList, "RNAseq")
+#' groupBy <- getSampleInfo(expMOList, "RNAseq")$groupBy
+#'
+#' # Example 1: Perform PCA analysis without batch effect correction
+#' pcaPlot <- countPCA(matrixRNAseq, groupBy)
+#'
+#' pcaPlot
+#'
+#' # Example 2: Perform PCA analysis with batch effect correction
+#' # Create an example batch effect
+#' batch <- rep(c("Batch1", "Batch2"), each = 30)[1:53]
+#' pcaPlot <- countPCA(matrixRNAseq, groupBy, batch = batch)
+#'
+#' pcaPlot
 #'
 countPCA <- function(matrix,
                      groupBy,
@@ -471,6 +527,24 @@ countPCA <- function(matrix,
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{villanueva2019ggplot2}{IntegraTRN}
+#'
+#' \insertRef{ggrepel}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
+#'
+#' \insertRef{love2014moderated}{IntegraTRN}
+#'
+#' @examples
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
+#'
+#' # Generate a list of PCA plots for each type of small RNA
+#' \dontrun{
+#' pcaPlotList <- plotSmallRNAPCAs(expMOList)
+#' }
+#'
 plotSmallRNAPCAs <- function(objMOList,
                              batch = NULL,
                              col1 = "#440154",
@@ -566,14 +640,17 @@ plotSmallRNAPCAs <- function(objMOList,
 #'
 #' @export
 #'
-#' @examples
-#' # Suppose that we have an MOList object called objMOList, which contains the
-#' # differential accessible regions as an element named DEPeaks
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
 #'
-#' # Plotting the peak coverage
-#' \dontrun{
-#' plotATACCoverage(objMOList)
-#' }
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
+#' @examples
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
+#'
+#' # Plotting the coverage plot
+#' plotATACCoverage(expMOList)
 #'
 plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
   if (is.null(objMOList$DEATAC)) {
@@ -610,14 +687,15 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
+#'
 #' @examples
-#' # Suppose that we have an MOList object called objMOList, which contains the
-#' # differential accessible regions with annotation
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
 #'
 #' # Plotting the annotation pie chart
-#' \dontrun{
-#' plotATACAnno(objMOList)
-#' }
+#' plotATACAnno(expMOList)
 #'
 plotATACAnno <- function(objMOList) {
   if (is.null(objMOList$DEATAC) ||
@@ -645,12 +723,29 @@ plotATACAnno <- function(objMOList) {
 #' @param by The feature to be used for grouping, default is "gene"
 #' @param type The type of the feature, default is "start_site"
 #'
+#' @return A ggplot object
+#'
 #' @details See ?ChIPseeker::peak_Profile_Heatmap for details on the values of
 #'          the parameters.
 #'
+#' @importFrom ChIPseeker peak_Profile_Heatmap
+#' @importFrom GenomicRanges asGRanges
+#'
 #' @export
 #'
-#' @return A ggplot object
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
+#'
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
+#' @examples
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
+#'
+#' # Plotting the profile and heatmap
+#' \dontrun{
+#' plotATACProfileHeatmap(expMOList)
+#' }
 #'
 plotATACProfileHeatmap <- function(objMOList,
                                    upstream = 1000,
@@ -668,7 +763,7 @@ plotATACProfileHeatmap <- function(objMOList,
   txdb <- objMOList$DEATAC@TxDB
 
   # Generate the profile and heatmap
-  profileHeatmap <- ChIPseeker::peak_Profile_Heatmap(
+  ChIPseeker::peak_Profile_Heatmap(
     peak = peakGR,
     upstream = upstream,
     downstream = downstream,
@@ -676,7 +771,6 @@ plotATACProfileHeatmap <- function(objMOList,
     by = by,
     type = type
   )
-  return(profileHeatmap)
 }
 
 
@@ -710,25 +804,28 @@ plotATACProfileHeatmap <- function(objMOList,
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{machlab2022monalisa}{IntegraTRN}
+#'
+#' \insertRef{SummarizedExperiment}{IntegraTRN}
+#'
+#' \insertRef{gu2016complex}{IntegraTRN}
+#'
+#'
 #' @examples
-#' # Suppose that we have an MOList object called objMOList, which contains the
-#' # differential accessible regions as an element named DEATAC, with motif
-#' # enrichment analysis results
+#' # Use the package-provided example data
+#' data(expMOList, package = "IntegraTRN")
 #'
 #' # Example 1: Plot the motif heatmap by default parameters
 #' \dontrun{
-#' plotATACMotifHeatmap(objMOList)
+#' plotATACMotifHeatmap(expMOList)
 #' }
 #'
 #' # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
-#' \dontrun{
-#' plotATACMotifHeatmap(objMOList, pValue = 0.01)
-#' }
+#' plotATACMotifHeatmap(expMOList, pValue = 0.01)
 #'
 #' # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
-#' \dontrun{
-#' plotATACMotifHeatmap(objMOList, pValue = 0.01, log2FEnrich = 1)
-#' }
+#' plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
 #'
 plotATACMotifHeatmap <- function(objMOList,
                                  pValueAdj = 0.05,

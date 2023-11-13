@@ -24,4 +24,11 @@ This function generates a base volcano plot for visualizing
             differentially expressed omics data based on log2 fold change
             and adjusted p-value.
 }
+\references{
+\insertRef{villanueva2019ggplot2}{IntegraTRN}
+
+\insertRef{ggrepel}{IntegraTRN}
+
+\insertRef{dplyr}{IntegraTRN}
+}
 \keyword{internal}

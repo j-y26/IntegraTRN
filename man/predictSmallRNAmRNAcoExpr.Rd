@@ -72,4 +72,7 @@ This function predicts small NC RNA - mRNA interactions via
 The final result includes all predicted interactions, without any
       filtering on the weight of the predicted interactions.
 }
+\references{
+\insertRef{huynh2010inferring}{IntegraTRN}
+}
 \keyword{internal}

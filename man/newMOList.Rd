@@ -69,7 +69,4 @@ objMOList <- newMOList(
 }
 
 }
-\references{
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-}
 \keyword{internal}

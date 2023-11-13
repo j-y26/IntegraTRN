@@ -20,12 +20,13 @@ This function generates a pie chart for the annotation of
              ChIPseeker package.
 }
 \examples{
-# Suppose that we have an MOList object called objMOList, which contains the
-# differential accessible regions with annotation
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
 
 # Plotting the annotation pie chart
-\dontrun{
-plotATACAnno(objMOList)
-}
+plotATACAnno(expMOList)
 
+}
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
 }

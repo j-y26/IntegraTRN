@@ -7,8 +7,6 @@
 
 #' @title TRNet S4 class of transcriptional regulatory network
 #'
-#' @keywords internal
-#'
 #' @description The TRNet S4 class is a class for storing transcriptional
 #'              regulatory network. It internally utilizes the igraph package
 #'              to store the network, with additional parameters to store
@@ -44,6 +42,8 @@ methods::setClass("TRNet",
 
 #' @title TRNet constructor
 #'
+#' @keywords internal
+#'
 #' @description This function is a constructor of the TRNet object
 #'
 #' @param TRNmetadata A data frame containing all interaction data for the
@@ -56,6 +56,11 @@ methods::setClass("TRNet",
 #'              the transcriptional regulatory network.
 #'
 #' @return A TRNet object
+#'
+#' @importFrom methods new
+#'
+#' @references
+#' \insertRef{csardi2006igraph}{IntegraTRN}
 #'
 TRNet <- function(TRNmetadata, predicted, omics) {
   # Check if TRNmetadata is a data frame
@@ -97,10 +102,12 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #'
 #' @return A TRNet object with the igraph object in the network slot
 #'
-#' @export
-#'
 #' @importFrom methods setGeneric setMethod
 #' @importFrom igraph graph_from_data_frame
+#'
+#' @references
+#' \insertRef{csardi2006igraph}{IntegraTRN}
+#'
 #' @examples
 #' # Define some example edges
 #' edges <- data.frame(
@@ -217,6 +224,11 @@ methods::setMethod(
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{csardi2006igraph}{IntegraTRN}
+#'
+#' \insertRef{networkD3}{IntegraTRN}
+#'
 #' @examples
 #' # Define some example edges
 #' edges <- data.frame(
@@ -301,6 +313,9 @@ methods::setMethod(
 #' @importFrom methods setGeneric setMethod
 #'
 #' @export
+#'
+#' @references
+#' \insertRef{csardi2006igraph}{IntegraTRN}
 #'
 #' @examples
 #' # Define some example edges

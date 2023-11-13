@@ -58,13 +58,7 @@ deTag
 
 }
 \references{
-Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-differential expression analysis of digital gene expression data.
+\insertRef{robinson2010edger}{IntegraTRN}
 
-Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
-
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+\insertRef{love2014deseq2}{IntegraTRN}
 }

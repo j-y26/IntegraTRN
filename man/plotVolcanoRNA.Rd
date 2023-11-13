@@ -43,24 +43,27 @@ This function generates a volcano plot for visualizing
              color scheme is provided.
 }
 \examples{
-# Suppose that we have an MOList object called objMOList, which contains the
-# differential expression results for mRNA as an element named DERNAseq.
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
 
 # Example 1: Generate the volcano plot by default parameters
-\dontrun{
-plotVolcanoRNA(objMOList)
-}
+plotVolcanoRNA(expMOList)
 
 # Example 2: Generate the volcano plot with custom parameters
-\dontrun{
-plotVolcanoRNA(objMOList,
-  log2FC = 2,
+plotVolcanoRNA(expMOList,
+  log2FC = 0,
   adjP = 0.01,
   geneList = c("MYH7B", "NELFCD", "KDM8"),
   upColor = "purple",
   downColor = "green",
   title = "Volcano plot for DE mRNA"
 )
-}
 
+}
+\references{
+\insertRef{villanueva2019ggplot2}{IntegraTRN}
+
+\insertRef{ggrepel}{IntegraTRN}
+
+\insertRef{dplyr}{IntegraTRN}
 }

@@ -70,3 +70,32 @@ This function performs data filtering, normalization, batch
              of the MOList class to extract filtered and normalized read
              counts for each of the omics data.
 }
+\examples{
+# Generate example datasets
+rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
+rnaseqSGroupBy <- rep(c("A", "B"), each = 5)
+smallRNAseq <- matrix(sample(0:100, 1000, replace = TRUE),
+  nrow = 100, ncol = 5
+)
+smallRNAseqSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+protein <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
+proteinSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+
+# Create a MOList object
+objMOList <- MOList(
+  RNAseq = rnaseq, RNAGroupBy = rnaseqSGroupBy,
+  smallRNAseq = smallRNAseq, smallRNAGroupBy = smallRNAseqSGroupBy,
+  proteomics = protein, proteomicsGroupBy = proteinSGroupBy
+)
+
+# Perform differential analysis
+objMOList <- diffOmics(objMOList)
+
+}
+\references{
+\insertRef{love2014deseq2}{IntegraTRN}
+
+\insertRef{robinson2010edger}{IntegraTRN}
+
+\insertRef{lawrence2013software}{IntegraTRN}
+}

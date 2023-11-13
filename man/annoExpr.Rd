@@ -14,7 +14,12 @@ results, must follow the described format in DETag-class}
 
 \item{adjP}{The cutoff for adjusted p-value}
 }
+\value{
+A data frame containing the differential expression analysis with
+        the expression annotated in the "expr" column
+}
 \description{
 This function annotates whether a gene is up-regulated,
              down-regulated, or not differentially expressed
 }
+\keyword{internal}

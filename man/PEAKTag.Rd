@@ -25,3 +25,27 @@ A PEAKTag object
 This function constructs a PEAKTag object from a DETag object
              and the annotated peaks, as defined in the ChIPseeker package.
 }
+\examples{
+# Make use of the package's provided example data
+data(expMOList)
+
+# Retrieve the DETag object for the ATACseq peaks
+atacDETag <- expMOList$DEATAC
+
+# Example 1: Construct a PEAKTag object without annotation
+atacPEAKTag <- PEAKTag(atacDETag)
+
+# Example 2: Construct a PEAKTag object with annotation
+# Suppose TxDB and annoDB are already loaded
+\dontrun{
+atacPEAKTag <- PEAKTag(atacDETag, TxDB = TxDB, annoDB = "org.Hs.eg.db")
+}
+
+}
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
+
+\insertRef{TxDb.Hsapiens.UCSC.hg38.knownGene}{IntegraTRN}
+
+\insertRef{org.Hs.eg.db}{IntegraTRN}
+}

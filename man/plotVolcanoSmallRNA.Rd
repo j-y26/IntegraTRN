@@ -24,7 +24,8 @@ results for small RNAs.}
 \item{geneList}{A vector of genes to highlight in the plot.}
 
 \item{colScheme}{A RColorBrewer color scheme for color-coding each type of
-small RNAs. Default is "BuPu".}
+small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
+for details.}
 
 \item{title}{The title for the plot. Default is NULL.}
 }
@@ -41,24 +42,28 @@ This function generates a volcano plot for visualizing
              The default color scheme is provided.
 }
 \examples{
-# Suppose that we have an MOList object called objMOList, which contains the
-# differential expression results for small RNAs as an element named
-DESmallRNAseq
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
 
 # Example 1: Generate the volcano plot by default parameters
-\dontrun{
-plotVolcanoSmallRNA(objMOList)
-}
+plotVolcanoSmallRNA(expMOList)
 
 # Example 2: Generate the volcano plot with custom parameters
-\dontrun{
-plotVolcanoSmallRNA(objMOList,
-  log2FC = 2,
+plotVolcanoSmallRNA(expMOList,
+  log2FC = 0,
   adjP = 0.01,
   geneList = c("hsa-miR-1-3p", "hsa-miR-2-3p"),
-  colScheme = "magma",
+  colScheme = "YlOrRd",
   title = "Volcano plot for DE small RNA"
 )
-}
 
+}
+\references{
+\insertRef{villanueva2019ggplot2}{IntegraTRN}
+
+\insertRef{ggrepel}{IntegraTRN}
+
+\insertRef{dplyr}{IntegraTRN}
+
+\insertRef{RColorBrewer}{IntegraTRN}
 }

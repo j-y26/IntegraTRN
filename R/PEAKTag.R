@@ -41,6 +41,9 @@
 #'              annotation
 #' @slot .Data A list containing additional peak information
 #'
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
+#'
 methods::setClass("PEAKTag",
   representation(
     annotatedPeaks = "csAnno",
@@ -69,6 +72,29 @@ methods::setClass("PEAKTag",
 #' @importFrom methods as
 #'
 #' @export
+#'
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
+#'
+#' \insertRef{TxDb.Hsapiens.UCSC.hg38.knownGene}{IntegraTRN}
+#'
+#' \insertRef{org.Hs.eg.db}{IntegraTRN}
+#'
+#' @examples
+#' # Make use of the package's provided example data
+#' data(expMOList)
+#'
+#' # Retrieve the DETag object for the ATACseq peaks
+#' atacDETag <- expMOList$DEATAC
+#'
+#' # Example 1: Construct a PEAKTag object without annotation
+#' atacPEAKTag <- PEAKTag(atacDETag)
+#'
+#' # Example 2: Construct a PEAKTag object with annotation
+#' # Suppose TxDB and annoDB are already loaded
+#' \dontrun{
+#' atacPEAKTag <- PEAKTag(atacDETag, TxDB = TxDB, annoDB = "org.Hs.eg.db")
+#' }
 #'
 PEAKTag <- function(objDETag,
                     annotatedPeaks = NULL,
@@ -128,15 +154,14 @@ PEAKTag <- function(objDETag,
 #' @return NULL
 #'
 #' @examples
-#' # Assuming that the object "peakTag" is a PEAKTag object
-#' \dontrun{
-#' print(peakTag)
-#' }
+#' # Use the package's provided example data
+#' data(expMOList)
+#'
+#' # Print the object
+#' print(expMOList$DEATAC)
 #'
 #' # Or simply type the object name
-#' \dontrun{
-#' peakTag
-#' }
+#' expMOList$DEATAC
 #'
 methods::setMethod(
   "show", "PEAKTag",
@@ -184,10 +209,11 @@ methods::setMethod(
 #' @return A GRanges object
 #'
 #' @examples
-#' # Assuming that the object "peakTag" is a PEAKTag object
-#' \dontrun{
-#' asGRanges(peakTag)
-#' }
+#' # Use the package's provided example data
+#' data(expMOList)
+#'
+#' # Convert the object to a GRanges object
+#' asGRanges(expMOList$DEATAC)
 #'
 methods::setGeneric(
   "asGRanges",
@@ -229,10 +255,11 @@ methods::setMethod(
 #' @return A data frame
 #'
 #' @examples
-#' # Assuming that the object "peakTag" is a PEAKTag object
-#' \dontrun{
-#' as.data.frame(peakTag)
-#' }
+#' # Use the package's provided example data
+#' data(expMOList)
+#'
+#' # Convert the object to a data frame
+#' as.data.frame(expMOList$DEATAC)
 #'
 methods::setMethod(
   "as.data.frame",

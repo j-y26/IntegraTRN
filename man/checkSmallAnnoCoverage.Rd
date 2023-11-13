@@ -18,4 +18,7 @@ This function checks if the annotation covers all small RNA
              transcripts in the MOList object. If not, it will throw an
              warning message, but the function will still continue to run.
 }
+\references{
+\insertRef{dplyr}{IntegraTRN}
+}
 \keyword{internal}

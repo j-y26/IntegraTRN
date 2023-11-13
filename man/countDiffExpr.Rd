@@ -109,11 +109,7 @@ objMOList <- countDiffExpr(
 
 }
 \references{
-Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-differential expression analysis of digital gene expression data.
-Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
-Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+\insertRef{love2014deseq2}{IntegraTRN}
 
-Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+\insertRef{robinson2010edger}{IntegraTRN}
 }

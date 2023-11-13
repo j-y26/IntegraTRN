@@ -16,6 +16,9 @@
 #'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame reduce
 #'
+#' @references
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
 mergePeaks <- function(peaks) {
   # Generate a GRanges object from the peak data frame
   # The GRangesFromDataFrame function requires "start" and "end" as column names
@@ -55,6 +58,14 @@ mergePeaks <- function(peaks) {
 #' @importFrom IRanges width
 #' @importFrom Repitools annoGR2DF
 #' @importFrom S4Vectors from to
+#'
+#' @references
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
+#' \insertRef{statham2010repitools}{IntegraTRN}
+#'
+#' \insertRef{S4Vectors}{IntegraTRN}
+#'
 #'
 processPeakOverlap <- function(objMOList) {
   # Check if the ATACseq peak files exist
@@ -125,6 +136,11 @@ processPeakOverlap <- function(objMOList) {
 #' @importFrom ChIPseeker annotatePeak
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #'
+#' @references
+#' \insertRef{yu2015chipseeker}{IntegraTRN}
+#'
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
 annotatePeaks <- function(objMOList,
                           tssRegion = c(-3000, 3000),
                           TxDb,
@@ -172,21 +188,48 @@ annotatePeaks <- function(objMOList,
 #'             package. See the vignette of the TFBSTools package for more
 #'             details.
 #' @param fixedWidth The fixed width to adjust the peak size for motif if
-#'                   necessary (default: 500)
+#'                   necessary (default: 500). The default width follows an
+#'                   optimal width peak selection strategy defined by
+#'                   \insertCite{grandi2022chromatin;textual}{IntegraTRN}.
 #'
 #' @importClassesFrom BSgenome BSgenome
 #' @importClassesFrom TFBSTools PWMatrixList
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
+#' @importFrom monaLisa calcBinnedMotifEnrR
+#' @importFrom Biostrings getSeq
+#'
+#' @references
+#' \insertRef{BSgenome}{IntegraTRN}
+#'
+#' \insertRef{tan2016tfbstools}{IntegraTRN}
+#'
+#' \insertRef{grandi2022chromatin}{IntegraTRN}
+#'
+#' \insertRef{machlab2022monalisa}{IntegraTRN}
+#'
+#' \insertRef{Biostrings}{IntegraTRN}
 #'
 #' @examples
+#' \dontrun{
+#' # Use the package-provided example data
+#' data("expMOList")
 #'
+#' # Retrieve genome data
+#' bsgenome <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38
 #' # Generate position-weight matrices (PWMs) from the JASPAR database
-#' pwms <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+#' pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
 #'   opts = list(
 #'     matrixtype = "PWM",
 #'     tax_group = "vertebrates"
 #'   )
 #' )
-#'
+#' # Perform motif enrichment analysis
+#' expMOList <- enrichMotifs(expMOList,
+#'   bsgenome = bsgenome,
+#'   pwmL = pwmL,
+#'   fixedWidth = 500
+#' )
+#' }
 enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
   if (is.null(objMOList$DEATAC)) {
     # No ATACseq peaks
@@ -240,6 +283,9 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
   )
 
   cat("Done.\n")
+
+  # Remove large objects
+  rm(peakGR, peakSeq)
 
   # Append the motif enrichment results to the MOList object
   objMOList$DEATAC$motifEnrichment <- enrichedMotifs
@@ -364,6 +410,9 @@ annotateATACPeaksMotif <- function(objMOList,
 #'         in the input object
 #'
 #' @importFrom SummarizedExperiment assay
+#'
+#' @references
+#' \insertRef{SummarizedExperiment}{IntegraTRN}
 #'
 selectedMotifs <- function(enrichedMotifs,
                            pValueAdj = 0.05,

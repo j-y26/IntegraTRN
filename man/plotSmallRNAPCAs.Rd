@@ -29,3 +29,22 @@ This function generates a PCA plot for each type of small RNA
              used to explore the contribution of each type of small RNA to
              separating samples based on their phenotypes.
 }
+\examples{
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
+
+# Generate a list of PCA plots for each type of small RNA
+\dontrun{
+pcaPlotList <- plotSmallRNAPCAs(expMOList)
+}
+
+}
+\references{
+\insertRef{villanueva2019ggplot2}{IntegraTRN}
+
+\insertRef{ggrepel}{IntegraTRN}
+
+\insertRef{dplyr}{IntegraTRN}
+
+\insertRef{love2014moderated}{IntegraTRN}
+}

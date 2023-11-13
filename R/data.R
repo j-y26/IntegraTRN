@@ -227,7 +227,7 @@
 #'
 #' @references
 #' \insertRef{castro2022jaspar}{IntegraTRN}
-#' 
+#'
 #' \insertRef{tan2016tfbstools}{IntegraTRN}
 #'
 #' @examples
@@ -245,19 +245,42 @@
 #'
 #' @format An S4 object of class MOList
 #' \describe{
-#' \item{RNAseq}{A matrix of RNAseq gene expression values}
-#' \item{smallRNAseq}{A matrix of small RNAseq gene expression values}
-#' \item{proteomics}{A matrix of proteomics gene expression values}
-#' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions}
+#' \item{RNAseq}{A matrix of RNAseq gene expression values with 100 genes}
+#' \item{smallRNAseq}{A matrix of small RNAseq gene expression values with 100
+#'                    genes}
+#' \item{proteomics}{A matrix of proteomics gene expression values with 100
+#'                   genes}
+#' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions,
+#'               each with 100 peaks}
 #' }
+#' \item{DERNAseq}{A DETag object of the differentially expressed genes from
+#'                 RNAseq}
+#' \item{DEsmallRNAseq}{A DETag object of the differentially expressed genes
+#'                     from small RNAseq}
+#' \item{DEproteomics}{A DETag object of the differentially expressed genes
+#'                    from proteomics}
+#' \item{DEATAC}{A PEAKTag object of ATACseq peaks with annotations and
+#'               motif enrichment}
+#' \item{anncSncRNA}{The string "human"}
+#' \item{matchingRNAsmallRNA}{A list of matched indices between RNAseq and
+#'                           small RNAseq samples}
+#' \item{extInteractions}{A list of 2 lists for miRNA-target and TF-target
+#'                       interactions. Each contains 50 pairs of interactions}
 #'
+#' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
+#' ON, Canada
+#'
+#' @references
+#' \insertRef{ahmed2021maternal}{IntegraTRN}
+#'
+#' \insertRef{adar2023integrate}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{
-#' myMOList
+#' expMOList
 #' }
 #'
-"myMOList"
+"expMOList"
 
 
 # [END]

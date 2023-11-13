@@ -50,18 +50,11 @@
 #' @importFrom methods setClass
 #'
 #' @references
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
-#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#'
-#' Reimand J, Isserlin R, Voisin V, et al. Pathway enrichment analysis and
-#' visualization of omics data using g:Profiler, GSEA, Cytoscape and
-#' EnrichmentMap. Nat Protoc. 2019;14(2):482-517. doi:10.1038/s41596-018-0103-9.
-#'
+#' \insertRef{reimand2019pathway}{IntegraTRN}
 #'
 methods::setClass("TOPTag",
   contains = "DETag",
@@ -102,26 +95,34 @@ methods::setClass("TOPTag",
 #'
 #' @export
 #'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
+#'
+#' \insertRef{reimand2019pathway}{IntegraTRN}
+#'
 #' @examples
-#' # Assuming that the object "deTag" is a DETag object
+#' # Use the package provided example data
+#' data("expMOList")
+#' # Extract an DETag object from RNA-seq data
+#' deTag <- expMOList$DERNAseq
 #'
 #' # Example 1: Select the top 20% of differential genes with default cutoffs
-#'
-#' \dontrun{
 #' topTag <- TOPTag(deTag, topGenes = 0.2)
-#' }
+#' topTag
 #'
-#' # Example 2: Select the top 100 differential genes with default cutoffs
-#'
+#' # Example 2: Select the top 50 differential genes with default cutoffs
 #' \dontrun{
-#' topTag <- TOPTag(deTag, topGenes = 100)
+#' topTag <- TOPTag(deTag, topGenes = 50)
+#' topTag
 #' }
 #'
 #' # Example 3: Select the top 20% of differential genes with custom cutoffs
+#' topTag <- TOPTag(deTag, logFCCutoff = 0, pCutoff = 0.01, topGenes = 0.2)
+#' topTag
 #'
-#' \dontrun{
-#' topTag <- TOPTag(deTag, logFCCutoff = 2, pCutoff = 0.01, topGenes = 0.2)
-#' }
+#' # Example 4: Select the top 20% of up-regulated genes with default cutoffs
+#' topTag <- TOPTag(deTag, topGenes = 0.2, direction = "up")
+#' topTag
 #'
 TOPTag <- function(object,
                    logFCCutoff = 1,
@@ -234,15 +235,20 @@ TOPTag <- function(object,
 #' @return NULL
 #'
 #' @examples
-#' # Assuming that the object "topTag" is a TOPTag object
-#' \dontrun{
-#' print(topTag)
-#' }
+#' # Use the package provided example data
+#' data("expMOList")
 #'
-#' # Or simply type the object name
-#' \dontrun{
+#' # Extract an DETag object from RNA-seq data
+#' deTag <- expMOList$DERNAseq
+#'
+#' # Create a TOPTag object
+#' topTag <- TOPTag(deTag, topGenes = 0.2)
+#'
+#' # Print the TOPTag object
+#' print(topTag)
+#'
+#' # or simply type the object name
 #' topTag
-#' }
 #'
 methods::setMethod(
   "show", "TOPTag",
@@ -283,8 +289,7 @@ methods::setMethod(
 #' @title Filter genes by a names vector
 #'
 #' @description This function filters the top differential genes by a names
-#'              vector. It is a convenient function for users to filter the
-#'              top differential genes by a list of genes of interest.
+#'              vector
 #'
 #' @param object A TOPTag object.
 #' @param names A character vector containing the names of the genes to be
@@ -295,14 +300,18 @@ methods::setMethod(
 #' @importFrom methods setGeneric
 #' @importFrom methods setMethod
 #'
-#' @export
-#'
 #' @examples
-#' # Assuming that the object "topTag" is a TOPTag object
-#' \dontrun{
-#' # Filter the top differential genes by a list of genes of interest
-#' topTag <- filterGenes(topTag, c("gene1", "gene2", "gene3"))
-#' }
+#' # Use the package provided example data
+#' data("expMOList")
+#'
+#' # Extract an DETag object from RNA-seq data
+#' deTag <- expMOList$DERNAseq
+#'
+#' # Create a TOPTag object
+#' topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
+#'
+#' # Filter the top differential genes by a names vector
+#' topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
 #'
 methods::setGeneric("filterGenes", function(object, names) {
   standardGeneric("filterGenes")
@@ -333,10 +342,17 @@ methods::setMethod("filterGenes", "TOPTag", function(object, names) {
 #' @export
 #'
 #' @examples
-#' # Assuming that the object "topTag" is a TOPTag object
-#' \dontrun{
+#' # Use the package provided example data
+#' data("expMOList")
+#'
+#' # Extract an DETag object from RNA-seq data
+#' deTag <- expMOList$DERNAseq
+#'
+#' # Create a TOPTag object
+#' topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
+#'
+#' # Export the differential analysis results
 #' exportDE(topTag)
-#' }
 #'
 methods::setMethod("exportDE", "TOPTag", function(x, original = FALSE) {
   # Ignore the original argument

@@ -36,3 +36,18 @@ This function generates a combined profile and heatmap of
 See ?ChIPseeker::peak_Profile_Heatmap for details on the values of
          the parameters.
 }
+\examples{
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
+
+# Plotting the profile and heatmap
+\dontrun{
+plotATACProfileHeatmap(expMOList)
+}
+
+}
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
+
+\insertRef{lawrence2013software}{IntegraTRN}
+}

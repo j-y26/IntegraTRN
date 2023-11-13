@@ -31,4 +31,7 @@ This function selects enriched motifs based on user-specified
              cutoff and the motif enrichment result. If pValue is specified,
              pValueAdj will be ignored.
 }
+\references{
+\insertRef{SummarizedExperiment}{IntegraTRN}
+}
 \keyword{internal}

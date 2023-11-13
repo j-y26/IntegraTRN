@@ -68,24 +68,28 @@ annotation}
 }}
 
 \examples{
-# Assuming that the object "peakTag" is a PEAKTag object
-\dontrun{
-print(peakTag)
-}
+# Use the package's provided example data
+data(expMOList)
+
+# Print the object
+print(expMOList$DEATAC)
 
 # Or simply type the object name
-\dontrun{
-peakTag
-}
+expMOList$DEATAC
 
-# Assuming that the object "peakTag" is a PEAKTag object
-\dontrun{
-asGRanges(peakTag)
-}
+# Use the package's provided example data
+data(expMOList)
 
-# Assuming that the object "peakTag" is a PEAKTag object
-\dontrun{
-as.data.frame(peakTag)
-}
+# Convert the object to a GRanges object
+asGRanges(expMOList$DEATAC)
 
+# Use the package's provided example data
+data(expMOList)
+
+# Convert the object to a data frame
+as.data.frame(expMOList$DEATAC)
+
+}
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
 }

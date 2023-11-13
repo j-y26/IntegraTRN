@@ -20,3 +20,7 @@ A data frame containing the differential expression analysis with
 This function annotates the type of small RNA in the
              differential expression results.
 }
+\references{
+\insertRef{dplyr}{IntegraTRN}
+}
+\keyword{internal}

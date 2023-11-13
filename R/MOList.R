@@ -39,11 +39,7 @@ INTERACTION_FIELDS <- c("ID", "Target")
 #' @exportClass MOList
 #'
 #' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#'
-#' Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
-#' by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
-#' https://doi-org/10.1038/s41596-022-00692-9
+#' \insertRef{grandi2022chromatin}{IntegraTRN}
 #'
 methods::setClass("MOList",
   # Inheritance
@@ -92,12 +88,6 @@ methods::setClass("MOList",
 #' @param groupBy A vector of grouping information for the sequencing data
 #'
 #' @return NULL
-#'
-#' @references
-#' Yang Liao, Gordon K. Smyth, Wei Shi, featureCounts: an efficient general
-#' purpose program for assigning sequence reads to genomic features,
-#' Bioinformatics, Volume 30, Issue 7, April 2014, Pages 923–930,
-#' https://doi.org/10.1093/bioinformatics/btt656
 #'
 #' @examples
 #' \dontrun{
@@ -153,8 +143,7 @@ validateMatrix <- function(matrix, groupBy) {
 #' @return NULL
 #'
 #' @references
-#' Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
-#' analysis.
+#' \insertRef{genomictools}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{
@@ -323,9 +312,6 @@ setOmics <- function(objMOList,
 #' }
 #'
 #' @importFrom methods new
-#'
-#' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
 #'
 #' @examples
 #' \dontrun{
@@ -567,8 +553,7 @@ validateMOList <- function(objMOList) {
 #' @importFrom GenomicTools.fileHandler importBed
 #'
 #' @references
-#' Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
-#' analysis.
+#' \insertRef{genomictools}{IntegraTRN}
 #'
 #' @examples
 #' # Generating some example data
@@ -1049,9 +1034,6 @@ exportDiffGenes <- function(objMOList, experiment, outPath,
 #'
 #' @export
 #'
-#' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming myMOList is a MOList object
@@ -1083,13 +1065,11 @@ methods::setMethod("show", "MOList", function(object) {
   print(head(object@proteomics))
   cat("\n")
 
-  cat("ATAC peaks with", nrow(object@ATACpeaks$peaksCond1), "peaks for
-    condition 1 and", nrow(object@ATACpeaks$peaksCond2), "peaks for
-    condition 2\n")
-  cat("Peaks for condition 1:\n")
+  cat("ATACseq:\n")
+  cat("Peaks for condition 1:", nrow(object@ATACpeaks$peaksCond1), "\n")
   print(head(object@ATACpeaks$peaksCond1))
   cat("\n")
-  cat("Peaks for condition 2:\n")
+  cat("Peaks for condition 2:", nrow(object@ATACpeaks$peaksCond2), "\n")
   print(head(object@ATACpeaks$peaksCond2))
   cat("\n")
 
@@ -1124,14 +1104,30 @@ methods::setMethod("show", "MOList", function(object) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Assuming myMOList is a MOList object
-#' # Assuming conversion is a data frame containing the conversion information
-#' # between protein and gene names
+#' # Create example RNAseq and proteomics data
+#' rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+#' rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
+#' rnaGroupBy <- rep(c("A", "B"), each = 5)
+#' proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
+#' rownames(proteomics) <- paste0("protein_", seq_len(nrow(proteomics)))
+#' proteomicsGroupBy <- rep(c("A", "B"), each = 3)
 #'
-#' # Setting the conversion information
-#' setGene2Protein(myMOList, conversion)
-#' }
+#' # Create an example MOList object
+#' objMOList <- MOList(
+#'   RNAseq = rnaseq,
+#'   RNAGroupBy = rnaGroupBy,
+#'   proteomics = proteomics,
+#'   proteomicsGroupBy = proteomicsGroupBy
+#' )
+#'
+#' # Create an example conversion information
+#' conversion <- data.frame(
+#'   protein = paste0("protein_", seq_len(nrow(proteomics))),
+#'   gene = paste0("gene_", seq_len(nrow(proteomics)))
+#' )
+#'
+#' # Set the conversion information to the MOList object
+#' objMOList <- setGene2Protein(objMOList, conversion)
 #'
 methods::setGeneric(
   "setGene2Protein",

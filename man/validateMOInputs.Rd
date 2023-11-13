@@ -54,7 +54,6 @@ validateMOInputs(
 }
 }
 \references{
-Fischer, D. (2020). GenomicTools.fileHandler: File handlers for genomic data
-analysis.
+\insertRef{genomictools}{IntegraTRN}
 }
 \keyword{internal}

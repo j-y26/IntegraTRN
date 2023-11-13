@@ -78,6 +78,14 @@ validateSampleDFs <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #' \item{RNA}{The sample names of the RNAseq samples.}
 #' }
 #'
+#' @importFrom MatchIt matchit
+#' @import optmatch
+#'
+#' @references
+#' \insertRef{stuart2011matchit}{IntegraTRN}
+#'
+#' \insertRef{gong2020optmatch}{IntegraTRN}
+#'
 matchContinuous <- function(sampleDF) {
   # Use continuous matching algorithm
   matchVars <- colnames(sampleDF)[colnames(sampleDF) != "groupBy"]
@@ -144,6 +152,11 @@ matchContinuous <- function(sampleDF) {
 #'
 #' @importFrom MatchIt matchit
 #' @import optmatch
+#'
+#' @references
+#' \insertRef{stuart2011matchit}{IntegraTRN}
+#'
+#' \insertRef{gong2020optmatch}{IntegraTRN}
 #'
 matchBinary <- function(sampleDF) {
   # Covariates for matching
@@ -221,6 +234,11 @@ matchBinary <- function(sampleDF) {
 #' @importFrom MatchIt matchit
 #' @import optmatch
 #'
+#' @references
+#' \insertRef{stuart2011matchit}{IntegraTRN}
+#'
+#' \insertRef{gong2020optmatch}{IntegraTRN}
+#'
 nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   # Check if the two sample data frames have the same number of variables
   if (ncol(sampleDFRNAseq) != ncol(sampleDFSmallRNAseq)) {
@@ -297,6 +315,11 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #' @import optmatch
 #'
 #' @export
+#'
+#' @references
+#' \insertRef{stuart2011matchit}{IntegraTRN}
+#'
+#' \insertRef{gong2020optmatch}{IntegraTRN}
 #'
 #' @examples
 #' # Suppose we have an MOList object with RNAseq and small RNAseq data
@@ -503,6 +526,9 @@ exportMatchResult <- function(objMOList) {
 #'
 #' @importFrom GENIE3 GENIE3 getLinkList
 #'
+#' @references
+#' \insertRef{huynh2010inferring}{IntegraTRN}
+#'
 runGENIE3 <- function(exprMatrix,
                       regulators,
                       ntree = 1000,
@@ -602,6 +628,9 @@ runGENIE3 <- function(exprMatrix,
 #'       filtering on the weight of the predicted interactions.
 #'
 #' @importFrom GENIE3 GENIE3 getLinkList
+#'
+#' @references
+#' \insertRef{huynh2010inferring}{IntegraTRN}
 #'
 #'
 predictSmallRNAmRNAcoExpr <- function(mRNATopTag,

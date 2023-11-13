@@ -21,4 +21,7 @@ A boolean indicating whether the annotation covers all transcript
 This function checks if the annotation covers all transcript
              names provided
 }
+\references{
+\insertRef{dplyr}{IntegraTRN}
+}
 \keyword{internal}

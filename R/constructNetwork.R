@@ -615,9 +615,9 @@ combineSncInteractions <- function(predInteract,
 #'
 #' @references
 #' \insertRef{dplyr}{IntegraTRN}
-#' 
+#'
 #' \insertRef{csardi2006igraph}{IntegraTRN}
-#' 
+#'
 #' \insertRef{huynh2010inferring}{IntegraTRN}
 #'
 #' @examples

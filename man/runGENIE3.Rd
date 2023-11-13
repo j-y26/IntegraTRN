@@ -42,4 +42,7 @@ A list containing the predicted interactions, with the
 \description{
 This function runs GENIE3 for predicted interactions.
 }
+\references{
+\insertRef{huynh2010inferring}{IntegraTRN}
+}
 \keyword{internal}

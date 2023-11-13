@@ -42,8 +42,7 @@ The TOPTag S4 class inherits the DETag class and is a more
 The print method for the TOPTag class.
 
 This function filters the top differential genes by a names
-             vector. It is a convenient function for users to filter the
-             top differential genes by a list of genes of interest.
+             vector
 
 This function exports the differential analysis results from a
              TopTag object. Overwrites the exportDE function in the DETag
@@ -90,38 +89,50 @@ be set to the number of DE genes.}
 }}
 
 \examples{
-# Assuming that the object "topTag" is a TOPTag object
-\dontrun{
+# Use the package provided example data
+data("expMOList")
+
+# Extract an DETag object from RNA-seq data
+deTag <- expMOList$DERNAseq
+
+# Create a TOPTag object
+topTag <- TOPTag(deTag, topGenes = 0.2)
+
+# Print the TOPTag object
 print(topTag)
-}
 
-# Or simply type the object name
-\dontrun{
+# or simply type the object name
 topTag
-}
 
-# Assuming that the object "topTag" is a TOPTag object
-\dontrun{
-# Filter the top differential genes by a list of genes of interest
-topTag <- filterGenes(topTag, c("gene1", "gene2", "gene3"))
-}
+# Use the package provided example data
+data("expMOList")
 
-# Assuming that the object "topTag" is a TOPTag object
-\dontrun{
+# Extract an DETag object from RNA-seq data
+deTag <- expMOList$DERNAseq
+
+# Create a TOPTag object
+topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
+
+# Filter the top differential genes by a names vector
+topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
+
+# Use the package provided example data
+data("expMOList")
+
+# Extract an DETag object from RNA-seq data
+deTag <- expMOList$DERNAseq
+
+# Create a TOPTag object
+topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
+
+# Export the differential analysis results
 exportDE(topTag)
-}
 
 }
 \references{
-Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-differential expression analysis of digital gene expression data.
+\insertRef{love2014moderated}{IntegraTRN}
 
-Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+\insertRef{robinson2010edger}{IntegraTRN}
 
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-
-Reimand J, Isserlin R, Voisin V, et al. Pathway enrichment analysis and
-visualization of omics data using g:Profiler, GSEA, Cytoscape and
-EnrichmentMap. Nat Protoc. 2019;14(2):482-517. doi:10.1038/s41596-018-0103-9.
+\insertRef{reimand2019pathway}{IntegraTRN}
 }

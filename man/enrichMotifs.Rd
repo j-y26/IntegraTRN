@@ -20,7 +20,9 @@ package. See the vignette of the TFBSTools package for more
 details.}
 
 \item{fixedWidth}{The fixed width to adjust the peak size for motif if
-necessary (default: 500)}
+necessary (default: 500). The default width follows an
+optimal width peak selection strategy defined by
+\insertCite{grandi2022chromatin;textual}{IntegraTRN}.}
 }
 \description{
 This function performs motif enrichment analysis on peaks with
@@ -28,14 +30,36 @@ This function performs motif enrichment analysis on peaks with
              using the monaLisa package.
 }
 \examples{
+\dontrun{
+# Use the package-provided example data
+data("expMOList")
 
+# Retrieve genome data
+bsgenome <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38
 # Generate position-weight matrices (PWMs) from the JASPAR database
-pwms <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
+pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
   opts = list(
     matrixtype = "PWM",
     tax_group = "vertebrates"
   )
 )
+# Perform motif enrichment analysis
+expMOList <- enrichMotifs(expMOList,
+  bsgenome = bsgenome,
+  pwmL = pwmL,
+  fixedWidth = 500
+)
+}
+}
+\references{
+\insertRef{BSgenome}{IntegraTRN}
 
+\insertRef{tan2016tfbstools}{IntegraTRN}
+
+\insertRef{grandi2022chromatin}{IntegraTRN}
+
+\insertRef{machlab2022monalisa}{IntegraTRN}
+
+\insertRef{Biostrings}{IntegraTRN}
 }
 \keyword{internal}

@@ -24,4 +24,11 @@ This function processes user input peak files to check for
              peak files that already represents differential accessible
              regions, we do not merge peaks across conditions.
 }
+\references{
+\insertRef{lawrence2013software}{IntegraTRN}
+
+\insertRef{statham2010repitools}{IntegraTRN}
+
+\insertRef{S4Vectors}{IntegraTRN}
+}
 \keyword{internal}

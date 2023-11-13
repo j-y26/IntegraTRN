@@ -42,23 +42,25 @@ The motif enrichment analysis can be exceptionally stringent for
          pValueAdj will be ignored.
 }
 \examples{
-# Suppose that we have an MOList object called objMOList, which contains the
-# differential accessible regions as an element named DEATAC, with motif
-# enrichment analysis results
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
 
 # Example 1: Plot the motif heatmap by default parameters
 \dontrun{
-plotATACMotifHeatmap(objMOList)
+plotATACMotifHeatmap(expMOList)
 }
 
 # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
-\dontrun{
-plotATACMotifHeatmap(objMOList, pValue = 0.01)
-}
+plotATACMotifHeatmap(expMOList, pValue = 0.01)
 
 # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
-\dontrun{
-plotATACMotifHeatmap(objMOList, pValue = 0.01, log2FEnrich = 1)
-}
+plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
 
+}
+\references{
+\insertRef{machlab2022monalisa}{IntegraTRN}
+
+\insertRef{SummarizedExperiment}{IntegraTRN}
+
+\insertRef{gu2016complex}{IntegraTRN}
 }

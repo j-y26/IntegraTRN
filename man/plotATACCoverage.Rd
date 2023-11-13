@@ -21,12 +21,15 @@ This function generates a peak coverage plot for differential
              function for the covplot function in the ChIPseeker package.
 }
 \examples{
-# Suppose that we have an MOList object called objMOList, which contains the
-# differential accessible regions as an element named DEPeaks
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
 
-# Plotting the peak coverage
-\dontrun{
-plotATACCoverage(objMOList)
+# Plotting the coverage plot
+plotATACCoverage(expMOList)
+
 }
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
 
+\insertRef{lawrence2013software}{IntegraTRN}
 }

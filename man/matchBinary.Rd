@@ -30,4 +30,9 @@ This function performs optimal pair matching, a variant of
              based on a binary grouping variable. The matching is performed
              separately for the two groups.
 }
+\references{
+\insertRef{stuart2011matchit}{IntegraTRN}
+
+\insertRef{gong2020optmatch}{IntegraTRN}
+}
 \keyword{internal}

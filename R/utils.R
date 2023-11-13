@@ -174,6 +174,8 @@ csAnnoToDF <- function(anno) {
 #'                       enrichment results
 #' @return A vector of enriched TF names
 #'
+#' @importFrom dplyr %>%
+#'
 motifNames <- function(enrichedMotifs) {
   motifNames <- enrichedMotifs@elementMetadata@listData$motif.name
 
@@ -194,6 +196,8 @@ motifNames <- function(enrichedMotifs) {
 #' @param deResult A data frame containing the differential expression results
 #'
 #' @return A list of names respectively for down and up regulated genes
+#'
+#' @importFrom dplyr %>% filter
 #'
 extractDirectionalGenes <- function(deResult) {
   downGenes <- deResult %>%

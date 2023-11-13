@@ -40,3 +40,33 @@ This function performs PCA analysis for count-based omics data.
 Raw counts are normalized by RLE method and then transformed by
         variance stabilizing transformation (VST) before PCA analysis.
 }
+\examples{
+# Use the package-provided example data
+data(expMOList, package = "IntegraTRN")
+
+# Extract the information needed for PCA analysis for example RNAseq data
+matrixRNAseq <- getRawData(expMOList, "RNAseq")
+groupBy <- getSampleInfo(expMOList, "RNAseq")$groupBy
+
+# Example 1: Perform PCA analysis without batch effect correction
+pcaPlot <- countPCA(matrixRNAseq, groupBy)
+
+pcaPlot
+
+# Example 2: Perform PCA analysis with batch effect correction
+# Create an example batch effect
+batch <- rep(c("Batch1", "Batch2"), each = 30)[1:53]
+pcaPlot <- countPCA(matrixRNAseq, groupBy, batch = batch)
+
+pcaPlot
+
+}
+\references{
+\insertRef{villanueva2019ggplot2}{IntegraTRN}
+
+\insertRef{ggrepel}{IntegraTRN}
+
+\insertRef{dplyr}{IntegraTRN}
+
+\insertRef{love2014moderated}{IntegraTRN}
+}

@@ -29,4 +29,9 @@ This function performs optimal pair matching, a variant of
              nearest neighbor marching for RNAseq and small RNAseq samples
              based on a continuous grouping variable.
 }
+\references{
+\insertRef{stuart2011matchit}{IntegraTRN}
+
+\insertRef{gong2020optmatch}{IntegraTRN}
+}
 \keyword{internal}

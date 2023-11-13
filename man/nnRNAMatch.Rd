@@ -44,3 +44,8 @@ Depending on the nature of the grouping variables, either continuous
          forces the matching process to be within the same group, and then
          performs optimal pair matching on other parameters.
 }
+\references{
+\insertRef{stuart2011matchit}{IntegraTRN}
+
+\insertRef{gong2020optmatch}{IntegraTRN}
+}

@@ -92,3 +92,8 @@ myMOList <- matchSamplesRNAsmallRNA(myMOList,
 }
 
 }
+\references{
+\insertRef{stuart2011matchit}{IntegraTRN}
+
+\insertRef{gong2020optmatch}{IntegraTRN}
+}

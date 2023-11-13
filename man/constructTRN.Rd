@@ -68,6 +68,8 @@ myTRNet <- constructTRN(myMOList, omiCutoffs)
 }
 \references{
 \insertRef{dplyr}{IntegraTRN}
+
 \insertRef{csardi2006igraph}{IntegraTRN}
+
 \insertRef{huynh2010inferring}{IntegraTRN}
 }

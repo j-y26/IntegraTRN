@@ -23,4 +23,7 @@ A character vector containing the small RNA transcripts belonging to
 This function extracts the small RNAs belonging to each of the
              categories, based on input.
 }
+\references{
+\insertRef{dplyr}{IntegraTRN}
+}
 \keyword{internal}

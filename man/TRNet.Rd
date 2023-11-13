@@ -24,3 +24,7 @@ A TRNet object
 \description{
 This function is a constructor of the TRNet object
 }
+\references{
+\insertRef{csardi2006igraph}{IntegraTRN}
+}
+\keyword{internal}

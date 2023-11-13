@@ -17,4 +17,7 @@ A GRanges object containing the merged peaks
 Merge peaks with overlapping genomic coordinates and filter out highly
 overlapped peaks between conditions
 }
+\references{
+\insertRef{lawrence2013software}{IntegraTRN}
+}
 \keyword{internal}

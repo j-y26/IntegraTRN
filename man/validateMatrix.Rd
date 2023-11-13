@@ -30,10 +30,4 @@ validateMatrix(proteomics, proteomicsGroupBy)
 }
 
 }
-\references{
-Yang Liao, Gordon K. Smyth, Wei Shi, featureCounts: an efficient general
-purpose program for assigning sequence reads to genomic features,
-Bioinformatics, Volume 30, Issue 7, April 2014, Pages 923–930,
-https://doi.org/10.1093/bioinformatics/btt656
-}
 \keyword{internal}

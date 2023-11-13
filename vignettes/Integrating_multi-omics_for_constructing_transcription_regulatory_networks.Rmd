@@ -187,7 +187,10 @@ we want to adjust for.
 
 ```{r message = FALSE, eval=FALSE}
 # NOT run, just illustrate the usage of the batch argument
-myMOList <- diffOmics(myMOList, smallRnaBatch = smallRNAseq_heart_samples$Sex)
+myMOList <- diffOmics(myMOList,
+  smallRnaBatch = smallRNAseq_heart_samples$Sex,
+  program = "EdgeR"
+)
 ```
 
 ##### Exploring differential gene expression analysis
@@ -254,20 +257,16 @@ The following is an example:
 
 ```{r message = FALSE}
 smallRNAAnnotation <- data.frame(
-  miRNA = c("hsa-mir-365b", "hsa-mir-365a"),
-  circRNA = c("NM_024116", "NM_000126"),
-  piRNA = c("hsa_piR_022874", "hsa_piR_019239"),
-  snoRNA = c("SNORD45", "SNORA30B"),
-  snRNA = c("RNU4-5P", "RNU2-44P"),
-  tRNA = c("chr6.trna81", "chr16.trna19")
+  transcript = c("hsa-miR-1-3p", "hsa-miR-1-5p", "hsa-miR-2-5p"),
+  type = c("miRNA", "miRNA", "miRNA")
 )
 ```
 
 To annotate the small RNAseq data, we can use the `annotateSmallRNA` function.
 
-```{r message = FALSE}
+```{r message = FALSE, eval=FALSE}
 # NOT run, just illustrate the usage of the smallRNAAnnotation argument
-myMOList <- annotateSmallRNA(myMOList, anno = "human")
+myMOList <- annotateSmallRNA(myMOList, anno = smallRNAAnnotation)
 ```
 
 We need to make sure that the names of the transcripts are consistent with

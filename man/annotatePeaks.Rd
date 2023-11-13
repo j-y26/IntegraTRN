@@ -47,4 +47,9 @@ The annotation is performed using the TxDb object and annotation
          human samples, and the TxDb.Mmusculus.UCSC.mm10.knownGene and
          org.Mm.eg.db packages for mouse samples.
 }
+\references{
+\insertRef{yu2015chipseeker}{IntegraTRN}
+
+\insertRef{lawrence2013software}{IntegraTRN}
+}
 \keyword{internal}

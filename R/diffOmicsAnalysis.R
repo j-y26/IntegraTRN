@@ -96,14 +96,10 @@ validateDataAnno <- function(objMOList, annoList) {
 #'                        condition 2, kept unchanged
 #' }
 #'
-#' @export
 #' @importFrom edgeR cpm
 #'
 #' @references
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
-#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
-#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: Filtering the RNAseq data
@@ -222,8 +218,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' @importFrom dplyr %>%
 #'
 #' @references
-#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#' \insertRef{love2014deseq2}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: Differential expression analysis of RNAseq data without batch
@@ -326,10 +321,7 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
 #' @importFrom dplyr %>%
 #'
 #' @references
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
-#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
-#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: Differential expression analysis of RNAseq data without batch
@@ -467,13 +459,9 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
 #'
 #' @references
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
-#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
-#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
+#' \insertRef{love2014deseq2}{IntegraTRN}
 #'
-#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: Differential expression analysis of RNAseq data without batch
@@ -615,6 +603,33 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #'                      accessible accessible regions for the ATACseq data
 #' }
 #'
+#' @references
+#' \insertRef{love2014deseq2}{IntegraTRN}
+#'
+#' \insertRef{robinson2010edger}{IntegraTRN}
+#'
+#' \insertRef{lawrence2013software}{IntegraTRN}
+#'
+#' @examples
+#' # Generate example datasets
+#' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
+#' rnaseqSGroupBy <- rep(c("A", "B"), each = 5)
+#' smallRNAseq <- matrix(sample(0:100, 1000, replace = TRUE),
+#'   nrow = 100, ncol = 5
+#' )
+#' smallRNAseqSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#' protein <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
+#' proteinSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#'
+#' # Create a MOList object
+#' objMOList <- MOList(
+#'   RNAseq = rnaseq, RNAGroupBy = rnaseqSGroupBy,
+#'   smallRNAseq = smallRNAseq, smallRNAGroupBy = smallRNAseqSGroupBy,
+#'   proteomics = protein, proteomicsGroupBy = proteinSGroupBy
+#' )
+#'
+#' # Perform differential analysis
+#' objMOList <- diffOmics(objMOList)
 #'
 diffOmics <- function(objMOList,
                       rnaseqBatch = NULL,

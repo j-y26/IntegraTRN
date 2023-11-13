@@ -77,22 +77,32 @@ in the same way as a list}
 print(myMOList)
 }
 
-\dontrun{
-# Assuming myMOList is a MOList object
-# Assuming conversion is a data frame containing the conversion information
-# between protein and gene names
+# Create example RNAseq and proteomics data
+rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
+rnaGroupBy <- rep(c("A", "B"), each = 5)
+proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
+rownames(proteomics) <- paste0("protein_", seq_len(nrow(proteomics)))
+proteomicsGroupBy <- rep(c("A", "B"), each = 3)
 
-# Setting the conversion information
-setGene2Protein(myMOList, conversion)
-}
+# Create an example MOList object
+objMOList <- MOList(
+  RNAseq = rnaseq,
+  RNAGroupBy = rnaGroupBy,
+  proteomics = proteomics,
+  proteomicsGroupBy = proteomicsGroupBy
+)
+
+# Create an example conversion information
+conversion <- data.frame(
+  protein = paste0("protein_", seq_len(nrow(proteomics))),
+  gene = paste0("gene_", seq_len(nrow(proteomics)))
+)
+
+# Set the conversion information to the MOList object
+objMOList <- setGene2Protein(objMOList, conversion)
 
 }
 \references{
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-
-Grandi, F.C., Modi, H., Kampman, L. et al. Chromatin accessibility profiling
-by ATAC-seq. Nat Protoc 17, 1518–1552 (2022).
-https://doi-org/10.1038/s41596-022-00692-9
-
-Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+\insertRef{grandi2022chromatin}{IntegraTRN}
 }

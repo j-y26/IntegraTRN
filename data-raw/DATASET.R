@@ -490,3 +490,72 @@ usethis::use_data(smallRNAseq_heart, overwrite = TRUE)
 miR2Gene <- read.csv("./data-raw/gene2mir.csv", header = TRUE)
 set.seed(91711)
 mir2Gene <- miR2Gene[sample(1:nrow(miR2Gene), 2000), ]
+
+
+# Create an example MOList object
+
+rna <- RNAseq_heart[sample(1:nrow(RNAseq_heart), 100), ]
+srna <- smallRNAseq_heart[sample(1:nrow(smallRNAseq_heart), 100), ]
+protein <- protein_heart[sample(1:nrow(protein_heart), 100), ]
+
+ATACseq1 <- read.table(
+  system.file("extdata", "peak1.bed",
+    package = "IntegraTRN"
+  ),
+  header = FALSE
+)
+ATACseq2 <- read.table(
+  system.file("extdata", "peak2.bed",
+    package = "IntegraTRN"
+  ),
+  header = FALSE
+)
+ATACseq1 <- ATACseq1[sample(1:nrow(ATACseq1), 100), 1:3]
+ATACseq2 <- ATACseq2[sample(1:nrow(ATACseq2), 100), 1:3]
+
+expMOList <- MOList(
+  RNAseq = rna, RNAGroupBy = RNAseq_heart_samples$Age,
+  smallRNAseq = srna,
+  smallRNAGroupBy = smallRNAseq_heart_samples$Age,
+  proteomics = protein,
+  proteomicsGroupBy = protein_heart_samples$Age
+)
+
+write.table(ATACseq1, "./data-raw/ATACseq1.bed",
+  sep = "\t", quote = FALSE,
+  row.names = FALSE, col.names = FALSE
+)
+
+write.table(ATACseq2, "./data-raw/ATACseq2.bed",
+  sep = "\t", quote = FALSE,
+  row.names = FALSE, col.names = FALSE
+)
+
+expMOList <- MOList(expMOList,
+  pathATACpeak1 = "./data-raw/ATACseq1.bed",
+  pathATACpeak2 = "./data-raw/ATACseq2.bed"
+)
+
+expMOList <- diffOmics(expMOList, program = EDGER)
+
+expMOList <- annotateSmallRNA(expMOList)
+
+expMOList <- annotateATACPeaksMotif(expMOList,
+  tssRegion = c(-3000, 3000),
+  TxDb = txdb,
+  annoDb = annoDb,
+  bsgenome = bsgenome,
+  pwmL = jasparVertebratePWM
+)
+
+expMOList <- matchSamplesRNAsmallRNA(expMOList,
+  sampleDFRNAseq = RNAseq_heart_samples,
+  sampleDFSmallRNAseq = smallRNAseq_heart_samples
+)
+
+expMOList <- loadExtInteractions(expMOList,
+  miR2Genes = list(regulator = miR2Genes$regulator[1:50], target = miR2Genes$target[1:50]),
+  tf2Genes = list(regulator = tf2Genes$regulator[1:50], target = tf2Genes$target[1:50])
+)
+
+usethis::use_data(expMOList, overwrite = TRUE)

@@ -39,24 +39,32 @@ A TOPTag object.
 The constructor for the TOPTag class.
 }
 \examples{
-# Assuming that the object "deTag" is a DETag object
+# Use the package provided example data
+data("expMOList")
+# Extract an DETag object from RNA-seq data
+deTag <- expMOList$DERNAseq
 
 # Example 1: Select the top 20\% of differential genes with default cutoffs
-
-\dontrun{
 topTag <- TOPTag(deTag, topGenes = 0.2)
-}
+topTag
 
-# Example 2: Select the top 100 differential genes with default cutoffs
-
+# Example 2: Select the top 50 differential genes with default cutoffs
 \dontrun{
-topTag <- TOPTag(deTag, topGenes = 100)
+topTag <- TOPTag(deTag, topGenes = 50)
+topTag
 }
 
 # Example 3: Select the top 20\% of differential genes with custom cutoffs
+topTag <- TOPTag(deTag, logFCCutoff = 0, pCutoff = 0.01, topGenes = 0.2)
+topTag
 
-\dontrun{
-topTag <- TOPTag(deTag, logFCCutoff = 2, pCutoff = 0.01, topGenes = 0.2)
+# Example 4: Select the top 20\% of up-regulated genes with default cutoffs
+topTag <- TOPTag(deTag, topGenes = 0.2, direction = "up")
+topTag
+
 }
+\references{
+\insertRef{dplyr}{IntegraTRN}
 
+\insertRef{reimand2019pathway}{IntegraTRN}
 }

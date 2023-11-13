@@ -170,4 +170,12 @@ trn <- TRNet(edges, FALSE, "RNA-seq")
 trn
 
 }
-\keyword{internal}
+\references{
+\insertRef{csardi2006igraph}{IntegraTRN}
+
+\insertRef{csardi2006igraph}{IntegraTRN}
+
+\insertRef{networkD3}{IntegraTRN}
+
+\insertRef{csardi2006igraph}{IntegraTRN}
+}

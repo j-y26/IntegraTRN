@@ -76,7 +76,6 @@ deTag <- diffExprDESeq2(
 
 }
 \references{
-Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+\insertRef{love2014deseq2}{IntegraTRN}
 }
 \keyword{internal}

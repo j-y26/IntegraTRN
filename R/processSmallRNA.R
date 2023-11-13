@@ -26,6 +26,9 @@ SMALLRNA_CATEGORIES <- c("miRNA", "piRNA", "tRNA", "circRNA", "snRNA", "snoRNA")
 #'
 #' @importFrom dplyr %>%
 #'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
+#'
 sncAnnoCoverage <- function(transcripts, objMOList, anno) {
   # Check if the annotation covers all transcripts
   if (anno == HUMAN) {
@@ -44,6 +47,8 @@ sncAnnoCoverage <- function(transcripts, objMOList, anno) {
 #' Check if the annotation covers all small RNA transcripts in the MOList
 #' object
 #'
+#' @keywords internal
+#'
 #' @description This function checks if the annotation covers all small RNA
 #'              transcripts in the MOList object. If not, it will throw an
 #'              warning message, but the function will still continue to run.
@@ -55,6 +60,11 @@ sncAnnoCoverage <- function(transcripts, objMOList, anno) {
 #'             "human" or "userAnno".
 #'
 #' @return NULL
+#'
+#' @importFrom dplyr %>% filter pull
+#'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
 #'
 checkSmallAnnoCoverage <- function(objMOList, anno) {
   # Check if small RNA data is available
@@ -125,6 +135,8 @@ checkSmallAnnoCoverage <- function(objMOList, anno) {
 #'
 #' @importFrom dplyr %>% filter pull
 #'
+#' @references
+#' \insertRef{dplyr}{IntegraTRN}
 #'
 extractTranscriptFromAnno <- function(annoDF, category) {
   # Extract small RNA transcripts belonging to the specified category
@@ -179,31 +191,23 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'        annoSncRNA element.
 #'
 #' @references
-#' Li, J., Kho, A.T., Chase, R.P. et al. COMPSRA: a COMprehensive Platform for
-#' Small RNA-Seq data Analysis. Sci Rep 10, 4552 (2020).
-#' https://doi.org/10.1038/s41598-020-61495-0
+#' \insertRef{li2020compsra}{IntegraTRN}
 #'
-#' Kozomara A, Griffiths-Jones S. miRBase: integrating microRNA annotation and
-#' deep-sequencing data. Nucleic Acids Res. 2011;39 suppl_1:D152–7.
+#' \insertRef{kozomara2010mirbase}{IntegraTRN}
 #'
-#' Chan PP, Lowe TM. GtRNAdb 2.0: an expanded database of transfer RNA genes
-#' identified in complete and draft genomes. Nucleic Acids Res. 2016;44:D184–9.
+#' \insertRef{chan2016gtrnadb}{IntegraTRN}
 #'
-#' Harrow J, Frankish A, Gonzalez JM, Tapanari E, Diekhans M, Kokocinski F, et
-#' al. GENCODE: The reference human genome annotation for The ENCODE Project.
-#' Genome Res. 2012;22:1760–74.
+#' \insertRef{harrow2012gencode}{IntegraTRN}
 #'
-#' Glažar P, Papavasileiou P, Rajewsky N. circBase: a database for circular
-#' RNAs. RNA. 2014;20:1666.
+#' \insertRef{glavzar2014circbase}{IntegraTRN}
 #'
-#' Sai lakshmi S, Agrawal S. piRNABank: a web resource on classified and
-#' clustered Piwi-interacting RNAs. Nucleic Acids Res. 2008;36 suppl_1:D173–7.
+#' \insertRef{sai2008pirnabank}{IntegraTRN}
 #'
-#' Zhang P, Si X, Skogerbø G, Wang J, Cui D, Li Y, et al. piRBase: a web
-#' resource assisting piRNA functional study. Database. 2014;2014:1–7.
+#' \insertRef{zhang2014pirbase}{IntegraTRN}
 #'
-#' Rosenkranz D. piRNA cluster database: a web resource for piRNA producing
-#' loci. Nucleic Acids Res. 2016;44:D223–30.
+#' \insertRef{rosenkranz2016pirna}{IntegraTRN}
+#'
+#' \insertRef{dplyr}{IntegraTRN}
 #'
 #' @export
 #'

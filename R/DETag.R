@@ -42,13 +42,9 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 #' @exportClass DETag
 #'
 #' @references
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
-#'
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' \insertRef{love2014deseq2}{IntegraTRN}
 #'
 methods::setClass("DETag", slots = c(
   DEResult = "data.frame",
@@ -137,9 +133,6 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 #'
 #' @export
 #'
-#' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
-#'
 #' @examples
 #' # Create an example data frame
 #' deResult <- data.frame(
@@ -191,9 +184,6 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
 #' @importFrom methods setGeneric setMethod
 #'
 #' @export
-#'
-#' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
 #'
 #' @examples
 #' # Create an example data frame
@@ -264,15 +254,9 @@ methods::setMethod("show", "DETag", function(object) {
 #' @export
 #'
 #' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
+#' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' Robinson MD, McCarthy DJ, Smyth GK. edgeR: a Bioconductor package for
-#' differential expression analysis of digital gene expression data.
-#' Bioinformatics. 2010 Jan 1;26(1):139-40. doi: 10.1093/bioinformatics/btp616.
-#' Epub 2009 Nov 11. PMID: 19910308; PMCID: PMC2796818.
-#'
-#' Love, M.I., Huber, W., and Anders, S. (2014). Moderated estimation of fold
-#' change and dispersion for RNA-seq data with DESeq2. Genome Biology 15, 1–21.
+#' \insertRef{love2014deseq2}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: export the package default results
@@ -336,9 +320,6 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
 #' @importFrom methods setGeneric setMethod
 #'
 #' @export
-#'
-#' @references
-#' Advanced R by H. Wickham. Access: https://adv-r.hadley.nz/index.html
 #'
 #' @examples
 #' # Assuming the deTag object is already created from a differential analysis
