@@ -36,8 +36,6 @@
 #'
 #' @format A data frame with 53 rows (samples) and 4 columns (fields)
 #' \describe{
-#'  \item{Sample}{Sample name corresponding to the RNAseq gene expression
-#'  dataset}
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #'  \item{Sex}{Sex of the fetus}
 #'  \item{Batch}{Batch number of the RNAseq experiment, represented from
@@ -93,8 +91,6 @@
 #'
 #' @format A data frame with 37 rows (samples) and 3 columns (fields)
 #' \describe{
-#'  \item{Sample}{Sample name corresponding to the small RNAseq gene expression
-#'  dataset}
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #'  \item{Sex}{Sex of the fetus}
 #' }
@@ -144,8 +140,6 @@
 #'
 #' @format A data frame with 6 rows (samples) and 3 columns (fields)
 #' \describe{
-#'  \item{Sample}{Sample name corresponding to the proteomics gene expression
-#'  dataset}
 #'  \item{Age}{Age of the fetus in gestational weeks}
 #' }
 #'
@@ -252,21 +246,19 @@
 #'                   genes}
 #' \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions,
 #'               each with 100 peaks}
-#' }
 #' \item{DERNAseq}{A DETag object of the differentially expressed genes from
 #'                 RNAseq}
 #' \item{DEsmallRNAseq}{A DETag object of the differentially expressed genes
 #'                     from small RNAseq}
 #' \item{DEproteomics}{A DETag object of the differentially expressed genes
 #'                    from proteomics}
-#' \item{DEATAC}{A PEAKTag object of ATACseq peaks with annotations and
-#'               motif enrichment}
+#' \item{DEATAC}{A DETag object of peaks}
 #' \item{anncSncRNA}{The string "human"}
 #' \item{matchingRNAsmallRNA}{A list of matched indices between RNAseq and
 #'                           small RNAseq samples}
 #' \item{extInteractions}{A list of 2 lists for miRNA-target and TF-target
 #'                       interactions. Each contains 50 pairs of interactions}
-#'
+#' }
 #' @source Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,
 #' ON, Canada
 #'

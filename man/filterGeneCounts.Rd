@@ -34,49 +34,6 @@ Filtering is based on the design of the experiment. If the
              then the genes with counts in more than 1 CPM in at least
              30% of the samples are kept.
 }
-\examples{
-# Example 1: Filtering the RNAseq data
-
-# Create example RNAseq data
-rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
-rnaseq[1:20, 1:8] <- 0
-group <- rep(c("A", "B"), each = 5)
-
-# Create example MOList object
-objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group)
-
-# Before filtering, check the dimensions of the RNAseq data
-dim(getRawData(objMOList, "RNAseq"))
-
-# Filter the RNAseq data
-objMOList <- filterGeneCounts(objMOList, "RNAseq")
-
-# After filtering, check the dimensions of the RNAseq data
-dim(getRawData(objMOList, "RNAseq")) # should be lower than the original
-
-# Example 2: Filtering the small RNAseq data
-
-# Create example small RNAseq data
-smallRna <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
-smallRna[1:20, 1:3] <- 0
-group <- paste0(rep("A", 3), rep("B", 2))
-
-# Create example MOList object
-objMOList <- MOList(
-  RNAseq = rnaseq, RNAGroupBy = group,
-  smallRNAseq = smallRna, smallRNAGroupBy = group
-)
-
-# Before filtering, check the dimensions of the small RNAseq data
-dim(getRawData(objMOList, "smallRNAseq"))
-
-# Filter the small RNAseq data
-objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
-
-# After filtering, check the dimensions of the small RNAseq data
-dim(getRawData(objMOList, "smallRNAseq")) # should be lower than the original
-
-}
 \references{
 \insertRef{robinson2010edger}{IntegraTRN}
 }

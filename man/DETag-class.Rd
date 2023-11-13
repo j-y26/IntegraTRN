@@ -3,15 +3,7 @@
 \docType{class}
 \name{DETag-class}
 \alias{DETag-class}
-\alias{DETag}
-\alias{show,DETag-method}
 \title{DETag S4 class}
-\usage{
-\S4method{show}{DETag}(object)
-}
-\arguments{
-\item{object}{An object of the DETag class}
-}
 \description{
 This class is used to store the differential expression analysis
              results for the count-based omics data. Although the
@@ -20,8 +12,6 @@ This class is used to store the differential expression analysis
              S4 class to allow future extension of the program, e.g.
              providing different methods for differential expression
              analysis while maintaining a consistent interface.
-
-This function prints the DETag object
 }
 \section{Slots}{
 
@@ -39,24 +29,6 @@ genes, with each row representing a gene and each
 column representing a sample}
 }}
 
-\examples{
-# Create an example data frame
-deResult <- data.frame(
-  gene = paste0("gene", seq_len(10)),
-  logFC = runif(10),
-  adj.P.Val = runif(10)
-)
-
-# Create an object of the DETag class
-deTag <- DETag(deResult, "DESeq2")
-
-# Print the object
-print(deTag)
-
-# or simply do
-deTag
-
-}
 \references{
 \insertRef{robinson2010edger}{IntegraTRN}
 

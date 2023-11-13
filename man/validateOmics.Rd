@@ -15,14 +15,4 @@ for the omics data}
 \description{
 Validate omics raw data with sample information
 }
-\examples{
-\dontrun{
-# Assuming RNAseq is a matrix of count data and RNASamples is a list of
-# sample names and grouping information for the RNAseq data
-
-# Validating the input data
-validateOmics(RNAseq, RNAsamples)
-}
-
-}
 \keyword{internal}

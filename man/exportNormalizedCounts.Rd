@@ -2,6 +2,7 @@
 % Please edit documentation in R/DETag.R
 \name{exportNormalizedCounts}
 \alias{exportNormalizedCounts}
+\alias{exportNormalizedCounts,DETag-method}
 \title{Export the normalized counts from a DETag object}
 \usage{
 exportNormalizedCounts(x)

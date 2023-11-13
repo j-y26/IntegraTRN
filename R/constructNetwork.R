@@ -40,6 +40,8 @@ validateInteractionAdjList <- function(adjList) {
 
 #' Loading external interaction data into the MOList object
 #'
+#' @aliases loadExtInteractions
+#'
 #' @description This function loads external interaction data into the MOList
 #'              object. The external data can be curated non-tissue/sample
 #'              specific interaction data, or any interactions that the users
@@ -131,6 +133,8 @@ loadExtInteractions <- function(objMOList,
 
 
 #' Setting cutoffs for the omics data
+#'
+#' @aliases setOmicCutoffs
 #'
 #' @description This function sets the cutoffs for the omics data. The cutoffs
 #'              are used to determine the key differentially regulated/expressed
@@ -250,6 +254,8 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
 
 #' Print method for the OMICutoffs object
 #'
+#' @aliases print.OMICutoffs
+#'
 #' @description This function prints the cutoffs for the omics data.
 #'
 #' @param x An OMICutoffs object
@@ -261,16 +267,7 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
 #'
 #' @examples
 #' omiCutoffs <- setOmicCutoffs()
-#'
-#' # The output will be:
-#' # RNAseq adjusted p-value cutoff: 0.05
-#' # RNAseq log fold change cutoff: 1
-#' # RNAseq selecting top 100% of DE genes
-#' # smallRNAseq adjusted p-value cutoff: 0.05
-#' # smallRNAseq log fold change cutoff: 1
-#' # smallRNAseq selecting top 100% of DE genes
-#' # Proteomics adjusted p-value cutoff: 0.05
-#' # Proteomics log fold change cutoff: 1
+#' print(omiCutoffs)
 #'
 print.OMICutoffs <- function(x, ...) {
   cat("RNAseq adjusted p-value cutoff:", x$rnaAdjPval, "\n")
@@ -578,6 +575,8 @@ combineSncInteractions <- function(predInteract,
 
 #' Construct a transcriptional regulatory network
 #'
+#' @aliases constructTRN
+#'
 #' @description This function constructs a transcriptional regulatory network
 #'              based on the omics data and the external interaction data
 #'              provided. The network is stored as an igraph object in the
@@ -587,7 +586,7 @@ combineSncInteractions <- function(predInteract,
 #'                  wants to use to construct the network
 #' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
 #'                   data
-#' @param smallRNATypes A character vector containing the small RNA types that
+#' @param smallRNAtypes A character vector containing the small RNA types that
 #'                      the user wants to use to construct the network. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
 #'                     "tRNA", and "circRNA". If "all" is specified, then all
@@ -621,14 +620,16 @@ combineSncInteractions <- function(predInteract,
 #' \insertRef{huynh2010inferring}{IntegraTRN}
 #'
 #' @examples
-#' # Suppose we have a MOList object called myMOList, with the omics data
-#' # already loaded and contains the required omics data
+#' # Use the package data
+#' data("expMOList")
 #'
 #' # Set the cutoffs for the omics data
 #' omiCutoffs <- setOmicCutoffs() # use default cutoffs
 #'
 #' # Construct the network
+#' \dontrun{
 #' myTRNet <- constructTRN(myMOList, omiCutoffs)
+#' }
 #'
 constructTRN <- function(objMOList,
                          omiCutoffs,

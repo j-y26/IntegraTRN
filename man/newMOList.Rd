@@ -55,18 +55,4 @@ An object of class MOList
 \description{
 Construct a new MOList object
 }
-\examples{
-\dontrun{
-# Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-# and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
-# grouping information for the sequencing data
-
-# Constructing a new MOList object
-objMOList <- newMOList(
-  RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
-  proteomics, proteomicsGroupBy, peakCond1, peakCond2
-)
-}
-
-}
 \keyword{internal}

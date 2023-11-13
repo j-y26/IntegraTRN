@@ -31,14 +31,4 @@ An object of class MOList
 \description{
 Setter for the ATACpeaks slot
 }
-\examples{
-\dontrun{
-# Assuming peakCond1 and peakCond2 are data frames containing the
-# differentially ATAC peaks for condition 1 and condition 2, respectively
-
-# Setting the ATAC peaks data to the MOList object
-ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)
-}
-
-}
 \keyword{internal}

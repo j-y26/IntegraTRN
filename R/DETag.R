@@ -17,7 +17,7 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 
 #' @name DETag-class
 #' @title DETag S4 class
-#' @aliases DETag-class DETag
+#' @aliases DETag-class
 #'
 #' @description This class is used to store the differential expression analysis
 #'              results for the count-based omics data. Although the
@@ -64,20 +64,6 @@ setClass("DETag", slots = c(
 #'
 #' @return NULL
 #'
-#' @examples
-#' # Create an example data frame
-#' deResult <- data.frame(
-#'   gene = paste0("gene", seq_len(10)),
-#'   logFC = runif(10),
-#'   adj.P.Val = runif(10)
-#' )
-#'
-#' # Create an object of the DETag class
-#' deTag <- DETag(deResult, "DESeq2")
-#'
-#' # Validate the object
-#' validateDETagSlots(deTag)
-#'
 validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
   # Validate each slot
   # DEResult
@@ -109,6 +95,8 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 
 #' Constructor for the DETag class
 #'
+#' @aliases DETag
+#'
 #' @description This function creates an object of the DETag class
 #'
 #' @param DEResult A data frame containing the differential expression analysis
@@ -137,8 +125,11 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 #'   adj.P.Val = runif(10)
 #' )
 #'
+#' # Create a normalized counts matrix
+#' normalizedCounts <- matrix(runif(100), nrow = 10)
+#'
 #' # Create an object of the DETag class
-#' deTag <- DETag(deResult, "DESeq2")
+#' deTag <- DETag(deResult, "DESeq2", normalizedCounts)
 #'
 #' # Check the class of the object
 #' class(deTag)
@@ -167,9 +158,9 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
 
 # Define the S4 method for the DETag class
 
-#' @rdname DETag-class
+#' Print DETag
 #'
-#' @method print DETag
+#' @aliases print,DETag-method
 #'
 #' @description This function prints the DETag object
 #'
@@ -216,7 +207,7 @@ setMethod("show", "DETag", function(object) {
     # Do nothing
   }
   cat("A snap shot for differential analysis results:\n")
-  print(head(object@DEResult))
+  print(utils::head(object@DEResult))
   cat("\n")
   cat("To access the full results, use the exportDE S4 method\n")
   invisible(object)
@@ -224,6 +215,8 @@ setMethod("show", "DETag", function(object) {
 
 
 #' Export the differential analysis results from a DETag object
+#'
+#' @aliases exportDE,DETag-method
 #'
 #' @description This function extracts the differential analysis results from
 #'              the DETag object
@@ -299,6 +292,8 @@ setMethod("exportDE", "DETag", function(x, original = FALSE) {
 
 
 #' Export the normalized counts from a DETag object
+#'
+#' @aliases exportNormalizedCounts,DETag-method
 #'
 #' @description This function extracts the normalized counts from the DETag
 #'              object, but this only applies to the count-based differential

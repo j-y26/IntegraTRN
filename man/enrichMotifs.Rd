@@ -29,28 +29,6 @@ This function performs motif enrichment analysis on peaks with
              binary conditions. The motif enrichment analysis is performed
              using the monaLisa package.
 }
-\examples{
-\dontrun{
-# Use the package-provided example data
-data("expMOList")
-
-# Retrieve genome data
-bsgenome <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38
-# Generate position-weight matrices (PWMs) from the JASPAR database
-pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
-  opts = list(
-    matrixtype = "PWM",
-    tax_group = "vertebrates"
-  )
-)
-# Perform motif enrichment analysis
-expMOList <- enrichMotifs(expMOList,
-  bsgenome = bsgenome,
-  pwmL = pwmL,
-  fixedWidth = 500
-)
-}
-}
 \references{
 \insertRef{BSgenome}{IntegraTRN}
 

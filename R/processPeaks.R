@@ -200,27 +200,6 @@ annotatePeaks <- function(objMOList,
 #'
 #' \insertRef{Biostrings}{IntegraTRN}
 #'
-#' @examples
-#' \dontrun{
-#' # Use the package-provided example data
-#' data("expMOList")
-#'
-#' # Retrieve genome data
-#' bsgenome <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38
-#' # Generate position-weight matrices (PWMs) from the JASPAR database
-#' pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
-#'   opts = list(
-#'     matrixtype = "PWM",
-#'     tax_group = "vertebrates"
-#'   )
-#' )
-#' # Perform motif enrichment analysis
-#' expMOList <- enrichMotifs(expMOList,
-#'   bsgenome = bsgenome,
-#'   pwmL = pwmL,
-#'   fixedWidth = 500
-#' )
-#' }
 enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
   if (is.null(objMOList$DEATAC)) {
     # No ATACseq peaks
@@ -286,6 +265,8 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 
 #' Performing peak annotation and motif enrichment analysis
 #'
+#' @aliases annotateATACPeaksMotif
+#'
 #' @description This function performs peak annotation and motif enrichment
 #'              analysis on the ATACseq peaks. The peak annotation is performed
 #'              using the ChIPseeker package, and the motif enrichment analysis
@@ -306,7 +287,7 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @param objMOList An object of class MOList
 #' @param tssRegion The region around the TSS to annotate with
 #'                 (default: +/- 3000)
-#' @param TxDB The TxDb object to use for annotation, using one of the TxDb
+#' @param TxDb The TxDb object to use for annotation, using one of the TxDb
 #'             packages
 #' @param annoDb The annotation database to use for annotation, using one of
 #'               the org.*.eg.db packages. Must be a valid string for the name

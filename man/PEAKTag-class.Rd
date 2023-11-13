@@ -3,34 +3,12 @@
 \docType{class}
 \name{PEAKTag-class}
 \alias{PEAKTag-class}
-\alias{show,PEAKTag-method}
-\alias{asGRanges}
-\alias{as.data.frame,PEAKTag-method}
 \title{PEAKTag S4 class for storing peak information}
-\usage{
-\S4method{show}{PEAKTag}(object)
-
-asGRanges(x)
-
-\S4method{as.data.frame}{PEAKTag}(x)
-}
-\arguments{
-\item{object}{An object of the DETag class}
-
-\item{x}{A PEAKTag object}
-}
-\value{
-A GRanges object
-
-A data frame
-}
 \description{
 The PEAKTag S4 class inherits the DETag class and is a more
              specialized class for storing peak information. It contains
              all slots of the DETag class, with additional slots added as a
              more convenient way for users to access the peak information.
-
-The print method for the PEAKTag class.
 }
 \section{Slots}{
 
@@ -67,29 +45,6 @@ annotation}
 \item{\code{.Data}}{A list containing additional peak information}
 }}
 
-\examples{
-# Use the package's provided example data
-data(expMOList)
-
-# Print the object
-print(expMOList$DEATAC)
-
-# Or simply type the object name
-expMOList$DEATAC
-
-# Use the package's provided example data
-data(expMOList)
-
-# Convert the object to a GRanges object
-asGRanges(expMOList$DEATAC)
-
-# Use the package's provided example data
-data(expMOList)
-
-# Convert the object to a data frame
-as.data.frame(expMOList$DEATAC)
-
-}
 \references{
 \insertRef{yu2015chipseeker}{IntegraTRN}
 }

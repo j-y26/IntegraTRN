@@ -22,10 +22,12 @@ This function generates a peak coverage plot for differential
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Plotting the coverage plot
+\dontrun{
 plotATACCoverage(expMOList)
+}
 
 }
 \references{

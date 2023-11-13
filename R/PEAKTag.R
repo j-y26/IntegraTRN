@@ -55,6 +55,9 @@ setClass("PEAKTag",
 
 
 #' @title Constructor for the PEAKTag class
+#'
+#' @aliases PEAKTag
+#'
 #' @description This function constructs a PEAKTag object from a DETag object
 #'              and the annotated peaks, as defined in the ChIPseeker package.
 #'
@@ -138,17 +141,17 @@ PEAKTag <- function(objDETag,
 
 # Define some S4 methods for the PEAKTag class
 
-#' @rdname PEAKTag-class
+#' print PEAKTag
 #'
-#' @export
-#'
-#' @method print PEAKTag
+#' @aliases print,PEAKTag-method
 #'
 #' @description The print method for the PEAKTag class.
 #'
 #' @inheritParams DETag-class
 #'
 #' @return NULL
+#'
+#' @export
 #'
 #' @examples
 #' # Use the package's provided example data
@@ -180,10 +183,10 @@ setMethod(
     cat("A snapshot of the peaks:\n")
     anno <- object@annotatedPeaks
     if (is.null(anno)) {
-      print(head(object@DEResult, 5))
+      print(utils::head(object@DEResult, 5))
     } else {
       peakDF <- csAnnoToDF(object@annotatedPeaks)
-      print(head(peakDF, 5))
+      print(utils::head(peakDF, 5))
     }
     rm(anno, peakDF)
     return(invisible(NULL))
@@ -193,7 +196,7 @@ setMethod(
 
 #' Convert to a GRanges object
 #'
-#' @rdname PEAKTag-class
+#' @aliases asGRanges,PEAKTag-method
 #'
 #' @export
 #'
@@ -239,7 +242,7 @@ setMethod(
 
 #' Convert to a data frame
 #'
-#' @rdname PEAKTag-class
+#' @aliases as.data.frame,PEAKTag-method
 #'
 #' @export
 #'

@@ -24,6 +24,7 @@
 #'                 regulatory network contains inffered interactions.
 #' @slot omics A character string indicating the omics data used to construct
 #'             the transcriptional regulatory network.
+#' @slot .Data A list containing additional network information
 #'
 #' @exportClass TRNet
 #'
@@ -141,7 +142,7 @@ setMethod(
 
 #' @title Parse vertex metadata from TRNet network metadata
 #'
-#' @rdname TRNet-class
+#' @aliases parseVertexMetadata,TRNet-method
 #'
 #' @description This function parses vertex metadata from the TRNet network
 #'              metadata
@@ -194,7 +195,7 @@ setMethod(
 
 #' @title Plot TRNet object
 #'
-#' @rdname TRNet-class
+#' @aliases plotNetwork,TRNet-method
 #'
 #' @description This function plots the TRNet object
 #'
@@ -248,7 +249,7 @@ setMethod(
     network <- trn@network
     # Label vertices with their type
     vertexMetadata <- parseVertexMetadata(trn)
-    vertexMetadata <- setNames(vertexMetadata$type, vertexMetadata$name)
+    vertexMetadata <- stats::setNames(vertexMetadata$type, vertexMetadata$name)
     # Plot network
     if (interactive == TRUE) {
       # Convert igraph object to networkd3 object
@@ -267,7 +268,7 @@ setMethod(
     } else {
       # Assign vertex color based on type of gene/transcript/TF
       colors <- igraph::categorical_pal(length(unique(vertexMetadata)))
-      colors <- setNames(colors, unique(vertexMetadata))
+      colors <- stats::setNames(colors, unique(vertexMetadata))
       igraph::V(network)$color <- colors[igraph::V(network)$type]
       # Define layout
       layout <- igraph::layout_with_drl(network)
@@ -292,7 +293,7 @@ setMethod(
 
 #' @title Export an igraph object from TRNet object
 #'
-#' @rdname TRNet-class
+#' @aliases exportIgraph,TRNet-method
 #'
 #' @description This function exports an igraph object from TRNet object
 #'
@@ -335,7 +336,7 @@ setMethod(
 
 #' @title Export all network interactions from TRNet object
 #'
-#' @rdname TRNet-class
+#' @aliases exportEdgeSet,TRNet-method
 #'
 #' @description This function exports all network interactions from TRNet object
 #'
@@ -375,7 +376,7 @@ setMethod(
 
 #' @title show method for TRNet object
 #'
-#' @rdname TRNet-class
+#' @aliases show,TRNet-method
 #'
 #' @description This function prints the TRNet object
 #'
@@ -437,7 +438,7 @@ setMethod(
     cat("Omics data involved during network construction:", object@omics, "\n")
     cat("\n")
     cat("A snapshort of network interactions:\n")
-    print(head(object@TRNmetadata, 5))
+    print(utils::head(object@TRNmetadata, 5))
     cat("\n")
     cat("To access all network interactions, use exportEdgeSet()\n")
   }

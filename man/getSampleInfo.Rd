@@ -19,19 +19,4 @@ A list containing the sample names and grouping information for the
 \description{
 Retrieving the sample information from the MOList object
 }
-\examples{
-\dontrun{
-# Assuming myMOList is a MOList object
-
-# Get the sample information for the RNAseq data
-getSampleInfo(myMOList, "RNAseq")
-
-# Get the sample information for the smallRNAseq data
-getSampleInfo(myMOList, "smallRNAseq")
-
-# Get the sample information for the proteomics data
-getSampleInfo(myMOList, "proteomics")
-}
-
-}
 \keyword{internal}

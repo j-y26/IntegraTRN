@@ -40,21 +40,6 @@ COUNT_OMICS <- c(RNA, SMALLRNA, PROTEIN)
 #'
 #' @return NULL
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming myMOList is a MOList object
-#'
-#' # Create an example annotation list for batch correction
-#' annoList <- list(
-#'   RNAseq = rep(c("A", "B"), each = 5),
-#'   smallRNAseq = rep(c("A", "B"), each = 3),
-#'   proteomics = rep(c("A", "B"), each = 3)
-#' )
-#'
-#' # Validate the input data and annotations
-#' validateDataAnno(myMOList, annoList)
-#' }
-#'
 validateDataAnno <- function(objMOList, annoList) {
   # Validate the correctness of the MOList object
   validateMOList(objMOList)
@@ -100,48 +85,6 @@ validateDataAnno <- function(objMOList, annoList) {
 #'
 #' @references
 #' \insertRef{robinson2010edger}{IntegraTRN}
-#'
-#' @examples
-#' # Example 1: Filtering the RNAseq data
-#'
-#' # Create example RNAseq data
-#' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
-#' rnaseq[1:20, 1:8] <- 0
-#' group <- rep(c("A", "B"), each = 5)
-#'
-#' # Create example MOList object
-#' objMOList <- MOList(RNAseq = rnaseq, RNAGroupBy = group)
-#'
-#' # Before filtering, check the dimensions of the RNAseq data
-#' dim(getRawData(objMOList, "RNAseq"))
-#'
-#' # Filter the RNAseq data
-#' objMOList <- filterGeneCounts(objMOList, "RNAseq")
-#'
-#' # After filtering, check the dimensions of the RNAseq data
-#' dim(getRawData(objMOList, "RNAseq")) # should be lower than the original
-#'
-#' # Example 2: Filtering the small RNAseq data
-#'
-#' # Create example small RNAseq data
-#' smallRna <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
-#' smallRna[1:20, 1:3] <- 0
-#' group <- paste0(rep("A", 3), rep("B", 2))
-#'
-#' # Create example MOList object
-#' objMOList <- MOList(
-#'   RNAseq = rnaseq, RNAGroupBy = group,
-#'   smallRNAseq = smallRna, smallRNAGroupBy = group
-#' )
-#'
-#' # Before filtering, check the dimensions of the small RNAseq data
-#' dim(getRawData(objMOList, "smallRNAseq"))
-#'
-#' # Filter the small RNAseq data
-#' objMOList <- filterGeneCounts(objMOList, "smallRNAseq")
-#'
-#' # After filtering, check the dimensions of the small RNAseq data
-#' dim(getRawData(objMOList, "smallRNAseq")) # should be lower than the original
 #'
 filterGeneCounts <- function(objMOList, omic) {
   if (!(omic %in% COUNT_OMICS)) {
@@ -220,45 +163,6 @@ filterGeneCounts <- function(objMOList, omic) {
 #' @references
 #' \insertRef{love2014moderated}{IntegraTRN}
 #'
-#' @examples
-#' # Example 1: Differential expression analysis of RNAseq data without batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'   nrow = 100, ncol = 10
-#' )
-#'
-#' # Create example grouping information
-#' group <- rep(c("A", "B"), each = 5)
-#'
-#' # Perform differential expression analysis
-#' deTag <- diffExprDESeq2(countMatrix, group)
-#'
-#' # Check the results
-#' head(exportDE(deTag))
-#'
-#' # Example 2: Differential expression analysis of RNAseq data with batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'   nrow = 100, ncol = 10
-#' )
-#'
-#' # Create example grouping information
-#' group <- seq_len(10)
-#'
-#' # Create example batch information
-#' batch <- rep(c("batch1", "batch2"), each = 5)
-#'
-#' # Perform differential expression analysis
-#' deTag <- diffExprDESeq2(
-#'   filteredCounts = countMatrix,
-#'   groupBy = group,
-#'   batch = batch
-#' )
-#'
 diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   # Generate DESeqDataSet as the base object
   designList <- DESeqDesign(groupBy, batch)
@@ -323,57 +227,15 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
 #' @references
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' @examples
-#' # Example 1: Differential expression analysis of RNAseq data without batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'   nrow = 100, ncol = 10
-#' )
-#'
-#' # Create example grouping information
-#' group <- rep(c("A", "B"), each = 5)
-#'
-#' # Perform differential expression analysis
-#' deTag <- diffExprEdgeR(countMatrix, group)
-#'
-#' # Check the results
-#' head(exportDE(deTag))
-#'
-#' # Example 2: Differential expression analysis of RNAseq data with batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'   nrow = 100, ncol = 10
-#' )
-#'
-#' # Create example grouping information
-#' group <- seq_len(10)
-#'
-#' # Create example batch information
-#' batch <- rep(c("batch1", "batch2"), each = 5)
-#'
-#' # Perform differential expression analysis
-#' deTag <- diffExprEdgeR(
-#'   filteredCounts = countMatrix,
-#'   groupBy = group,
-#'   batch = batch
-#' )
-#'
-#' # Check the results
-#' head(exportDE(deTag))
-#'
 diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
   # Generate DGEList as the base object
   dge <- edgeR::DGEList(counts = filteredCounts, group = groupBy)
 
   # Construct GLM model
   if (!is.null(batch)) {
-    design <- model.matrix(~ batch + groupBy)
+    design <- stats::model.matrix(~ batch + groupBy)
   } else {
-    design <- model.matrix(~groupBy)
+    design <- stats::model.matrix(~groupBy)
   }
 
   # Normalization and dispersion estimation
@@ -402,6 +264,8 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 
 
 #' Differential expression analysis of count-based omics data
+#'
+#' @keywords internal
 #'
 #' @description This function performs differential expression analysis on the
 #'              count-based omics data. The RNAseq, small RNAseq, and protein
@@ -463,50 +327,6 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 #'
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' @examples
-#' # Example 1: Differential expression analysis of RNAseq data without batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-#'   nrow = 100, ncol = 10
-#' )
-#'
-#' # Create example grouping information
-#' group <- rep(c("A", "B"), each = 5)
-#'
-#' # Create example MOList object
-#' objMOList <- MOList(RNAseq = countMatrix, RNAGroupBy = group)
-#'
-#' # Perform differential expression analysis
-#' objMOList <- countDiffExpr(objMOList, "RNAseq", group)
-#'
-#'
-#' # Example 2: Differential expression analysis of protein data with batch
-#' #            correction
-#'
-#' # Create example count matrix
-#' proteinCounts <- matrix(sample(0:100, nrow = 100, ncol = 20, replace = TRUE))
-#'
-#' # Create example grouping information
-#' proteinGroup <- rep(c("A", "B"), each = 10)
-#'
-#' # Create example batch information
-#' proteinBatch <- c(rep("batch1", 5), rep("batch2", 15))
-#'
-#' # Create example MOList object
-#' objMOList <- MOList(
-#'   RNAseq = countMatrix, RNAGroupBy = group,
-#'   proteomics = proteinCounts,
-#'   proteomicsGroupBy = proteinGroup
-#' )
-#'
-#' # Perform differential expression analysis
-#' objMOList <- countDiffExpr(
-#'   objMOList, "proteomics",
-#'   proteinGroup, proteinBatch
-#' )
-#'
 countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
   if (!(omic %in% COUNT_OMICS)) {
     stop("The input omics data is not supported for differential analysis")
@@ -544,6 +364,8 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 
 
 #' Perform differential analysis on the omics data
+#'
+#' @aliases diffOmics
 #'
 #' @description This function performs data filtering, normalization, batch
 #'              correction, and differential analysis on each of the omics data.

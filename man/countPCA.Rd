@@ -42,7 +42,7 @@ Raw counts are normalized by RLE method and then transformed by
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Extract the information needed for PCA analysis for example RNAseq data
 matrixRNAseq <- getRawData(expMOList, "RNAseq")

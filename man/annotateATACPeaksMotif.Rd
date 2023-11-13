@@ -20,6 +20,9 @@ annotateATACPeaksMotif(
 \item{tssRegion}{The region around the TSS to annotate with
 (default: +/- 3000)}
 
+\item{TxDb}{The TxDb object to use for annotation, using one of the TxDb
+packages}
+
 \item{annoDb}{The annotation database to use for annotation, using one of
 the org.*.eg.db packages. Must be a valid string for the name
 of the package. For details, see the vignette of the ChIPseeker
@@ -37,9 +40,6 @@ details.}
 
 \item{fixedWidth}{The fixed width to adjust the peak size for motif if
 necessary (default: 500)}
-
-\item{TxDB}{The TxDb object to use for annotation, using one of the TxDb
-packages}
 }
 \value{
 An object of class MOList, with the ATACseq peaks annotated with

@@ -2,6 +2,7 @@
 % Please edit documentation in R/DETag.R
 \name{exportDE}
 \alias{exportDE}
+\alias{exportDE,DETag-method}
 \title{Export the differential analysis results from a DETag object}
 \usage{
 exportDE(x, original = FALSE)

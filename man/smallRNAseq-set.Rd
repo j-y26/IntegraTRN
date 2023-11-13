@@ -30,13 +30,4 @@ An object of class MOList
 \description{
 Setter for the smallRNAseq slot
 }
-\examples{
-\dontrun{
-# Assuming smallRNAseq is a matrix of count data
-
-# Setting the smallRNAseq data to the MOList object
-smallRNAseq(myMOList) <- smallRNAseq
-}
-
-}
 \keyword{internal}

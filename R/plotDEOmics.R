@@ -92,6 +92,8 @@ plotVolcano <- function(deg,
 
 #' Volcano plot for visualizing differentially expressed mRNA
 #'
+#' @aliases plotVolcanoRNA
+#'
 #' @description This function generates a volcano plot for visualizing
 #'              differentially expressed mRNA based on log2 fold change and
 #'              adjusted p-value. The user can specify the cutoffs for log2 fold
@@ -124,7 +126,7 @@ plotVolcano <- function(deg,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Example 1: Generate the volcano plot by default parameters
 #' plotVolcanoRNA(expMOList)
@@ -230,6 +232,8 @@ annoSncList <- function(deg, annoList) {
 
 #' Volcano plot for visualizing differentially expressed small RNAs
 #'
+#' @aliases plotVolcanoSmallRNA
+#'
 #' @description This function generates a volcano plot for visualizing
 #'              differentially expressed small RNAs based on log2 fold change
 #'              and adjusted p-value. The user can specify the cutoffs for log2
@@ -266,7 +270,7 @@ annoSncList <- function(deg, annoList) {
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Example 1: Generate the volcano plot by default parameters
 #' plotVolcanoSmallRNA(expMOList)
@@ -321,7 +325,7 @@ plotVolcanoSmallRNA <- function(objMOList,
 
   # Generate a set of colors for each type of small RNA
   sncColors <- RColorBrewer::brewer.pal(length(sncTypes), colScheme)
-  sncColorList <- setNames(sncColors, sncTypes)
+  sncColorList <- stats::setNames(sncColors, sncTypes)
 
 
   # Color each type of small RNA
@@ -340,6 +344,8 @@ plotVolcanoSmallRNA <- function(objMOList,
 
 
 #' Principle Component Analysis (PCA) for count-based omics data
+#'
+#' @aliases countPCA
 #'
 #' @description This function performs PCA analysis for count-based omics data.
 #'              The user can specify the title for the plot.
@@ -378,7 +384,7 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Extract the information needed for PCA analysis for example RNAseq data
 #' matrixRNAseq <- getRawData(expMOList, "RNAseq")
@@ -464,6 +470,8 @@ countPCA <- function(matrix,
 #' Plotting results for Principle Component Analysis (PCA) for each type of
 #' small RNA
 #'
+#' @aliases plotSmallRNAPCAs
+#'
 #' @description This function generates a PCA plot for each type of small RNA
 #'              based on the normalized expression matrix. This function is
 #'              used to explore the contribution of each type of small RNA to
@@ -499,7 +507,7 @@ countPCA <- function(matrix,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Generate a list of PCA plots for each type of small RNA
 #' \dontrun{
@@ -586,6 +594,8 @@ plotSmallRNAPCAs <- function(objMOList,
 
 #' Peak coverage plot for differential accessible regions
 #'
+#' @aliases plotATACCoverage
+#'
 #' @description This function generates a peak coverage plot for differential
 #'              accessible regions based on the ATACseq data. This is a wrapper
 #'              function for the covplot function in the ChIPseeker package.
@@ -608,10 +618,12 @@ plotSmallRNAPCAs <- function(objMOList,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Plotting the coverage plot
+#' \dontrun{
 #' plotATACCoverage(expMOList)
+#' }
 #'
 plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
   if (is.null(objMOList$DEATAC)) {
@@ -625,7 +637,7 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
     peakGR <- asGRanges(objMOList$DEATAC)
   } else {
     # A DETag object
-    peakGR <- GRanges::makeGRangesFromDataFrame(exportDE(objMOList$DEATAC))
+    peakGR <- GenomicRanges::makeGRangesFromDataFrame(exportDE(objMOList$DEATAC))
   }
   covPlot <- ChIPseeker::covplot(peakGR, title = title)
   return(covPlot)
@@ -633,6 +645,8 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
 
 
 #' Plotting the annotation Pie chart of differential accessible regions
+#'
+#' @aliases plotATACAnno
 #'
 #' @description This function generates a pie chart for the annotation of
 #'              differential accessible regions based on the ATACseq data.
@@ -653,10 +667,12 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Plotting the annotation pie chart
+#' \dontrun{
 #' plotATACAnno(expMOList)
+#' }
 #'
 plotATACAnno <- function(objMOList) {
   if (is.null(objMOList$DEATAC) ||
@@ -672,6 +688,8 @@ plotATACAnno <- function(objMOList) {
 
 
 #' Plotting the combined profile and heatmap of annotated peaks
+#'
+#' @aliases plotATACProfileHeatmap
 #'
 #' @description This function generates a combined profile and heatmap of
 #'              annotated peaks based on the ATACseq data. This is a wrapper
@@ -700,7 +718,7 @@ plotATACAnno <- function(objMOList) {
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Plotting the profile and heatmap
 #' \dontrun{
@@ -736,6 +754,8 @@ plotATACProfileHeatmap <- function(objMOList,
 
 #' Motif heatmap of differential accessible regions of enriched motifs
 #'
+#' @aliases plotATACMotifHeatmap
+#'
 #' @description This function generates a combined profile and heatmap of
 #'              differential accessible regions of enriched motifs based on the
 #'              ATACseq data. This is a wrapper function for the
@@ -753,7 +773,7 @@ plotATACProfileHeatmap <- function(objMOList,
 #' @param objMOList An MOList object containing the differential accessible
 #'                  regions
 #' @param pValueAdj The cutoff for adjusted p-value, default is 0.05
-#' @param PValue The cutoff for p-value. If pValue is specified, pValueAdj
+#' @param pValue The cutoff for p-value. If pValue is specified, pValueAdj
 #'               will be ignored
 #' @param log2FEnrich The cutoff for log2 fold enrichment, default is NULL
 #'
@@ -774,7 +794,7 @@ plotATACProfileHeatmap <- function(objMOList,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList, package = "IntegraTRN")
+#' data(expMOList)
 #'
 #' # Example 1: Plot the motif heatmap by default parameters
 #' \dontrun{
@@ -782,10 +802,14 @@ plotATACProfileHeatmap <- function(objMOList,
 #' }
 #'
 #' # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
+#' \dontrun{
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01)
+#' }
 #'
 #' # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
+#' \dontrun{
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
+#' }
 #'
 plotATACMotifHeatmap <- function(objMOList,
                                  pValueAdj = 0.05,

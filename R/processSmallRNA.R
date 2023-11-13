@@ -156,6 +156,8 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 
 #' Annotate small RNA transcripts to respective categories
 #'
+#' @aliases annotateSmallRNA
+#'
 #' @description This function annotates small RNA transcripts to their
 #'              respective categories. The categories are defined as follows:
 #'              1. miRNA
@@ -257,7 +259,7 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
     # Whether input is a valid path to a tab file
     if (file.exists(userAnno)) {
       # Read in the annotation
-      userAnno <- read.table(userAnno,
+      userAnno <- utils::read.table(userAnno,
         sep = "\t", header = FALSE,
         stringsAsFactors = FALSE
       )

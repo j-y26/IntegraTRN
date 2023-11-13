@@ -3,42 +3,10 @@
 \docType{class}
 \name{MOList-class}
 \alias{MOList-class}
-\alias{show,MOList-method}
-\alias{setGene2Protein}
 \title{Multi-Omics List (MOList) S4 class}
-\usage{
-\S4method{show}{MOList}(object)
-
-setGene2Protein(x, conversion)
-}
-\arguments{
-\item{object}{An object of the DETag class}
-
-\item{x}{A MOList object containing the omics data}
-
-\item{conversion}{A data frame containing the conversion information between
-                  protein and gene names
-\itemize{
-\item \code{protein}: Name of the protein
-\item \code{gene}: Name of the gene
-}}
-}
-\value{
-An object of class MOList
-}
 \description{
 This class is used to store the multi-omics data, including
              RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
-
-This function prints the MOList object
-
-This function sets the conversion between protein and gene names
-             for the proteomics data. The user can provide a data frame
-             containing the conversion information. The data frame must
-             contain two columns, one for the protein names and the other
-             for the gene names. This must be provided to effectively utilize
-             the proteomics data. The users are responsible for the validity
-             of the conversion information.
 }
 \section{Slots}{
 
@@ -71,38 +39,6 @@ or a fixed-width approach, as indicated in Grandi et al. 2022}
 in the same way as a list}
 }}
 
-\examples{
-\dontrun{
-# Assuming myMOList is a MOList object
-print(myMOList)
-}
-
-# Create example RNAseq and proteomics data
-rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
-rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
-rnaGroupBy <- rep(c("A", "B"), each = 5)
-proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
-rownames(proteomics) <- paste0("protein_", seq_len(nrow(proteomics)))
-proteomicsGroupBy <- rep(c("A", "B"), each = 3)
-
-# Create an example MOList object
-objMOList <- MOList(
-  RNAseq = rnaseq,
-  RNAGroupBy = rnaGroupBy,
-  proteomics = proteomics,
-  proteomicsGroupBy = proteomicsGroupBy
-)
-
-# Create an example conversion information
-conversion <- data.frame(
-  protein = paste0("protein_", seq_len(nrow(proteomics))),
-  gene = paste0("gene_", seq_len(nrow(proteomics)))
-)
-
-# Set the conversion information to the MOList object
-objMOList <- setGene2Protein(objMOList, conversion)
-
-}
 \references{
 \insertRef{grandi2022chromatin}{IntegraTRN}
 }

@@ -16,14 +16,4 @@ A vector of sample names
 \description{
 Identify the sample names from a count matrix
 }
-\examples{
-# Create example count matrix
-countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-  nrow = 100, ncol = 10
-)
-
-# Get sample names
-getSampleNames(countMatrix)
-
-}
 \keyword{internal}

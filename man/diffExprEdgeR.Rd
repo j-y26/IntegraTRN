@@ -35,49 +35,6 @@ This function performs differential expression analysis on the
              and protein data are supported for differential expression
              analysis.
 }
-\examples{
-# Example 1: Differential expression analysis of RNAseq data without batch
-#            correction
-
-# Create example count matrix
-countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-  nrow = 100, ncol = 10
-)
-
-# Create example grouping information
-group <- rep(c("A", "B"), each = 5)
-
-# Perform differential expression analysis
-deTag <- diffExprEdgeR(countMatrix, group)
-
-# Check the results
-head(exportDE(deTag))
-
-# Example 2: Differential expression analysis of RNAseq data with batch
-#            correction
-
-# Create example count matrix
-countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-  nrow = 100, ncol = 10
-)
-
-# Create example grouping information
-group <- seq_len(10)
-
-# Create example batch information
-batch <- rep(c("batch1", "batch2"), each = 5)
-
-# Perform differential expression analysis
-deTag <- diffExprEdgeR(
-  filteredCounts = countMatrix,
-  groupBy = group,
-  batch = batch
-)
-
-# Check the results
-head(exportDE(deTag))
-
-}
 \references{
 \insertRef{robinson2010edger}{IntegraTRN}
 }

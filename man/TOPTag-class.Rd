@@ -3,34 +3,19 @@
 \docType{class}
 \name{TOPTag-class}
 \alias{TOPTag-class}
-\alias{show,TOPTag-method}
 \alias{filterGenes}
-\alias{exportDE,TOPTag-method}
 \title{TOPTag S4 class for storing top differential genes}
 \usage{
-\S4method{show}{TOPTag}(object)
-
 filterGenes(object, names)
-
-\S4method{exportDE}{TOPTag}(x, original = FALSE)
 }
 \arguments{
 \item{object}{A TOPTag object.}
 
 \item{names}{A character vector containing the names of the genes to be
 filtered.}
-
-\item{x}{An object of the DETag class}
-
-\item{original}{A boolean indicating whether to return the original results.
-If FALSE, the results will be converted to a data frame with
-the following columns: logFC, pvalue, padj
-(default: FALSE)}
 }
 \value{
 A TOPTag object
-
-A data frame containing the differential analysis results.\
 }
 \description{
 The TOPTag S4 class inherits the DETag class and is a more
@@ -39,14 +24,8 @@ The TOPTag S4 class inherits the DETag class and is a more
              genes involved. Additional slots are added as a more convenient
              way for users to access the top differential genes.
 
-The print method for the TOPTag class.
-
 This function filters the top differential genes by a names
              vector
-
-This function exports the differential analysis results from a
-             TopTag object. Overwrites the exportDE function in the DETag
-             class due to different nomenclature of the columns.
 }
 \section{Slots}{
 
@@ -96,37 +75,10 @@ data("expMOList")
 deTag <- expMOList$DERNAseq
 
 # Create a TOPTag object
-topTag <- TOPTag(deTag, topGenes = 0.2)
-
-# Print the TOPTag object
-print(topTag)
-
-# or simply type the object name
-topTag
-
-# Use the package provided example data
-data("expMOList")
-
-# Extract an DETag object from RNA-seq data
-deTag <- expMOList$DERNAseq
-
-# Create a TOPTag object
 topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
 
 # Filter the top differential genes by a names vector
 topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
-
-# Use the package provided example data
-data("expMOList")
-
-# Extract an DETag object from RNA-seq data
-deTag <- expMOList$DERNAseq
-
-# Create a TOPTag object
-topTag <- TOPTag(deTag, logFCCutoff = 0, topGenes = 0.2)
-
-# Export the differential analysis results
-exportDE(topTag)
 
 }
 \references{
@@ -136,3 +88,4 @@ exportDE(topTag)
 
 \insertRef{reimand2019pathway}{IntegraTRN}
 }
+\keyword{internal}

@@ -14,20 +14,19 @@ An S4 object of class MOList
                   genes}
 \item{ATACseq}{A list of two data frames of ATACseq peaks for 2 conditions,
               each with 100 peaks}
-}
 \item{DERNAseq}{A DETag object of the differentially expressed genes from
                 RNAseq}
 \item{DEsmallRNAseq}{A DETag object of the differentially expressed genes
                     from small RNAseq}
 \item{DEproteomics}{A DETag object of the differentially expressed genes
                    from proteomics}
-\item{DEATAC}{A PEAKTag object of ATACseq peaks with annotations and
-              motif enrichment}
+\item{DEATAC}{A DETag object of peaks}
 \item{anncSncRNA}{The string "human"}
 \item{matchingRNAsmallRNA}{A list of matched indices between RNAseq and
                           small RNAseq samples}
 \item{extInteractions}{A list of 2 lists for miRNA-target and TF-target
                       interactions. Each contains 50 pairs of interactions}
+}
 }
 \source{
 Paul Delgado Olguin Lab, The Hospital for Sick Children, Toronto,

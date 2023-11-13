@@ -13,13 +13,4 @@ data}
 \description{
 Validator of the MOList S4 object
 }
-\examples{
-\dontrun{
-# Assuming objMOList is an object of class MOList
-
-# Validating the MOList object
-validateMOList(objMOList)
-}
-
-}
 \keyword{internal}

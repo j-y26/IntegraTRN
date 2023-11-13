@@ -41,7 +41,7 @@ This function generates a volcano plot for visualizing
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Example 1: Generate the volcano plot by default parameters
 plotVolcanoRNA(expMOList)

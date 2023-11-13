@@ -23,6 +23,12 @@ wants to use to construct the network}
 \item{omiCutoffs}{A OMICutoffs object containing the cutoffs for the omics
 data}
 
+\item{smallRNAtypes}{A character vector containing the small RNA types that
+ the user wants to use to construct the network. The
+ available types are "miRNA", "piRNA", "snRNA", "snoRNA",
+"tRNA", and "circRNA". If "all" is specified, then all
+the small RNA types will be used.}
+
 \item{targetDirection}{A character vector indicating the direction of the
  target genes. Default to "both". Other options include
 "up" and "down".}
@@ -39,12 +45,6 @@ or "ET". See the documentation for the GENIE3 package for
 details.}
 
 \item{seed}{The seed to use for the random forest model}
-
-\item{smallRNATypes}{A character vector containing the small RNA types that
- the user wants to use to construct the network. The
- available types are "miRNA", "piRNA", "snRNA", "snoRNA",
-"tRNA", and "circRNA". If "all" is specified, then all
-the small RNA types will be used.}
 }
 \value{
 A TRNet object containing the transcriptional regulatory network
@@ -56,14 +56,16 @@ This function constructs a transcriptional regulatory network
              TRNet S4 class, which is a mRNA-TF-smallRNA network.
 }
 \examples{
-# Suppose we have a MOList object called myMOList, with the omics data
-# already loaded and contains the required omics data
+# Use the package data
+data("expMOList")
 
 # Set the cutoffs for the omics data
 omiCutoffs <- setOmicCutoffs() # use default cutoffs
 
 # Construct the network
+\dontrun{
 myTRNet <- constructTRN(myMOList, omiCutoffs)
+}
 
 }
 \references{

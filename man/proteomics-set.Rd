@@ -30,13 +30,4 @@ An object of class MOList
 \description{
 Setter for the proteomics slot
 }
-\examples{
-\dontrun{
-# Assuming proteomics is a matrix of count data
-
-# Setting the proteomics data to the MOList object
-proteomics(myMOList) <- proteomics
-}
-
-}
 \keyword{internal}

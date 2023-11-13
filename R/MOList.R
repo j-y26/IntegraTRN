@@ -87,18 +87,6 @@ setClass("MOList",
 #'
 #' @return NULL
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-#'
-#' # Validating the RNAseq data
-#' validateMatrix(RNAseq, RNAGroupBy)
-#' # Validating the smallRNAseq data
-#' validateMatrix(smallRNAseq, smallRNAGroupBy)
-#' # Validating the proteomics data
-#' validateMatrix(proteomics, proteomicsGroupBy)
-#' }
-#'
 validateMatrix <- function(matrix, groupBy) {
   if (any(is.na(matrix))) {
     stop("The sequencing data contains NA values. Please check the validity of
@@ -235,17 +223,6 @@ validateMOInputs <- function(RNAseq,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-#'
-#' # Setting the omics data to their respective slot in the MOList object
-#' objMOList <- setOmics(
-#'   objMOList, smallRNAseq, smallRNAGroupBy,
-#'   proteomics, proteomicsGroupBy, peakCond1, peakCond2
-#' )
-#' }
-#'
 setOmics <- function(objMOList,
                      smallRNAseq,
                      smallRNAGroupBy,
@@ -309,19 +286,6 @@ setOmics <- function(objMOList,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-#' # and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
-#' # grouping information for the sequencing data
-#'
-#' # Constructing a new MOList object
-#' objMOList <- newMOList(
-#'   RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
-#'   proteomics, proteomicsGroupBy, peakCond1, peakCond2
-#' )
-#' }
-#'
 newMOList <- function(RNAseq,
                       RNAGroupBy,
                       smallRNAseq,
@@ -381,20 +345,6 @@ newMOList <- function(RNAseq,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-#' # and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
-#' # grouping information for the sequencing data
-#'
-#' # Modifying an existing MOList object
-#' objMOList <- modifyMOList(
-#'   objMOList, RNAseq, RNAGroupBy, smallRNAseq,
-#'   smallRNAGroupBy, proteomics, proteomicsGroupBy,
-#'   peakCond1, peakCond2
-#' )
-#' }
-#'
 modifyMOList <- function(objMOList,
                          RNAseq,
                          RNAGroupBy,
@@ -430,15 +380,6 @@ modifyMOList <- function(objMOList,
 #'
 #' @return NULL
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq is a matrix of count data and RNASamples is a list of
-#' # sample names and grouping information for the RNAseq data
-#'
-#' # Validating the input data
-#' validateOmics(RNAseq, RNAsamples)
-#' }
-#'
 validateOmics <- function(dataMatrix, sampleInfo) {
   if (xor(is.null(dataMatrix), is.null(sampleInfo))) {
     stop("Both the omics data and sample information must be provided.")
@@ -471,14 +412,6 @@ validateOmics <- function(dataMatrix, sampleInfo) {
 #'
 #' @return NULL
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming objMOList is an object of class MOList
-#'
-#' # Validating the MOList object
-#' validateMOList(objMOList)
-#' }
-#'
 validateMOList <- function(objMOList) {
   if (class(objMOList)[1] != "MOList") {
     stop("Error validating the MOList class.")
@@ -509,6 +442,8 @@ validateMOList <- function(objMOList) {
 
 
 #' Constructor for the MOList object
+#'
+#' @aliases MOList
 #'
 #' @description This function is a constructor of the MOList object, which is
 #'              used to store the multi-omics data. The MOList object can be
@@ -617,9 +552,9 @@ MOList <- function(objMOList = NULL,
 
   # Read the ATAC peaks data if provided
   if (!is.null(pathATACpeak1) && !is.null(pathATACpeak2)) {
-    peakCond1 <- read.table(pathATACpeak1, header = FALSE, sep = "\t")
+    peakCond1 <- utils::read.table(pathATACpeak1, header = FALSE, sep = "\t")
     colnames(peakCond1)[1:3] <- CHROMINFO
-    peakCond2 <- read.table(pathATACpeak2, header = FALSE, sep = "\t")
+    peakCond2 <- utils::read.table(pathATACpeak2, header = FALSE, sep = "\t")
     colnames(peakCond2)[1:3] <- CHROMINFO
   } else if (xor(is.null(pathATACpeak1), is.null(pathATACpeak2))) {
     stop("Please provide both differentially accessible ATAC peaks files.")
@@ -686,14 +621,6 @@ MOList <- function(objMOList = NULL,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming RNAseq is a matrix of count data
-#'
-#' # Setting the RNAseq data to the MOList object
-#' RNAseq(myMOList) <- RNAseq
-#' }
-#'
 setGeneric("RNAseq<-", function(x, value) standardGeneric("RNAseq<-"))
 setMethod("RNAseq<-", "MOList", function(x, value) {
   if (is.null(value) || any(colnames(value) != x@RNAseqSamples$samples)) {
@@ -727,14 +654,6 @@ setMethod("RNAseq<-", "MOList", function(x, value) {
 #'                           grouping information for the proteomics data
 #' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
-#' }
-#'
-#' @examples
-#' \dontrun{
-#' # Assuming smallRNAseq is a matrix of count data
-#'
-#' # Setting the smallRNAseq data to the MOList object
-#' smallRNAseq(myMOList) <- smallRNAseq
 #' }
 #'
 setGeneric(
@@ -773,14 +692,6 @@ setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #'                           grouping information for the proteomics data
 #' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
-#' }
-#'
-#' @examples
-#' \dontrun{
-#' # Assuming proteomics is a matrix of count data
-#'
-#' # Setting the proteomics data to the MOList object
-#' proteomics(myMOList) <- proteomics
 #' }
 #'
 setGeneric(
@@ -822,15 +733,6 @@ setMethod("proteomics<-", "MOList", function(x, value) {
 #'                         condition 1 and condition 2
 #' }
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming peakCond1 and peakCond2 are data frames containing the
-#' # differentially ATAC peaks for condition 1 and condition 2, respectively
-#'
-#' # Setting the ATAC peaks data to the MOList object
-#' ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)
-#' }
-#'
 setGeneric(
   "ATACpeaks<-",
   function(x, value) standardGeneric("ATACpeaks<-")
@@ -852,6 +754,8 @@ setMethod("ATACpeaks<-", "MOList", function(x, value) {
 #' Getter for the count-based omics data from the MOList object
 #'
 #' @aliases getRawData
+#'
+#' @aliases getRawData,MOList-method
 #'
 #' @description This function is a getter for the count-based omics data from
 #'              the MOList object. The user can retrieve the RNAseq,
@@ -902,20 +806,6 @@ setMethod("getRawData", "MOList", function(x, omics) {
 #' @return A list containing the sample names and grouping information for the
 #'         specified omics data
 #'
-#' @examples
-#' \dontrun{
-#' # Assuming myMOList is a MOList object
-#'
-#' # Get the sample information for the RNAseq data
-#' getSampleInfo(myMOList, "RNAseq")
-#'
-#' # Get the sample information for the smallRNAseq data
-#' getSampleInfo(myMOList, "smallRNAseq")
-#'
-#' # Get the sample information for the proteomics data
-#' getSampleInfo(myMOList, "proteomics")
-#' }
-#'
 setGeneric(
   "getSampleInfo",
   function(x, experiment) standardGeneric("getSampleInfo")
@@ -929,82 +819,10 @@ setMethod("getSampleInfo", "MOList", function(x, experiment) {
   return(sampleInfo)
 })
 
-#' Export a list of differentially expressed genes
-#'
-#' @description This function exports a list of differentially expressed genes
-#'              from the MOList object. The user can specify the experiment type
-#'              and the cutoffs for the log2 fold change and adjusted p-value.
-#'              The function will export a file containing the differentially
-#'              expressed genes as a comma- or tab-separated text file. The
-#'              uses the suffix ".csv" or ".txt/tsv" to determine the file type.
-#'
-#' @param objMOList A MOList object containing the omics data
-#' @param experiment A character string specifying the experiment type, must
-#'                   be one of "RNAseq", "smallRNAseq", and "proteomics"
-#' @param outPath A character string specifying the output file path
-#' @param log2FC A numeric value specifying the cutoff for the log2 fold change
-#'               of the differentially expressed genes, default is 1
-#' @param adjP A numeric value specifying the cutoff for the adjusted p-value
-#'             of the differentially expressed genes, default is 0.05
-#'
-#' @return NULL
-#'
-#' @export
-#'
-#' @examples
-#' # Assuming myMOList contains the differential omics data
-#' # i.e., diffOmics has been performed
-#'
-#' # Example 1: Exporting the differentially expressed genes from RNAseq
-#' \dontrun{
-#' exportDiffGenes(myMOList, "RNAseq", "diffGenes_RNAseq.txt")
-#' }
-#'
-#' # Example 2: Exporting the differentially expressed genes from smallRNAseq
-#' # with custom cutoffs
-#' \dontrun{
-#' exportDiffGenes(myMOList, "smallRNAseq", "diffGenes_smallRNAseq.txt",
-#'   log2FC = 2, adjP = 0.01
-#' )
-#' }
-#'
-exportDiffGenes <- function(objMOList, experiment, outPath,
-                            log2FC = 1, adjP = 0.05) {
-  if (!experiment %in% COUNT_OMICS) {
-    stop("Please provide a valid experiment type. See ?exportDiffGenes for
-    details.")
-  } else {
-    # Continue
-  }
-  # Retrieve the respective omics
-  deResult <- switch(experiment,
-    RNAseq = objMOList$DERNAseq,
-    smallRNAseq = objMOList$DEsmallRNAseq,
-    proteomics = objMOList$DEproteomics
-  ) %>% exportDE()
-  # Filter the differentially expressed genes
-  deGenes <- deResult %>%
-    dplyr::filter(abs(logFC) > log2FC, padj < adjP) %>%
-    rownames()
-  # Export the differentially expressed genes to a file, a single column
-  # containing the gene names
-  if (grepl(".csv$", outPath)) {
-    write.table(deGenes, outPath,
-      sep = ",",
-      row.names = FALSE, col.names = FALSE
-    )
-  } else {
-    write.table(deGenes, outPath,
-      sep = "\t", quote = FALSE,
-      row.names = FALSE, col.names = FALSE
-    )
-  }
-}
 
-
-#' @rdname MOList-class
+#' print MOList object
 #'
-#' @method print DETag
+#' @aliases print,MOList-method
 #'
 #' @description This function prints the MOList object
 #'
@@ -1028,29 +846,29 @@ setMethod("show", "MOList", function(object) {
     "RNAseq with", nrow(object@RNAseq), "genes and",
     ncol(object@RNAseq), "samples\n"
   )
-  print(head(object@RNAseq))
+  print(utils::head(object@RNAseq))
   cat("\n")
 
   cat(
     "Small RNAseq with", nrow(object@smallRNAseq), "genes and",
     ncol(object@smallRNAseq), "samples\n"
   )
-  print(head(object@smallRNAseq))
+  print(utils::head(object@smallRNAseq))
   cat("\n")
 
   cat(
     "Proteomics with", nrow(object@proteomics), "genes and",
     ncol(object@proteomics), "samples\n"
   )
-  print(head(object@proteomics))
+  print(utils::head(object@proteomics))
   cat("\n")
 
   cat("ATACseq:\n")
   cat("Peaks for condition 1:", nrow(object@ATACpeaks$peaksCond1), "\n")
-  print(head(object@ATACpeaks$peaksCond1))
+  print(utils::head(object@ATACpeaks$peaksCond1))
   cat("\n")
   cat("Peaks for condition 2:", nrow(object@ATACpeaks$peaksCond2), "\n")
-  print(head(object@ATACpeaks$peaksCond2))
+  print(utils::head(object@ATACpeaks$peaksCond2))
   cat("\n")
 
   return(invisible(NULL))
@@ -1059,7 +877,7 @@ setMethod("show", "MOList", function(object) {
 
 #' Setting conversion between protein and gene names
 #'
-#' @rdname MOList-class
+#' @aliases setGene2Protein
 #'
 #' @description This function sets the conversion between protein and gene names
 #'              for the proteomics data. The user can provide a data frame

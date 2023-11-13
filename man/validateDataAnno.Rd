@@ -30,20 +30,4 @@ This function validates the input data and annotations on the
           annotations on the RNAseq, small RNAseq, and protein data, in the
         order of RNAseq, small RNAseq, and protein.
 }
-\examples{
-\dontrun{
-# Assuming myMOList is a MOList object
-
-# Create an example annotation list for batch correction
-annoList <- list(
-  RNAseq = rep(c("A", "B"), each = 5),
-  smallRNAseq = rep(c("A", "B"), each = 3),
-  proteomics = rep(c("A", "B"), each = 3)
-)
-
-# Validate the input data and annotations
-validateDataAnno(myMOList, annoList)
-}
-
-}
 \keyword{internal}

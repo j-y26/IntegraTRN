@@ -18,13 +18,4 @@ A boolean indicating whether the vector length matches the matrix
 \description{
 Match vector length to matrix column length
 }
-\examples{
-# Create example vector and matrix
-vec <- 1:10
-mat <- matrix(1:100, nrow = 10, ncol = 10)
-
-# Match vector length to matrix column length
-matchVecToMatrix(vec, mat)
-
-}
 \keyword{internal}

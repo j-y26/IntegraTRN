@@ -17,17 +17,4 @@ This function validates the matrix and grouping information for
              the grouping information must be a vector of the same length as
              the number of samples in the sequencing data.
 }
-\examples{
-\dontrun{
-# Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-
-# Validating the RNAseq data
-validateMatrix(RNAseq, RNAGroupBy)
-# Validating the smallRNAseq data
-validateMatrix(smallRNAseq, smallRNAGroupBy)
-# Validating the proteomics data
-validateMatrix(proteomics, proteomicsGroupBy)
-}
-
-}
 \keyword{internal}

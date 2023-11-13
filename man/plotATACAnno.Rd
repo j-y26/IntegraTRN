@@ -21,10 +21,12 @@ This function generates a pie chart for the annotation of
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Plotting the annotation pie chart
+\dontrun{
 plotATACAnno(expMOList)
+}
 
 }
 \references{

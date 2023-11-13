@@ -2,6 +2,7 @@
 % Please edit documentation in R/MOList.R
 \name{getRawData}
 \alias{getRawData}
+\alias{getRawData,MOList-method}
 \title{Getter for the count-based omics data from the MOList object}
 \usage{
 getRawData(x, omics)

@@ -32,13 +32,4 @@ This function is a setter for the RNAseq slot of the MOList.
              The user are NOT allowed to use this function directly, since
              use without caution may cause the MOList object to be invalid.
 }
-\examples{
-\dontrun{
-# Assuming RNAseq is a matrix of count data
-
-# Setting the RNAseq data to the MOList object
-RNAseq(myMOList) <- RNAseq
-}
-
-}
 \keyword{internal}

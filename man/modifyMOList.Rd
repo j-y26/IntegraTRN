@@ -59,19 +59,4 @@ An object of class MOList
 \description{
 Append/exchange omics data for the existing MOList object
 }
-\examples{
-\dontrun{
-# Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-# and RNAGroupBy, smallRNAGroupBy, and proteomicsGroupBy are vectors of
-# grouping information for the sequencing data
-
-# Modifying an existing MOList object
-objMOList <- modifyMOList(
-  objMOList, RNAseq, RNAGroupBy, smallRNAseq,
-  smallRNAGroupBy, proteomics, proteomicsGroupBy,
-  peakCond1, peakCond2
-)
-}
-
-}
 \keyword{internal}

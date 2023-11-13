@@ -63,53 +63,9 @@ Preconditions:
       samples in the omics data
 }
 }
-\examples{
-# Example 1: Differential expression analysis of RNAseq data without batch
-#            correction
-
-# Create example count matrix
-countMatrix <- matrix(sample(0:100, 1000, replace = TRUE),
-  nrow = 100, ncol = 10
-)
-
-# Create example grouping information
-group <- rep(c("A", "B"), each = 5)
-
-# Create example MOList object
-objMOList <- MOList(RNAseq = countMatrix, RNAGroupBy = group)
-
-# Perform differential expression analysis
-objMOList <- countDiffExpr(objMOList, "RNAseq", group)
-
-
-# Example 2: Differential expression analysis of protein data with batch
-#            correction
-
-# Create example count matrix
-proteinCounts <- matrix(sample(0:100, nrow = 100, ncol = 20, replace = TRUE))
-
-# Create example grouping information
-proteinGroup <- rep(c("A", "B"), each = 10)
-
-# Create example batch information
-proteinBatch <- c(rep("batch1", 5), rep("batch2", 15))
-
-# Create example MOList object
-objMOList <- MOList(
-  RNAseq = countMatrix, RNAGroupBy = group,
-  proteomics = proteinCounts,
-  proteomicsGroupBy = proteinGroup
-)
-
-# Perform differential expression analysis
-objMOList <- countDiffExpr(
-  objMOList, "proteomics",
-  proteinGroup, proteinBatch
-)
-
-}
 \references{
 \insertRef{love2014moderated}{IntegraTRN}
 
 \insertRef{robinson2010edger}{IntegraTRN}
 }
+\keyword{internal}

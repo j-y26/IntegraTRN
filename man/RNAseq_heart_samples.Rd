@@ -7,8 +7,6 @@
 \format{
 A data frame with 53 rows (samples) and 4 columns (fields)
 \describe{
- \item{Sample}{Sample name corresponding to the RNAseq gene expression
- dataset}
  \item{Age}{Age of the fetus in gestational weeks}
  \item{Sex}{Sex of the fetus}
  \item{Batch}{Batch number of the RNAseq experiment, represented from

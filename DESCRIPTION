@@ -40,6 +40,7 @@ Imports:
     ggplot2 (>= 3.4.0),
     igraph (>= 0.7.0),
     MatchIt (>= 4.4.0),
+    methods,
     monaLisa (>= 1.6.0),
     networkD3,
     optmatch (>= 0.10.6),

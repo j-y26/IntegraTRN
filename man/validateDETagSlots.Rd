@@ -16,19 +16,4 @@ analysis, must be one of the valid METHODS defined}
 \description{
 This function validates the DETag class
 }
-\examples{
-# Create an example data frame
-deResult <- data.frame(
-  gene = paste0("gene", seq_len(10)),
-  logFC = runif(10),
-  adj.P.Val = runif(10)
-)
-
-# Create an object of the DETag class
-deTag <- DETag(deResult, "DESeq2")
-
-# Validate the object
-validateDETagSlots(deTag)
-
-}
 \keyword{internal}

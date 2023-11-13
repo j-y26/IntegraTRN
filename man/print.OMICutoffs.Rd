@@ -19,15 +19,6 @@ This function prints the cutoffs for the omics data.
 }
 \examples{
 omiCutoffs <- setOmicCutoffs()
-
-# The output will be:
-# RNAseq adjusted p-value cutoff: 0.05
-# RNAseq log fold change cutoff: 1
-# RNAseq selecting top 100\% of DE genes
-# smallRNAseq adjusted p-value cutoff: 0.05
-# smallRNAseq log fold change cutoff: 1
-# smallRNAseq selecting top 100\% of DE genes
-# Proteomics adjusted p-value cutoff: 0.05
-# Proteomics log fold change cutoff: 1
+print(omiCutoffs)
 
 }

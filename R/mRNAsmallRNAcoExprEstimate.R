@@ -106,7 +106,7 @@ matchContinuous <- function(sampleDF) {
     matchVars <- colnames(sampleDF)[
       !(colnames(sampleDF) %in% c("groupBy", "seq"))
     ] # re-weighted
-    matchFormula <- as.formula(paste0(
+    matchFormula <- stats::as.formula(paste0(
       "seq ~ groupBy + ",
       paste(matchVars, collapse = " + ")
     ))
@@ -163,7 +163,7 @@ matchBinary <- function(sampleDF) {
   matchVars <- colnames(sampleDF)[colnames(sampleDF) != "groupBy"]
 
   # Matching formula
-  matchFormula <- as.formula(paste0(
+  matchFormula <- stats::as.formula(paste0(
     "seq ~ ",
     paste(matchVars, collapse = " + ")
   ))
@@ -275,6 +275,8 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 
 
 #' Match RNAseq and small RNAseq samples
+#'
+#' @aliases matchSamplesRNAsmallRNA
 #'
 #' @description This function generates a one-to-one matching between the
 #'              RNAseq samples and the small RNAseq samples using the
@@ -459,6 +461,8 @@ matchSamplesRNAsmallRNA <- function(objMOList,
 
 #' Export the match result of RNAseq and small RNAseq samples
 #'
+#' @aliases exportMatchResult
+#'
 #' @description This function exports the match result of RNAseq and small
 #'              RNAseq samples.
 #'
@@ -564,7 +568,7 @@ runGENIE3 <- function(exprMatrix,
 
   # Consider only the top 20% of the predicted interactions
   weightedAdjList <- weightedAdjList %>% dplyr::filter(
-    weight >= quantile(weight, 0.8)
+    weight >= stats::quantile(weight, 0.8)
   )
 
   # Convert the weighted adjacency list to a list of three vectors
@@ -703,3 +707,6 @@ predictSmallRNAmRNAcoExpr <- function(mRNATopTag,
 
   return(weightedAdjList)
 }
+
+
+# [END]

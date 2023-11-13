@@ -4,48 +4,15 @@
 \name{TRNet-class}
 \alias{TRNet-class}
 \alias{generatePlot}
-\alias{parseVertexMetadata}
-\alias{plotNetwork}
-\alias{exportIgraph}
-\alias{exportEdgeSet}
-\alias{show,TRNet-method}
 \title{TRNet S4 class of transcriptional regulatory network}
 \usage{
 generatePlot(trn)
-
-parseVertexMetadata(trn)
-
-plotNetwork(trn, interactive = FALSE, ...)
-
-exportIgraph(trn)
-
-exportEdgeSet(trn)
-
-\S4method{show}{TRNet}(object)
 }
 \arguments{
 \item{trn}{A TRNet object}
-
-\item{interactive}{A logical value indicating whether the plot should be
-interactive. If TRUE, an interactive plot will be
-plotted using the networkD3 package. If FALSE, a static
-plot will be plotted using the igraph package.}
-
-\item{...}{Additional arguments passed to the plot function for plotting
-a static plot using the igraph package, or the forceNetwork
-function for interactive plots using the networkD3. See the
-respective package documentation for details.}
-
-\item{object}{A TRNet object}
 }
 \value{
 A TRNet object with the igraph object in the network slot
-
-A data frame containing the vertex metadata
-
-An igraph object
-
-A data frame containing all network interactions
 }
 \description{
 The TRNet S4 class is a class for storing transcriptional
@@ -55,17 +22,6 @@ The TRNet S4 class is a class for storing transcriptional
 
 This function generates an igraph object from the TRNet network
              metadata
-
-This function parses vertex metadata from the TRNet network
-             metadata
-
-This function plots the TRNet object
-
-This function exports an igraph object from TRNet object
-
-This function exports all network interactions from TRNet object
-
-This function prints the TRNet object
 }
 \section{Slots}{
 
@@ -85,6 +41,8 @@ regulatory network contains inffered interactions.}
 
 \item{\code{omics}}{A character string indicating the omics data used to construct
 the transcriptional regulatory network.}
+
+\item{\code{.Data}}{A list containing additional network information}
 }}
 
 \examples{
@@ -101,81 +59,7 @@ trn <- TRNet(edges, FALSE, "RNA-seq")
 # Generate igraph object
 generatePlot(trn)
 
-# Define some example edges
-edges <- data.frame(
-  regulator = c("A", "B", "C"),
-  target = c("D", "E", "F"),
-  regulatorType = c("miRNA", "TF", "TF")
-)
-
-# Create TRNet object
-trn <- TRNet(edges, FALSE, "RNA-seq")
-
-# Parse vertex metadata
-parseVertexMetadata(trn)
-
-# Define some example edges
-edges <- data.frame(
-  regulator = c("A", "B", "C"),
-  target = c("D", "E", "F"),
-  regulatorType = c("miRNA", "TF", "TF")
-)
-
-# Create TRNet object
-trn <- TRNet(edges, FALSE, "RNA-seq")
-
-# Plot TRNet object
-plotNetwork(trn)
-
-# Plot interactive TRNet object
-plotNetwork(trn, interactive = TRUE)
-
-# Define some example edges
-edges <- data.frame(
-  regulator = c("A", "B", "C"),
-  target = c("D", "E", "F"),
-  regulatorType = c("miRNA", "TF", "TF")
-)
-
-# Create TRNet object
-trn <- TRNet(edges, FALSE, "RNA-seq")
-
-# Export igraph object
-exportIgraph(trn)
-
-# Define some example edges
-edges <- data.frame(
-  regulator = c("A", "B", "C"),
-  target = c("D", "E", "F"),
-  regulatorType = c("miRNA", "TF", "TF")
-)
-
-# Create TRNet object
-trn <- TRNet(edges, FALSE, "RNA-seq")
-
-# Export all network interactions
-exportEdgeSet(trn)
-
-# Define some example edges
-edges <- data.frame(
-  regulator = c("A", "B", "C"),
-  target = c("D", "E", "F"),
-  regulatorType = c("miRNA", "TF", "TF")
-)
-
-# Create TRNet object
-trn <- TRNet(edges, FALSE, "RNA-seq")
-
-# Print TRNet object
-trn
-
 }
 \references{
-\insertRef{csardi2006igraph}{IntegraTRN}
-
-\insertRef{csardi2006igraph}{IntegraTRN}
-
-\insertRef{networkd3}{IntegraTRN}
-
 \insertRef{csardi2006igraph}{IntegraTRN}
 }

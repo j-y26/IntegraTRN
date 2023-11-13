@@ -38,7 +38,7 @@ See ?ChIPseeker::peak_Profile_Heatmap for details on the values of
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Plotting the profile and heatmap
 \dontrun{

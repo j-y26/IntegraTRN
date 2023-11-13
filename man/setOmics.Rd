@@ -53,16 +53,4 @@ An object of class MOList
 \description{
 This function sets the non-mRNA omics data to the MOList object.
 }
-\examples{
-\dontrun{
-# Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-
-# Setting the omics data to their respective slot in the MOList object
-objMOList <- setOmics(
-  objMOList, smallRNAseq, smallRNAGroupBy,
-  proteomics, proteomicsGroupBy, peakCond1, peakCond2
-)
-}
-
-}
 \keyword{internal}

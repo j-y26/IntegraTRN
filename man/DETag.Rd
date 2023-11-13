@@ -36,8 +36,11 @@ deResult <- data.frame(
   adj.P.Val = runif(10)
 )
 
+# Create a normalized counts matrix
+normalizedCounts <- matrix(runif(100), nrow = 10)
+
 # Create an object of the DETag class
-deTag <- DETag(deResult, "DESeq2")
+deTag <- DETag(deResult, "DESeq2", normalizedCounts)
 
 # Check the class of the object
 class(deTag)

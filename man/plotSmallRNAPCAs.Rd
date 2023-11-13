@@ -31,7 +31,7 @@ This function generates a PCA plot for each type of small RNA
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Generate a list of PCA plots for each type of small RNA
 \dontrun{

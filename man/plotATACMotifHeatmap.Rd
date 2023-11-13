@@ -17,10 +17,10 @@ regions}
 
 \item{pValueAdj}{The cutoff for adjusted p-value, default is 0.05}
 
-\item{log2FEnrich}{The cutoff for log2 fold enrichment, default is NULL}
-
-\item{PValue}{The cutoff for p-value. If pValue is specified, pValueAdj
+\item{pValue}{The cutoff for p-value. If pValue is specified, pValueAdj
 will be ignored}
+
+\item{log2FEnrich}{The cutoff for log2 fold enrichment, default is NULL}
 }
 \value{
 A ComplexHeatmap object
@@ -43,7 +43,7 @@ The motif enrichment analysis can be exceptionally stringent for
 }
 \examples{
 # Use the package-provided example data
-data(expMOList, package = "IntegraTRN")
+data(expMOList)
 
 # Example 1: Plot the motif heatmap by default parameters
 \dontrun{
@@ -51,10 +51,14 @@ plotATACMotifHeatmap(expMOList)
 }
 
 # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
+\dontrun{
 plotATACMotifHeatmap(expMOList, pValue = 0.01)
+}
 
 # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
+\dontrun{
 plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
+}
 
 }
 \references{

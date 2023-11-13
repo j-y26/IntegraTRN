@@ -69,6 +69,8 @@ setClass("TOPTag",
 
 #' Constructor for TOPTag class
 #'
+#' @aliases TOPTag
+#'
 #' @description The constructor for the TOPTag class.
 #'
 #' @param object A DETag object.
@@ -81,7 +83,7 @@ setClass("TOPTag",
 #'                genes. If the number specified is greater than the number of
 #'                DE genes based on logFCCutoff and pCutoff, then topGenes will
 #'                be set to the number of DE genes. Default to select the top
-#'                10% of differential genes.
+#'                10\% of differential genes.
 #' @param direction A character string indicating the direction of the
 #'                  differential expression. Default to "both". Other options
 #'                  include "up" and "down".
@@ -216,7 +218,9 @@ TOPTag <- function(object,
 
 # Define the S4 method for the TOPTag class
 
-#' @rdname TOPTag-class
+#' print TOPTag
+#'
+#' @aliases print,TOPTag-method
 #'
 #' @export
 #'
@@ -266,12 +270,12 @@ setMethod(
     print(object@DEResult %>%
       dplyr::filter(rank > 0) %>%
       dplyr::arrange(rank) %>%
-      head(5))
+      utils::head(5))
     cat("\nA snapshot of the top down-regulated genes:\n")
     print(object@DEResult %>%
       dplyr::filter(rank < 0) %>%
       dplyr::arrange(dplyr::desc(rank)) %>%
-      head(5))
+      utils::head(5))
     cat("\n")
     cat("Method for differential expression analysis: ", object@method, "\n")
     cat("Log fold change cutoff: ", object@logFCCutoff, "\n")
@@ -281,6 +285,8 @@ setMethod(
 
 
 #' @rdname TOPTag-class
+#'
+#' @keywords internal
 #'
 #' @title Filter genes by a names vector
 #'
@@ -318,9 +324,9 @@ setMethod("filterGenes", "TOPTag", function(object, names) {
 })
 
 
-#' @rdname TOPTag-class
+#' Export the differential analysis results from a TopTag object
 #'
-#' @title Export the differential analysis results from a TopTag object
+#' @aliases exportDE,TOPTag-method
 #'
 #' @description This function exports the differential analysis results from a
 #'              TopTag object. Overwrites the exportDE function in the DETag
@@ -328,7 +334,7 @@ setMethod("filterGenes", "TOPTag", function(object, names) {
 #'
 #' @inheritParams exportDE
 #'
-#' @return A data frame containing the differential analysis results.\
+#' @return A data frame containing the differential analysis results.
 #'
 #' @export
 #'

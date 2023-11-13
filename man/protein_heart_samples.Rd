@@ -7,8 +7,6 @@
 \format{
 A data frame with 6 rows (samples) and 3 columns (fields)
 \describe{
- \item{Sample}{Sample name corresponding to the proteomics gene expression
- dataset}
  \item{Age}{Age of the fetus in gestational weeks}
 }
 }
