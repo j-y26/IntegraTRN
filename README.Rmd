@@ -1,5 +1,8 @@
 ---
 output: github_document
+bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
+nocite: |
+  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @genomictools, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @networkd3, @ahmed2021maternal, @yu2015chipseeker, @machlab2022monalisa, @li2020compsra
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -86,6 +89,32 @@ package, in the order of use subjected to the types of omcis data available.
 15. ***constructTRN*** for constructing the TRN
 16. ***plotNetwork*** for visualizing the TRN
 
+The package also provides several datasets:
+- An RNAseq count matrix
+
+- A small RNAseq count matrix coveting miRNA, tRNA, piRNA, snoRNA, snRNA, and 
+  circRNA
+
+- A proteomics count matrix
+
+- Sample information for all above 3 omics data
+
+- Two ATACseq peak files as raw data located in the `extdata` folder
+
+- An example miRNA-gene interaction dataset
+
+- An example TF-gene interaction dataset
+
+- An example MOList object containing all types of omics data, but with a very 
+  light weight (100 genes only)
+
+Please refer to the package vignette for more details on these datasets
+illustrates the analysis pipeline of the package.
+
+An overview of the analysis pipeline is shown below:
+
+![Overview of the package analysis pipeline](./inst/extdata/Schematics.jpg)
+
 
 ## Contributions
 
@@ -124,6 +153,8 @@ data based on the author's description. Generative AI results were
 incorporated into the tests at the author's discretion.
 
 ## References
+
+<div id="refs"></div>
 
 ## Acknowledgements
 

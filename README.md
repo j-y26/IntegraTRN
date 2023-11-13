@@ -98,6 +98,36 @@ omcis data available. `IntegraTRN` provides functions:
 15. ***constructTRN*** for constructing the TRN
 16. ***plotNetwork*** for visualizing the TRN
 
+The package also provides several datasets: - An RNAseq count matrix
+
+- A small RNAseq count matrix coveting miRNA, tRNA, piRNA, snoRNA,
+  snRNA, and circRNA
+
+- A proteomics count matrix
+
+- Sample information for all above 3 omics data
+
+- Two ATACseq peak files as raw data located in the `extdata` folder
+
+- An example miRNA-gene interaction dataset
+
+- An example TF-gene interaction dataset
+
+- An example MOList object containing all types of omics data, but with
+  a very light weight (100 genes only)
+
+Please refer to the package vignette for more details on these datasets
+illustrates the analysis pipeline of the package.
+
+An overview of the analysis pipeline is shown below:
+
+<figure>
+<img src="./inst/extdata/Schematics.jpg"
+alt="Overview of the package analysis pipeline" />
+<figcaption aria-hidden="true">Overview of the package analysis
+pipeline</figcaption>
+</figure>
+
 ## Contributions
 
 The author of the package is Jielin Yang. The author defined all data
@@ -140,6 +170,143 @@ description. Generative AI results were incorporated into the tests at
 the author’s discretion.
 
 ## References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-adar2023integrate" class="csl-entry">
+
+Aharon-Yariv, Adar, Yaxu Wang, Abdalla Ahmed, and Paul Delgado-Olguin.
+2023. “Integrated Small RNA, mRNA and Protein Omics Reveal a miRNA
+Network Orchestrating Metabolic Maturation of the Developing Human
+Heart.” *BMC Genomics*.
+
+</div>
+
+<div id="ref-ahmed2021maternal" class="csl-entry">
+
+Ahmed, Abdalla, Minggao Liang, Lijun Chi, Yu-Qing Zhou, John G Sled,
+Michael D Wilson, and Paul Delgado-Olguı́n. 2021. “Maternal Obesity
+Persistently Alters Cardiac Progenitor Gene Expression and Programs
+Adult-Onset Heart Disease Susceptibility.” *Molecular Metabolism* 43:
+101116.
+
+</div>
+
+<div id="ref-networkd3" class="csl-entry">
+
+Allaire, JJ, Peter Ellis, Christopher Gandrud, Kevin Kuo, BW Lewis,
+Jonathan Owen, Kenton Russell, et al. 2017. *networkD3: D3 JavaScript
+Network Graphs from r*. <https://CRAN.R-project.org/package=networkD3>.
+
+</div>
+
+<div id="ref-chang2020mirnet" class="csl-entry">
+
+Chang, Le, Guangyan Zhou, Othman Soufan, and Jianguo Xia. 2020. “miRNet
+2.0: Network-Based Visual Analytics for miRNA Functional Analysis and
+Systems Biology.” *Nucleic Acids Research* 48 (W1): W244–51.
+
+</div>
+
+<div id="ref-csardi2006igraph" class="csl-entry">
+
+Csardi, Gabor, Tamas Nepusz, et al. 2006. “The Igraph Software Package
+for Complex Network Research.” *InterJournal, Complex Systems* 1695 (5):
+1–9.
+
+</div>
+
+<div id="ref-genomictools" class="csl-entry">
+
+Fischer, Daniel. 2020. *GenomicTools.fileHandler: File Handlers for
+Genomic Data Analysis*.
+<https://CRAN.R-project.org/package=GenomicTools.fileHandler>.
+
+</div>
+
+<div id="ref-huynh2010inferring" class="csl-entry">
+
+Huynh-Thu, Vân Anh, Alexandre Irrthum, Louis Wehenkel, and Pierre
+Geurts. 2010. “Inferring Regulatory Networks from Expression Data Using
+Tree-Based Methods.” *PloS One* 5 (9): e12776.
+
+</div>
+
+<div id="ref-lawrence2013software" class="csl-entry">
+
+Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc
+Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013.
+“Software for Computing and Annotating Genomic Ranges.” *PLoS
+Computational Biology* 9 (8): e1003118.
+
+</div>
+
+<div id="ref-li2020compsra" class="csl-entry">
+
+Li, Jiang, Alvin T Kho, Robert P Chase, Lorena Pantano, Leanna Farnam,
+Sami S Amr, and Kelan G Tantisira. 2020. “COMPSRA: A COMprehensive
+Platform for Small RNA-Seq Data Analysis.” *Scientific Reports* 10 (1):
+4552.
+
+</div>
+
+<div id="ref-love2014moderated" class="csl-entry">
+
+Love, Michael I, Wolfgang Huber, and Simon Anders. 2014. “Moderated
+Estimation of Fold Change and Dispersion for RNA-Seq Data with DESeq2.”
+*Genome Biology* 15 (12): 1–21.
+
+</div>
+
+<div id="ref-machlab2022monalisa" class="csl-entry">
+
+Machlab, Dania, Lukas Burger, Charlotte Soneson, Filippo M Rijli, Dirk
+Schübeler, and Michael B Stadler. 2022. “monaLisa: An r/Bioconductor
+Package for Identifying Regulatory Motifs.” *Bioinformatics* 38 (9):
+2624–25.
+
+</div>
+
+<div id="ref-robinson2010edger" class="csl-entry">
+
+Robinson, Mark D, Davis J McCarthy, and Gordon K Smyth. 2010. “edgeR: A
+Bioconductor Package for Differential Expression Analysis of Digital
+Gene Expression Data.” *Bioinformatics* 26 (1): 139–40.
+
+</div>
+
+<div id="ref-stuart2011matchit" class="csl-entry">
+
+Stuart, Elizabeth A, Gary King, Kosuke Imai, and Daniel Ho. 2011.
+“MatchIt: Nonparametric Preprocessing for Parametric Causal Inference.”
+*Journal of Statistical Software*.
+
+</div>
+
+<div id="ref-villanueva2019ggplot2" class="csl-entry">
+
+Villanueva, Randle Aaron M, and Zhuo Job Chen. 2019. “Ggplot2: Elegant
+Graphics for Data Analysis.” Taylor & Francis.
+
+</div>
+
+<div id="ref-dplyr" class="csl-entry">
+
+Wickham, Hadley, Romain François, Lionel Henry, Kirill Müller, and Davis
+Vaughan. 2023. *Dplyr: A Grammar of Data Manipulation*.
+<https://CRAN.R-project.org/package=dplyr>.
+
+</div>
+
+<div id="ref-yu2015chipseeker" class="csl-entry">
+
+Yu, Guangchuang, Li-Gen Wang, and Qing-Yu He. 2015. “ChIPseeker: An
+r/Bioconductor Package for ChIP Peak Annotation, Comparison and
+Visualization.” *Bioinformatics* 31 (14): 2382–83.
+
+</div>
+
+</div>
 
 ## Acknowledgements
 

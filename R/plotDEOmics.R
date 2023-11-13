@@ -729,7 +729,6 @@ plotATACAnno <- function(objMOList) {
 #'          the parameters.
 #'
 #' @importFrom ChIPseeker peak_Profile_Heatmap
-#' @importFrom GenomicRanges asGRanges
 #'
 #' @export
 #'
