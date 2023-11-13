@@ -192,7 +192,7 @@ we want to adjust for.
 # NOT run, just illustrate the usage of the batch argument
 myMOList <- diffOmics(myMOList,
   smallRnaBatch = smallRNAseq_heart_samples$Sex,
-  program = "EdgeR"
+  program = "edgeR"
 )
 ```
 
@@ -246,9 +246,28 @@ genesToLabel <- exportDE(myRNADETag) %>%
 
 Then we again plot the volcano plot, with some genes labeled.
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
-plotVolcanoRNA(myMOList, log2FC = 0.1)
+```{r message = FALSE, tidy=TRUE}
 ```
+
+We can make use of the `ggrepel` package to label the genes on the plot.
+
+```{r message = FALSE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
+rnaVPlot <- plotVolcanoRNA(myMOList, log2FC = 0.1)
+rnaVPlot <- rnaVPlot + ggrepel::geom_label_repel(
+  data = rnaVPlot$data[rownames(rnaVPlot$data) %in% genesToLabel, ],
+  mapping = ggplot2::aes(
+    x = logFC,
+    y = -log10(padj),
+    label = rownames(rnaVPlot$data[
+      rownames(rnaVPlot$data) %in% genesToLabel,
+    ])
+  ),
+  box.padding = 0.5,
+  size = 3
+)
+rnaVPlot
+```
+
 
 ##### Exploring differential small RNA expression analysis
 

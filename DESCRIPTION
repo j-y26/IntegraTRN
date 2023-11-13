@@ -33,6 +33,7 @@ Imports:
     Biostrings (>= 2.56.0),
     ChIPseeker,
     DESeq2 (>= 1.39.7),
+    doRNG,
     dplyr (>= 1.0.7),
     edgeR (>= 3.36.0),
     GENIE3 (>= 1.13.3),

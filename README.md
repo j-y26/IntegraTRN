@@ -129,9 +129,9 @@ An overview of the analysis pipeline is shown below:
 
 <figure>
 <img src="./inst/extdata/Schematics.jpg"
-alt="Overview of the package analysis pipeline" />
-<figcaption aria-hidden="true">Overview of the package analysis
-pipeline</figcaption>
+alt="Overview of the package analysis pipeline (figure created from BioRender.com)" />
+<figcaption aria-hidden="true">Overview of the package analysis pipeline
+(figure created from BioRender.com)</figcaption>
 </figure>
 
 ## Contributions

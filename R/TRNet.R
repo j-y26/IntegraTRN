@@ -41,8 +41,6 @@ setClass("TRNet",
 
 #' @title TRNet constructor
 #'
-#' @keywords internal
-#'
 #' @description This function is a constructor of the TRNet object
 #'
 #' @param TRNmetadata A data frame containing all interaction data for the
@@ -58,6 +56,19 @@ setClass("TRNet",
 #'
 #' @references
 #' \insertRef{csardi2006igraph}{IntegraTRN}
+#'
+#' @export
+#'
+#' @examples
+#' # Define some example edges
+#' edges <- data.frame(
+#'   regulator = c("A", "B", "C"),
+#'   target = c("D", "E", "F"),
+#'   regulatorType = c("miRNA", "TF", "TF")
+#' )
+#'
+#' # Create TRNet object
+#' trn <- TRNet(edges, FALSE, "RNA-seq")
 #'
 TRNet <- function(TRNmetadata, predicted, omics) {
   # Check if TRNmetadata is a data frame

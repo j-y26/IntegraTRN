@@ -250,25 +250,28 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
     userAnno <- anno
 
     # Check of valid input as a data frame or a string
-    ifelse(inherits(userAnno, "data.frame") || is.character(userAnno),
-      userAnno <- userAnno, stop("Invalid annotation input. Please
-           provide a valid path to a tab-delimited file or a loaded data
-           frame. See ?annotateSmallRNA for more details.")
-    )
-
-    # Whether input is a valid path to a tab file
-    if (file.exists(userAnno)) {
-      # Read in the annotation
-      userAnno <- utils::read.table(userAnno,
-        sep = "\t", header = FALSE,
-        stringsAsFactors = FALSE
-      )
-      # Check if header is present
-      noHeader <- userAnno[1, 2] %in% SMALLRNA_CATEGORIES
-      ifelse(noHeader, userAnno <- userAnno, userAnno <- userAnno[-1, ])
+    if (is.character(userAnno)) {
+      # Assumed to be a path to a tab-delimited file
+      if (file.exists(userAnno)) {
+        # Read in the annotation
+        userAnno <- utils::read.table(userAnno,
+          sep = "\t", header = FALSE,
+          stringsAsFactors = FALSE
+        )
+        # Check if header is present
+        noHeader <- userAnno[1, 2] %in% SMALLRNA_CATEGORIES
+        ifelse(noHeader, userAnno <- userAnno, userAnno <- userAnno[-1, ])
+      } else {
+        stop("File does not exist. Please provide a valid path to a
+        tab-delimited file or a loaded data frame. See ?annotateSmallRNA for
+        more details.")
+      }
+    } else if (inherits(userAnno, "data.frame")) {
+      # Do nothing
     } else {
-      stop("File does not exist. Please provide a valid path to a tab-delimited
-          file or a loaded data frame. See ?annotateSmallRNA for more details.")
+      stop("Invalid annotation input. Please provide a valid path to a
+      tab-delimited file or a loaded data frame. See ?annotateSmallRNA for
+      more details.")
     }
 
     # Generate annotation

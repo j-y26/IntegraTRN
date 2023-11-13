@@ -120,7 +120,7 @@ illustrates the analysis pipeline of the package.
 
 An overview of the analysis pipeline is shown below:
 
-![Overview of the package analysis pipeline](./inst/extdata/Schematics.jpg)
+![Overview of the package analysis pipeline (figure created from BioRender.com)](./inst/extdata/Schematics.jpg)
 
 
 ## Contributions
