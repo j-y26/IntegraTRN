@@ -47,8 +47,6 @@
 #'
 #' @exportClass TOPTag
 #'
-#' @importFrom methods setClass
-#'
 #' @references
 #' \insertRef{love2014moderated}{IntegraTRN}
 #'
@@ -56,7 +54,7 @@
 #'
 #' \insertRef{reimand2019pathway}{IntegraTRN}
 #'
-methods::setClass("TOPTag",
+setClass("TOPTag",
   contains = "DETag",
   slots = c(
     DEResult = "data.frame",
@@ -90,7 +88,6 @@ methods::setClass("TOPTag",
 #'
 #' @return A TOPTag object.
 #'
-#' @importFrom methods new
 #' @importFrom dplyr filter arrange desc mutate %>%
 #'
 #' @export
@@ -223,7 +220,6 @@ TOPTag <- function(object,
 #'
 #' @export
 #'
-#' @importFrom methods setMethod
 #' @importFrom dplyr filter arrange desc %>%
 #'
 #' @method print TOPTag
@@ -250,7 +246,7 @@ TOPTag <- function(object,
 #' # or simply type the object name
 #' topTag
 #'
-methods::setMethod(
+setMethod(
   "show", "TOPTag",
   function(object) {
     if (object@topGenes > 1) {
@@ -295,10 +291,7 @@ methods::setMethod(
 #' @param names A character vector containing the names of the genes to be
 #'              filtered.
 #'
-#' @return A TOPTag object.
-#'
-#' @importFrom methods setGeneric
-#' @importFrom methods setMethod
+#' @return A TOPTag object
 #'
 #' @examples
 #' # Use the package provided example data
@@ -313,10 +306,10 @@ methods::setMethod(
 #' # Filter the top differential genes by a names vector
 #' topTag <- filterGenes(topTag, c("B2M", "VSIR", "HAND2-AS1"))
 #'
-methods::setGeneric("filterGenes", function(object, names) {
+setGeneric("filterGenes", function(object, names) {
   standardGeneric("filterGenes")
 })
-methods::setMethod("filterGenes", "TOPTag", function(object, names) {
+setMethod("filterGenes", "TOPTag", function(object, names) {
   object@DEResult <- object@DEResult[rownames(object@DEResult) %in% names, ]
   object@normalizedCounts <- object@normalizedCounts[
     rownames(object@DEResult),
@@ -335,9 +328,7 @@ methods::setMethod("filterGenes", "TOPTag", function(object, names) {
 #'
 #' @inheritParams exportDE
 #'
-#' @return A data frame containing the differential analysis results.
-#'
-#' @importFrom methods setMethod
+#' @return A data frame containing the differential analysis results.\
 #'
 #' @export
 #'
@@ -354,7 +345,7 @@ methods::setMethod("filterGenes", "TOPTag", function(object, names) {
 #' # Export the differential analysis results
 #' exportDE(topTag)
 #'
-methods::setMethod("exportDE", "TOPTag", function(x, original = FALSE) {
+setMethod("exportDE", "TOPTag", function(x, original = FALSE) {
   # Ignore the original argument
   return(x@DEResult)
 })

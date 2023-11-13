@@ -44,7 +44,7 @@
 #' @references
 #' \insertRef{yu2015chipseeker}{IntegraTRN}
 #'
-methods::setClass("PEAKTag",
+setClass("PEAKTag",
   representation(
     annotatedPeaks = "csAnno",
     TxDB = "TxDb",
@@ -69,7 +69,6 @@ methods::setClass("PEAKTag",
 #' @return A PEAKTag object
 #'
 #' @importClassesFrom ChIPseeker csAnno
-#' @importFrom methods as
 #'
 #' @export
 #'
@@ -122,7 +121,7 @@ PEAKTag <- function(objDETag,
   }
 
   # Coerce the DETag object to a PEAKTag object
-  objPEAKTag <- methods::as(objDETag, "PEAKTag")
+  objPEAKTag <- as(objDETag, "PEAKTag")
   if (!is.null(annotatedPeaks)) {
     objPEAKTag@annotatedPeaks <- annotatedPeaks
   }
@@ -143,8 +142,6 @@ PEAKTag <- function(objDETag,
 #'
 #' @export
 #'
-#' @importFrom methods setMethod
-#'
 #' @method print PEAKTag
 #'
 #' @description The print method for the PEAKTag class.
@@ -163,7 +160,7 @@ PEAKTag <- function(objDETag,
 #' # Or simply type the object name
 #' expMOList$DEATAC
 #'
-methods::setMethod(
+setMethod(
   "show", "PEAKTag",
   function(object) {
     cat(
@@ -200,7 +197,6 @@ methods::setMethod(
 #'
 #' @export
 #'
-#' @importFrom methods setMethod setGeneric
 #' @importFrom ChIPseeker as.GRanges
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #'
@@ -215,13 +211,13 @@ methods::setMethod(
 #' # Convert the object to a GRanges object
 #' asGRanges(expMOList$DEATAC)
 #'
-methods::setGeneric(
+setGeneric(
   "asGRanges",
   function(x) {
     standardGeneric("asGRanges")
   }
 )
-methods::setMethod(
+setMethod(
   "asGRanges",
   signature(x = "PEAKTag"),
   function(x) {
@@ -247,7 +243,6 @@ methods::setMethod(
 #'
 #' @export
 #'
-#' @importFrom methods setMethod setGeneric
 #' @importFrom BiocGenerics as.data.frame
 #'
 #' @param x A PEAKTag object
@@ -261,7 +256,7 @@ methods::setMethod(
 #' # Convert the object to a data frame
 #' as.data.frame(expMOList$DEATAC)
 #'
-methods::setMethod(
+setMethod(
   "as.data.frame",
   signature(x = "PEAKTag"),
   function(x) {

@@ -76,6 +76,6 @@ deTag <- diffExprDESeq2(
 
 }
 \references{
-\insertRef{love2014deseq2}{IntegraTRN}
+\insertRef{love2014moderated}{IntegraTRN}
 }
 \keyword{internal}

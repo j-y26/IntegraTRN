@@ -2,7 +2,7 @@
 output: github_document
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
-  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @genomictools, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @networkd3, @ahmed2021maternal, @yu2015chipseeker, @machlab2022monalisa, @li2020compsra
+  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @yu2015chipseeker, @machlab2022monalisa
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -72,22 +72,29 @@ package, in the order of use subjected to the types of omcis data available.
    expression
 6. ***plotSmallRNAPCAs*** for visualizing small RNAseq principal component
    analysis for each type of small RNA
-7. ***annotateATACPeaksMotif*** for annotating ATACseq peaks with motif
+7. ***countPCA*** for general-purpose principal component analysis on count
+   data
+8. ***annotateATACPeaksMotif*** for annotating ATACseq peaks with motif
     enrichment analysis
-8. ***plotATACAnno*** for visualizing the annotation of ATACseq peaks
-9. ***plotATACCoverage*** for visualizing the coverage of ATACseq peaks
-10. ***plotATACMotifHeatmap*** for visualizing the motif enrichment analysis
+9. ***plotATACAnno*** for visualizing the annotation of ATACseq peaks
+10. ***plotATACCoverage*** for visualizing the coverage of ATACseq peaks
+11. ***plotATACMotifHeatmap*** for visualizing the motif enrichment analysis
     as a heatmap comparing differentially enriched motifs between the two
     testing conditions
-11. ***matchSamplesRNAsmallRNA*** for matching the samples between RNAseq and
+12. ***plotATACProfileHeatmap*** for visualizing the profile plot to see the
+    distribution of peaks around the TSS
+13. ***matchSamplesRNAsmallRNA*** for matching the samples between RNAseq and
     small RNAseq data
-12. ***exportMatchResult*** for exporting the matching results to a data frame
-13. ***loadExtInteractions*** for loading external interaction data for 
+14. ***exportMatchResult*** for exporting the matching results to a data frame
+15. ***loadExtInteractions*** for loading external interaction data for 
     small RNA - gene and TF - gene interactions
-14. ***setOmicCutoffs*** for setting the cutoffs for differential expression
+16. ***setOmicCutoffs*** for setting the cutoffs for differential expression
     and accessibility used to filter the key elements in the TRN
-15. ***constructTRN*** for constructing the TRN
-16. ***plotNetwork*** for visualizing the TRN
+17. ***constructTRN*** for constructing the TRN
+18. ***plotNetwork*** for visualizing the TRN
+19. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN to 
+    retrieve the key elements in the TRN
+
 
 The package also provides several datasets:
 - An RNAseq count matrix

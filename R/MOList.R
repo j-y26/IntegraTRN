@@ -34,14 +34,12 @@ INTERACTION_FIELDS <- c("ID", "Target")
 #' @slot .Data A list containing differential expression analysis data, used
 #'             in the same way as a list
 #'
-#' @importFrom methods setClass
-#'
 #' @exportClass MOList
 #'
 #' @references
 #' \insertRef{grandi2022chromatin}{IntegraTRN}
 #'
-methods::setClass("MOList",
+setClass("MOList",
   # Inheritance
   contains = "list",
   # Slots
@@ -311,8 +309,6 @@ setOmics <- function(objMOList,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @importFrom methods new
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
@@ -335,7 +331,7 @@ newMOList <- function(RNAseq,
                       peakCond1,
                       peakCond2) {
   # Construct the MOList object
-  objMOList <- methods::new("MOList",
+  objMOList <- new("MOList",
     RNAseq = RNAseq,
     RNAseqSamples = list(
       samples = getSampleNames(RNAseq),
@@ -536,11 +532,12 @@ validateMOList <- function(objMOList) {
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data, used to perform differential expression
 #'                          analysis
-#' @param peakCond1 A data frame containing the differentially accessible ATAC
-#'                  peaks for condition 1
-#' @param peakCond2 A data frame containing the differentially accessible ATAC
-#'                  peaks for condition 2
-#'
+#' @param pathATACpeak1 A character string containing the path to the BED file
+#'                      containing the unified ATAC peaks for condition 1. The
+#'                      BED file should NOT contain a header line
+#' @param pathATACpeak2 A character string containing the path to the BED file
+#'                      containing the unified ATAC peaks for condition 2. The
+#'                      BED file should NOT contain a header line
 #' @note The users should ensure that each BED file used as input
 #'                 contains the chromosome regions that are found to have
 #'                 increased accessibility in each condition. The BED regions
@@ -550,7 +547,6 @@ validateMOList <- function(objMOList) {
 #'
 #' @return An object of class MOList
 #' @export MOList
-#' @importFrom GenomicTools.fileHandler importBed
 #'
 #' @references
 #' \insertRef{genomictools}{IntegraTRN}
@@ -621,9 +617,9 @@ MOList <- function(objMOList = NULL,
 
   # Read the ATAC peaks data if provided
   if (!is.null(pathATACpeak1) && !is.null(pathATACpeak2)) {
-    peakCond1 <- GenomicTools.fileHandler::importBed(pathATACpeak1)
+    peakCond1 <- read.table(pathATACpeak1, header = FALSE, sep = "\t")
     colnames(peakCond1)[1:3] <- CHROMINFO
-    peakCond2 <- GenomicTools.fileHandler::importBed(pathATACpeak2)
+    peakCond2 <- read.table(pathATACpeak2, header = FALSE, sep = "\t")
     colnames(peakCond2)[1:3] <- CHROMINFO
   } else if (xor(is.null(pathATACpeak1), is.null(pathATACpeak2))) {
     stop("Please provide both differentially accessible ATAC peaks files.")
@@ -690,8 +686,6 @@ MOList <- function(objMOList = NULL,
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming RNAseq is a matrix of count data
@@ -700,8 +694,8 @@ MOList <- function(objMOList = NULL,
 #' RNAseq(myMOList) <- RNAseq
 #' }
 #'
-methods::setGeneric("RNAseq<-", function(x, value) standardGeneric("RNAseq<-"))
-methods::setMethod("RNAseq<-", "MOList", function(x, value) {
+setGeneric("RNAseq<-", function(x, value) standardGeneric("RNAseq<-"))
+setMethod("RNAseq<-", "MOList", function(x, value) {
   if (is.null(value) || any(colnames(value) != x@RNAseqSamples$samples)) {
     stop("The sample names of the smallRNAseq data must match the RNAseq data.")
   } else {
@@ -735,8 +729,6 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming smallRNAseq is a matrix of count data
@@ -745,11 +737,11 @@ methods::setMethod("RNAseq<-", "MOList", function(x, value) {
 #' smallRNAseq(myMOList) <- smallRNAseq
 #' }
 #'
-methods::setGeneric(
+setGeneric(
   "smallRNAseq<-",
   function(x, value) standardGeneric("smallRNAseq<-")
 )
-methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
+setMethod("smallRNAseq<-", "MOList", function(x, value) {
   if (is.null(value) || any(colnames(value) != x@smallRNAseqSamples$samples)) {
     stop("The sample names of the smallRNAseq data must match the RNAseq data.")
   } else {
@@ -783,8 +775,6 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming proteomics is a matrix of count data
@@ -793,11 +783,11 @@ methods::setMethod("smallRNAseq<-", "MOList", function(x, value) {
 #' proteomics(myMOList) <- proteomics
 #' }
 #'
-methods::setGeneric(
+setGeneric(
   "proteomics<-",
   function(x, value) standardGeneric("proteomics<-")
 )
-methods::setMethod("proteomics<-", "MOList", function(x, value) {
+setMethod("proteomics<-", "MOList", function(x, value) {
   if (is.null(value) || any(colnames(value) != x@proteomicsSamples$samples)) {
     stop("The sample names of the proteomics data must match the RNAseq data.")
   } else {
@@ -832,8 +822,6 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #'                         condition 1 and condition 2
 #' }
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming peakCond1 and peakCond2 are data frames containing the
@@ -843,11 +831,11 @@ methods::setMethod("proteomics<-", "MOList", function(x, value) {
 #' ATACpeaks(myMOList) <- list(peaksCond1 = peakCond1, peaksCond2 = peakCond2)
 #' }
 #'
-methods::setGeneric(
+setGeneric(
   "ATACpeaks<-",
   function(x, value) standardGeneric("ATACpeaks<-")
 )
-methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
+setMethod("ATACpeaks<-", "MOList", function(x, value) {
   if (is.null(value)) {
     stop("Invalid ATAC peak list.")
   } else {
@@ -877,8 +865,6 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 #'         count-based omics data, and a list of data frames for ATAC peaks
 #'         that are differentially accessible between two conditions
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -890,11 +876,11 @@ methods::setMethod("ATACpeaks<-", "MOList", function(x, value) {
 #' dataATAC <- getRawData(myMOList, "ATAC")
 #' }
 #'
-methods::setGeneric(
+setGeneric(
   "getRawData",
   function(x, omics) standardGeneric("getRawData")
 )
-methods::setMethod("getRawData", "MOList", function(x, omics) {
+setMethod("getRawData", "MOList", function(x, omics) {
   omicData <- switch(omics,
     RNAseq = x@RNAseq,
     smallRNAseq = x@smallRNAseq,
@@ -916,8 +902,6 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 #' @return A list containing the sample names and grouping information for the
 #'         specified omics data
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @examples
 #' \dontrun{
 #' # Assuming myMOList is a MOList object
@@ -932,11 +916,11 @@ methods::setMethod("getRawData", "MOList", function(x, omics) {
 #' getSampleInfo(myMOList, "proteomics")
 #' }
 #'
-methods::setGeneric(
+setGeneric(
   "getSampleInfo",
   function(x, experiment) standardGeneric("getSampleInfo")
 )
-methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
+setMethod("getSampleInfo", "MOList", function(x, experiment) {
   sampleInfo <- switch(experiment,
     RNAseq = x@RNAseqSamples,
     smallRNAseq = x@smallRNAseqSamples,
@@ -964,8 +948,6 @@ methods::setMethod("getSampleInfo", "MOList", function(x, experiment) {
 #'             of the differentially expressed genes, default is 0.05
 #'
 #' @return NULL
-#'
-#' @importFrom methods setGeneric setMethod
 #'
 #' @export
 #'
@@ -1030,8 +1012,6 @@ exportDiffGenes <- function(objMOList, experiment, outPath,
 #'
 #' @return NULL
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -1042,7 +1022,7 @@ exportDiffGenes <- function(objMOList, experiment, outPath,
 #'
 #' @export
 #'
-methods::setMethod("show", "MOList", function(object) {
+setMethod("show", "MOList", function(object) {
   cat("MOList object with the following slots:\n")
   cat(
     "RNAseq with", nrow(object@RNAseq), "genes and",
@@ -1099,8 +1079,6 @@ methods::setMethod("show", "MOList", function(object) {
 #'
 #' @return An object of class MOList
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -1129,11 +1107,11 @@ methods::setMethod("show", "MOList", function(object) {
 #' # Set the conversion information to the MOList object
 #' objMOList <- setGene2Protein(objMOList, conversion)
 #'
-methods::setGeneric(
+setGeneric(
   "setGene2Protein",
   function(x, conversion) standardGeneric("setGene2Protein")
 )
-methods::setMethod("setGene2Protein", "MOList", function(x, conversion) {
+setMethod("setGene2Protein", "MOList", function(x, conversion) {
   if (is.null(x@proteomics)) {
     stop("Please provide the proteomics data.")
   } else if (!is.data.frame(conversion)) {

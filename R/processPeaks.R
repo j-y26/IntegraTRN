@@ -28,8 +28,6 @@ mergePeaks <- function(peaks) {
   )
 
   # Merge any overlapping peaks into a single peak
-  # Reduce internally uses the inter-range transformation from the IRanges
-  # package
   peakGR <- GenomicRanges::reduce(peakGR)
   return(peakGR)
 }
@@ -55,17 +53,12 @@ mergePeaks <- function(peaks) {
 #'         peak set that annotates where the peaks come from
 #'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame reduce findOverlaps
-#' @importFrom IRanges width
 #' @importFrom Repitools annoGR2DF
-#' @importFrom S4Vectors from to
 #'
 #' @references
 #' \insertRef{lawrence2013software}{IntegraTRN}
 #'
 #' \insertRef{statham2010repitools}{IntegraTRN}
-#'
-#' \insertRef{S4Vectors}{IntegraTRN}
-#'
 #'
 processPeakOverlap <- function(objMOList) {
   # Check if the ATACseq peak files exist
@@ -192,9 +185,7 @@ annotatePeaks <- function(objMOList,
 #'                   optimal width peak selection strategy defined by
 #'                   \insertCite{grandi2022chromatin;textual}{IntegraTRN}.
 #'
-#' @importClassesFrom BSgenome BSgenome
-#' @importClassesFrom TFBSTools PWMatrixList
-#' @importFrom GenomicRanges makeGRangesFromDataFrame resize
+#' @importFrom GenomicRanges makeGRangesFromDataFrame resize width
 #' @importFrom monaLisa calcBinnedMotifEnrR
 #' @importFrom Biostrings getSeq
 #'
@@ -262,7 +253,7 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
   )
 
   # First check if the peak size is the same
-  peakWidth <- IRanges::width(peakGR)
+  peakWidth <- GenomicRanges::width(peakGR)
   if (length(unique(peakWidth)) > 1) {
     # The peak size is not the same, need to fix the peak size for motif
     # enrichment analysis
@@ -335,12 +326,9 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @return An object of class MOList, with the ATACseq peaks annotated with
 #'         genomic features and motif enrichment analysis results appended.
 #'
-#' @importFrom BSgenome BSgenome
 #' @importFrom ChIPseeker annotatePeak
 #' @importFrom GenomicRanges makeGRangesFromDataFrame resize
-#' @importFrom IRanges width
 #' @importFrom monaLisa calcBinnedMotifEnrR
-#' @importClassesFrom TFBSTools PWMatrixList
 #'
 #' @export
 #'

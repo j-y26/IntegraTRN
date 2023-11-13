@@ -28,9 +28,9 @@ the following columns: logFC, pvalue, padj
 (default: FALSE)}
 }
 \value{
-A TOPTag object.
+A TOPTag object
 
-A data frame containing the differential analysis results.
+A data frame containing the differential analysis results.\
 }
 \description{
 The TOPTag S4 class inherits the DETag class and is a more

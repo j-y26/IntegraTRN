@@ -57,19 +57,15 @@ annoExpr <- function(deg, log2FC, adjP) {
 #' @importFrom ggplot2 ylab theme element_blank element_text element_line
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom ggrepel geom_label_repel
 #'
 #' @references
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
-#'
-#' \insertRef{ggrepel}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'
 plotVolcano <- function(deg,
                         log2FC = 1,
                         adjP = 0.05,
-                        geneList = NULL,
                         title = NULL) {
   # Generate the plot
   vPlot <- ggplot2::ggplot(deg, ggplot2::aes(x = logFC, y = -log(padj, 10))) +
@@ -84,23 +80,6 @@ plotVolcano <- function(deg,
       axis.ticks = ggplot2::element_line(size = 0.4),
       axis.text = ggplot2::element_text(size = 10)
     )
-
-  # Label the genes in the geneList
-  labelData <- deg[rownames(deg) %in% geneList, ]
-  if (!is.null(geneList)) {
-    vPlot <- vPlot + ggrepel::geom_label_repel(
-      data = labelData,
-      mapping = ggplot2::aes(logFC, -log(padj, 10),
-        label = rownames(labelData)
-      ),
-      size = 3,
-      color = "black",
-      nudge_x = 0.1,
-      nudge_y = 0.1
-    )
-  } else {
-    # Do nothing
-  }
 
   # Add the title
   if (!is.null(title)) {
@@ -125,7 +104,6 @@ plotVolcano <- function(deg,
 #'                  results for mRNA.
 #' @param log2FC The cutoff for log2 fold change. Default is 1.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
-#' @param geneList A vector of genes to highlight in the plot. Default is NULL.
 #' @param upColor The color for up-regulated genes. Default is "firebrick3".
 #' @param downColor The color for down-regulated genes. Default is "dodgerblue3"
 #' @param title The title for the plot. Default is NULL.
@@ -136,12 +114,9 @@ plotVolcano <- function(deg,
 #' @importFrom ggplot2 ylab theme element_blank element_text element_line
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom ggrepel geom_label_repel
 #'
 #' @references
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
-#'
-#' \insertRef{ggrepel}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'
@@ -158,7 +133,6 @@ plotVolcano <- function(deg,
 #' plotVolcanoRNA(expMOList,
 #'   log2FC = 0,
 #'   adjP = 0.01,
-#'   geneList = c("MYH7B", "NELFCD", "KDM8"),
 #'   upColor = "purple",
 #'   downColor = "green",
 #'   title = "Volcano plot for DE mRNA"
@@ -167,7 +141,6 @@ plotVolcano <- function(deg,
 plotVolcanoRNA <- function(objMOList,
                            log2FC = 1,
                            adjP = 0.05,
-                           geneList = NULL,
                            upColor = "firebrick3",
                            downColor = "dodgerblue3",
                            title = NULL) {
@@ -185,7 +158,7 @@ plotVolcanoRNA <- function(objMOList,
   degRNAseq <- annoExpr(degRNAseq, log2FC, adjP)
 
   # Generate the base volcano plot
-  vPlot <- plotVolcano(degRNAseq, log2FC, adjP, geneList, title)
+  vPlot <- plotVolcano(degRNAseq, log2FC, adjP, title)
 
   # Color the up- and down-regulated genes
   vPlot <- vPlot +
@@ -269,7 +242,6 @@ annoSncList <- function(deg, annoList) {
 #'                  results for small RNAs.
 #' @param log2FC The cutoff for log2 fold change. Default is 1.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
-#' @param geneList A vector of genes to highlight in the plot.
 #' @param colScheme A RColorBrewer color scheme for color-coding each type of
 #'                  small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
 #'                  for details.
@@ -281,15 +253,12 @@ annoSncList <- function(deg, annoList) {
 #' @importFrom ggplot2 ylab theme element_blank
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom ggrepel geom_label_repel
 #' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 #'
 #' @references
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
-#'
-#' \insertRef{ggrepel}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'
@@ -306,7 +275,6 @@ annoSncList <- function(deg, annoList) {
 #' plotVolcanoSmallRNA(expMOList,
 #'   log2FC = 0,
 #'   adjP = 0.01,
-#'   geneList = c("hsa-miR-1-3p", "hsa-miR-2-3p"),
 #'   colScheme = "YlOrRd",
 #'   title = "Volcano plot for DE small RNA"
 #' )
@@ -314,7 +282,6 @@ annoSncList <- function(deg, annoList) {
 plotVolcanoSmallRNA <- function(objMOList,
                                 log2FC = 1,
                                 adjP = 0.05,
-                                geneList = NULL,
                                 colScheme = "BuPu",
                                 title = NULL) {
   if (is.null(objMOList$DEsmallRNAseq)) {
@@ -349,7 +316,7 @@ plotVolcanoSmallRNA <- function(objMOList,
   degSmallRNAseq$type[degSmallRNAseq$expr == "Not DE"] <- "Not DE"
 
   # Generate the base volcano plot
-  vPlot <- plotVolcano(degSmallRNAseq, log2FC, adjP, geneList, title)
+  vPlot <- plotVolcano(degSmallRNAseq, log2FC, adjP, title)
 
 
   # Generate a set of colors for each type of small RNA
@@ -395,7 +362,6 @@ plotVolcanoSmallRNA <- function(objMOList,
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom ggplot2 coord_fixed scale_color_gradient
 #' @importFrom dplyr mutate case_when
-#' @importFrom ggrepel geom_label_repel
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq
 #' @importFrom DESeq2 varianceStabilizingTransformation plotPCA
 #'
@@ -403,8 +369,6 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'
 #' @references
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
-#'
-#' \insertRef{ggrepel}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'
@@ -521,7 +485,6 @@ countPCA <- function(matrix,
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom ggplot2 coord_fixed scale_color_gradient
 #' @importFrom dplyr mutate case_when
-#' @importFrom ggrepel geom_label_repel
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq
 #' @importFrom DESeq2 varianceStabilizingTransformation plotPCA
 #'
@@ -529,8 +492,6 @@ countPCA <- function(matrix,
 #'
 #' @references
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
-#'
-#' \insertRef{ggrepel}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'

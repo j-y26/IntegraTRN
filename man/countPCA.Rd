@@ -64,8 +64,6 @@ pcaPlot
 \references{
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
 
-\insertRef{ggrepel}{IntegraTRN}
-
 \insertRef{dplyr}{IntegraTRN}
 
 \insertRef{love2014moderated}{IntegraTRN}

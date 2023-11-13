@@ -218,7 +218,7 @@ filterGeneCounts <- function(objMOList, omic) {
 #' @importFrom dplyr %>%
 #'
 #' @references
-#' \insertRef{love2014deseq2}{IntegraTRN}
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: Differential expression analysis of RNAseq data without batch
@@ -459,7 +459,7 @@ diffExprEdgeR <- function(filteredCounts, groupBy, batch = NULL) {
 #' @importFrom DESeq2 DESeqDataSetFromMatrix DESeq results
 #'
 #' @references
-#' \insertRef{love2014deseq2}{IntegraTRN}
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
@@ -604,7 +604,7 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #' }
 #'
 #' @references
-#' \insertRef{love2014deseq2}{IntegraTRN}
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'

@@ -16,8 +16,10 @@ RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
 Suggests: 
+    BSgenome,
     BSgenome.Hsapiens.UCSC.hg38,
     ggpubr (>= 0.6.0),
+    ggrepel,
     JASPAR2022,
     knitr,
     org.Hs.eg.db,
@@ -31,25 +33,19 @@ Imports:
     Biostrings (>= 2.56.0),
     ChIPseeker,
     DESeq2 (>= 1.39.7),
-    doRNG (>= 1.8.6),
     dplyr (>= 1.0.7),
     edgeR (>= 3.36.0),
     GENIE3 (>= 1.13.3),
     GenomicRanges (>= 1.52.0),
-    GenomicTools.fileHandler (>= 0.1.5.9),
     ggplot2 (>= 3.4.0),
-    ggrepel,
     igraph (>= 0.7.0),
-    IRanges,
     MatchIt (>= 4.4.0),
-    methods (>= 3.6.0),
     monaLisa (>= 1.6.0),
     networkD3,
     optmatch (>= 0.10.6),
     RColorBrewer (>= 1.1-2),
     Rdpack,
     Repitools,
-    S4Vectors (>= 0.38.0),
     SummarizedExperiment
 RdMacros: Rdpack
 URL: https://github.com/j-y26/IntegraTRN

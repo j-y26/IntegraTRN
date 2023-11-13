@@ -39,11 +39,13 @@ names as gene names and column names as sample names}
 data, used to perform differential expression
 analysis}
 
-\item{peakCond1}{A data frame containing the differentially accessible ATAC
-peaks for condition 1}
+\item{pathATACpeak1}{A character string containing the path to the BED file
+containing the unified ATAC peaks for condition 1. The
+BED file should NOT contain a header line}
 
-\item{peakCond2}{A data frame containing the differentially accessible ATAC
-peaks for condition 2}
+\item{pathATACpeak2}{A character string containing the path to the BED file
+containing the unified ATAC peaks for condition 2. The
+BED file should NOT contain a header line}
 }
 \value{
 An object of class MOList

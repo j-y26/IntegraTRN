@@ -28,7 +28,5 @@ This function processes user input peak files to check for
 \insertRef{lawrence2013software}{IntegraTRN}
 
 \insertRef{statham2010repitools}{IntegraTRN}
-
-\insertRef{S4Vectors}{IntegraTRN}
 }
 \keyword{internal}

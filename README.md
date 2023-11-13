@@ -79,24 +79,30 @@ omcis data available. `IntegraTRN` provides functions:
     expression
 6.  ***plotSmallRNAPCAs*** for visualizing small RNAseq principal
     component analysis for each type of small RNA
-7.  ***annotateATACPeaksMotif*** for annotating ATACseq peaks with motif
+7.  ***countPCA*** for general-purpose principal component analysis on
+    count data
+8.  ***annotateATACPeaksMotif*** for annotating ATACseq peaks with motif
     enrichment analysis
-8.  ***plotATACAnno*** for visualizing the annotation of ATACseq peaks
-9.  ***plotATACCoverage*** for visualizing the coverage of ATACseq peaks
-10. ***plotATACMotifHeatmap*** for visualizing the motif enrichment
+9.  ***plotATACAnno*** for visualizing the annotation of ATACseq peaks
+10. ***plotATACCoverage*** for visualizing the coverage of ATACseq peaks
+11. ***plotATACMotifHeatmap*** for visualizing the motif enrichment
     analysis as a heatmap comparing differentially enriched motifs
     between the two testing conditions
-11. ***matchSamplesRNAsmallRNA*** for matching the samples between
+12. ***plotATACProfileHeatmap*** for visualizing the profile plot to see
+    the distribution of peaks around the TSS
+13. ***matchSamplesRNAsmallRNA*** for matching the samples between
     RNAseq and small RNAseq data
-12. ***exportMatchResult*** for exporting the matching results to a data
+14. ***exportMatchResult*** for exporting the matching results to a data
     frame
-13. ***loadExtInteractions*** for loading external interaction data for
+15. ***loadExtInteractions*** for loading external interaction data for
     small RNA - gene and TF - gene interactions
-14. ***setOmicCutoffs*** for setting the cutoffs for differential
+16. ***setOmicCutoffs*** for setting the cutoffs for differential
     expression and accessibility used to filter the key elements in the
     TRN
-15. ***constructTRN*** for constructing the TRN
-16. ***plotNetwork*** for visualizing the TRN
+17. ***constructTRN*** for constructing the TRN
+18. ***plotNetwork*** for visualizing the TRN
+19. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN
+    to retrieve the key elements in the TRN
 
 The package also provides several datasets: - An RNAseq count matrix
 
@@ -182,24 +188,6 @@ Heart.” *BMC Genomics*.
 
 </div>
 
-<div id="ref-ahmed2021maternal" class="csl-entry">
-
-Ahmed, Abdalla, Minggao Liang, Lijun Chi, Yu-Qing Zhou, John G Sled,
-Michael D Wilson, and Paul Delgado-Olguı́n. 2021. “Maternal Obesity
-Persistently Alters Cardiac Progenitor Gene Expression and Programs
-Adult-Onset Heart Disease Susceptibility.” *Molecular Metabolism* 43:
-101116.
-
-</div>
-
-<div id="ref-networkd3" class="csl-entry">
-
-Allaire, JJ, Peter Ellis, Christopher Gandrud, Kevin Kuo, BW Lewis,
-Jonathan Owen, Kenton Russell, et al. 2017. *networkD3: D3 JavaScript
-Network Graphs from r*. <https://CRAN.R-project.org/package=networkD3>.
-
-</div>
-
 <div id="ref-chang2020mirnet" class="csl-entry">
 
 Chang, Le, Guangyan Zhou, Othman Soufan, and Jianguo Xia. 2020. “miRNet
@@ -213,14 +201,6 @@ Systems Biology.” *Nucleic Acids Research* 48 (W1): W244–51.
 Csardi, Gabor, Tamas Nepusz, et al. 2006. “The Igraph Software Package
 for Complex Network Research.” *InterJournal, Complex Systems* 1695 (5):
 1–9.
-
-</div>
-
-<div id="ref-genomictools" class="csl-entry">
-
-Fischer, Daniel. 2020. *GenomicTools.fileHandler: File Handlers for
-Genomic Data Analysis*.
-<https://CRAN.R-project.org/package=GenomicTools.fileHandler>.
 
 </div>
 
@@ -238,15 +218,6 @@ Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc
 Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013.
 “Software for Computing and Annotating Genomic Ranges.” *PLoS
 Computational Biology* 9 (8): e1003118.
-
-</div>
-
-<div id="ref-li2020compsra" class="csl-entry">
-
-Li, Jiang, Alvin T Kho, Robert P Chase, Lorena Pantano, Leanna Farnam,
-Sami S Amr, and Kelan G Tantisira. 2020. “COMPSRA: A COMprehensive
-Platform for Small RNA-Seq Data Analysis.” *Scientific Reports* 10 (1):
-4552.
 
 </div>
 

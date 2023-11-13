@@ -4,7 +4,7 @@
 \alias{plotVolcano}
 \title{Generate a base volcano plot}
 \usage{
-plotVolcano(deg, log2FC = 1, adjP = 0.05, geneList = NULL, title = NULL)
+plotVolcano(deg, log2FC = 1, adjP = 0.05, title = NULL)
 }
 \arguments{
 \item{deg}{A data frame containing the differential expression analysis
@@ -26,8 +26,6 @@ This function generates a base volcano plot for visualizing
 }
 \references{
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
-
-\insertRef{ggrepel}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
 }

@@ -8,7 +8,6 @@ plotVolcanoSmallRNA(
   objMOList,
   log2FC = 1,
   adjP = 0.05,
-  geneList = NULL,
   colScheme = "BuPu",
   title = NULL
 )
@@ -20,8 +19,6 @@ results for small RNAs.}
 \item{log2FC}{The cutoff for log2 fold change. Default is 1.}
 
 \item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
-
-\item{geneList}{A vector of genes to highlight in the plot.}
 
 \item{colScheme}{A RColorBrewer color scheme for color-coding each type of
 small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
@@ -52,7 +49,6 @@ plotVolcanoSmallRNA(expMOList)
 plotVolcanoSmallRNA(expMOList,
   log2FC = 0,
   adjP = 0.01,
-  geneList = c("hsa-miR-1-3p", "hsa-miR-2-3p"),
   colScheme = "YlOrRd",
   title = "Volcano plot for DE small RNA"
 )
@@ -60,8 +56,6 @@ plotVolcanoSmallRNA(expMOList,
 }
 \references{
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
-
-\insertRef{ggrepel}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
 

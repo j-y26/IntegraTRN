@@ -109,7 +109,7 @@ objMOList <- countDiffExpr(
 
 }
 \references{
-\insertRef{love2014deseq2}{IntegraTRN}
+\insertRef{love2014moderated}{IntegraTRN}
 
 \insertRef{robinson2010edger}{IntegraTRN}
 }

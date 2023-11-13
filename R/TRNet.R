@@ -27,9 +27,7 @@
 #'
 #' @exportClass TRNet
 #'
-#' @importFrom methods setClass
-#'
-methods::setClass("TRNet",
+setClass("TRNet",
   contains = "list",
   slots = c(
     network = "ANY",
@@ -56,8 +54,6 @@ methods::setClass("TRNet",
 #'              the transcriptional regulatory network.
 #'
 #' @return A TRNet object
-#'
-#' @importFrom methods new
 #'
 #' @references
 #' \insertRef{csardi2006igraph}{IntegraTRN}
@@ -101,8 +97,6 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #' @param trn A TRNet object
 #'
 #' @return A TRNet object with the igraph object in the network slot
-#'
-#' @importFrom methods setGeneric setMethod
 #' @importFrom igraph graph_from_data_frame
 #'
 #' @references
@@ -122,13 +116,13 @@ TRNet <- function(TRNmetadata, predicted, omics) {
 #' # Generate igraph object
 #' generatePlot(trn)
 #'
-methods::setGeneric(
+setGeneric(
   "generatePlot",
   function(trn) {
     standardGeneric("generatePlot")
   }
 )
-methods::setMethod(
+setMethod(
   "generatePlot", "TRNet",
   function(trn) {
     # Parse vertex metadata
@@ -156,8 +150,6 @@ methods::setMethod(
 #'
 #' @return A data frame containing the vertex metadata
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -174,13 +166,13 @@ methods::setMethod(
 #' # Parse vertex metadata
 #' parseVertexMetadata(trn)
 #'
-methods::setGeneric(
+setGeneric(
   "parseVertexMetadata",
   function(trn) {
     standardGeneric("parseVertexMetadata")
   }
 )
-methods::setMethod(
+setMethod(
   "parseVertexMetadata", "TRNet",
   function(trn) {
     edgeMetadata <- trn@TRNmetadata
@@ -217,8 +209,6 @@ methods::setMethod(
 #'            respective package documentation for details.
 #'
 #' @return NULL
-#'
-#' @importFrom methods setGeneric setMethod
 #' @importFrom igraph plot.igraph layout_with_drl categorical_pal
 #' @importFrom networkD3 igraph_to_networkD3 forceNetwork
 #'
@@ -227,7 +217,7 @@ methods::setMethod(
 #' @references
 #' \insertRef{csardi2006igraph}{IntegraTRN}
 #'
-#' \insertRef{networkD3}{IntegraTRN}
+#' \insertRef{networkd3}{IntegraTRN}
 #'
 #' @examples
 #' # Define some example edges
@@ -246,13 +236,13 @@ methods::setMethod(
 #' # Plot interactive TRNet object
 #' plotNetwork(trn, interactive = TRUE)
 #'
-methods::setGeneric(
+setGeneric(
   "plotNetwork",
   function(trn, interactive = FALSE, ...) {
     standardGeneric("plotNetwork")
   }
 )
-methods::setMethod(
+setMethod(
   "plotNetwork", "TRNet",
   function(trn, interactive = FALSE, ...) {
     network <- trn@network
@@ -261,7 +251,7 @@ methods::setMethod(
     vertexMetadata <- setNames(vertexMetadata$type, vertexMetadata$name)
     # Plot network
     if (interactive == TRUE) {
-      # Convert igraph object to networkD3 object
+      # Convert igraph object to networkd3 object
       network <- networkD3::igraph_to_networkD3(network, group = vertexMetadata)
       networkD3::forceNetwork(
         Links = network$links,
@@ -310,8 +300,6 @@ methods::setMethod(
 #'
 #' @return An igraph object
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @references
@@ -331,13 +319,13 @@ methods::setMethod(
 #' # Export igraph object
 #' exportIgraph(trn)
 #'
-methods::setGeneric(
+setGeneric(
   "exportIgraph",
   function(trn) {
     standardGeneric("exportIgraph")
   }
 )
-methods::setMethod(
+setMethod(
   "exportIgraph", "TRNet",
   function(trn) {
     return(trn@network)
@@ -355,8 +343,6 @@ methods::setMethod(
 #'
 #' @return A data frame containing all network interactions
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -373,13 +359,13 @@ methods::setMethod(
 #' # Export all network interactions
 #' exportEdgeSet(trn)
 #'
-methods::setGeneric(
+setGeneric(
   "exportEdgeSet",
   function(trn) {
     standardGeneric("exportEdgeSet")
   }
 )
-methods::setMethod(
+setMethod(
   "exportEdgeSet", "TRNet",
   function(trn) {
     return(trn@TRNmetadata)
@@ -396,8 +382,6 @@ methods::setMethod(
 #' @param object A TRNet object
 #'
 #' @return NULL
-#'
-#' @importFrom methods setMethod
 #' @importFrom igraph ecount vcount
 #'
 #' @export
@@ -416,7 +400,7 @@ methods::setMethod(
 #' # Print TRNet object
 #' trn
 #'
-methods::setMethod(
+setMethod(
   "show", "TRNet",
   function(object) {
     nEdges <- igraph::ecount(object@network)

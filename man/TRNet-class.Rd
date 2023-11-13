@@ -175,7 +175,7 @@ trn
 
 \insertRef{csardi2006igraph}{IntegraTRN}
 
-\insertRef{networkD3}{IntegraTRN}
+\insertRef{networkd3}{IntegraTRN}
 
 \insertRef{csardi2006igraph}{IntegraTRN}
 }

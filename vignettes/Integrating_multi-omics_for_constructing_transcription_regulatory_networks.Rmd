@@ -247,7 +247,7 @@ genesToLabel <- exportDE(myRNADETag) %>%
 Then we again plot the volcano plot, with some genes labeled.
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
-plotVolcanoRNA(myMOList, log2FC = 0.1, geneList = genesToLabel)
+plotVolcanoRNA(myMOList, log2FC = 0.1)
 ```
 
 ##### Exploring differential small RNA expression analysis

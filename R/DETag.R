@@ -37,16 +37,14 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 #'                        genes, with each row representing a gene and each
 #'                        column representing a sample
 #'
-#' @importFrom methods setClass
-#'
 #' @exportClass DETag
 #'
 #' @references
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' \insertRef{love2014deseq2}{IntegraTRN}
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
-methods::setClass("DETag", slots = c(
+setClass("DETag", slots = c(
   DEResult = "data.frame",
   method = "character",
   normalizedCounts = "matrix"
@@ -129,8 +127,6 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 #'                      analysis
 #' }
 #'
-#' @importFrom methods new
-#'
 #' @export
 #'
 #' @examples
@@ -153,14 +149,14 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
   # Create the object
   if (method %in% c(DESEQ2, EDGER)) {
     # Count-based differential analysis
-    newDETag <- methods::new("DETag",
+    newDETag <- new("DETag",
       DEResult = DEResult,
       method = method,
       normalizedCounts = normalizedCounts
     )
   } else if (method == ATAC_GRANGE) {
     # Differential accessibility analysis
-    newDETag <- methods::new("DETag", DEResult = DEResult, method = method)
+    newDETag <- new("DETag", DEResult = DEResult, method = method)
   } else {
     stop("The method is not supported")
   }
@@ -181,8 +177,6 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
 #'
 #' @return NULL
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -202,7 +196,7 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
 #' # or simply do
 #' deTag
 #'
-methods::setMethod("show", "DETag", function(object) {
+setMethod("show", "DETag", function(object) {
   cat("A DETag S4 object\n")
   cat("Method for differential analysis: ", object@method, "\n\n")
   # Some more DE details for count-based DE
@@ -249,14 +243,12 @@ methods::setMethod("show", "DETag", function(object) {
 #' \item \code{padj}: A numeric vector containing the adjusted p-values
 #' }
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @references
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
-#' \insertRef{love2014deseq2}{IntegraTRN}
+#' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' @examples
 #' # Example 1: export the package default results
@@ -275,10 +267,10 @@ methods::setMethod("show", "DETag", function(object) {
 #' exportDE(deTag, original = TRUE)
 #' }
 #'
-methods::setGeneric("exportDE", function(x, original = FALSE) {
+setGeneric("exportDE", function(x, original = FALSE) {
   standardGeneric("exportDE")
 })
-methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
+setMethod("exportDE", "DETag", function(x, original = FALSE) {
   # Validate the input
   if (!is.logical(original)) {
     stop("The original argument must be a boolean")
@@ -317,8 +309,6 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
 #' @return A matrix containing the normalized counts for the genes, with each
 #'         row representing a gene and each column representing a sample
 #'
-#' @importFrom methods setGeneric setMethod
-#'
 #' @export
 #'
 #' @examples
@@ -329,10 +319,10 @@ methods::setMethod("exportDE", "DETag", function(x, original = FALSE) {
 #' exportNormalizedCounts(deTag)
 #' }
 #'
-methods::setGeneric("exportNormalizedCounts", function(x) {
+setGeneric("exportNormalizedCounts", function(x) {
   standardGeneric("exportNormalizedCounts")
 })
-methods::setMethod("exportNormalizedCounts", "DETag", function(x) {
+setMethod("exportNormalizedCounts", "DETag", function(x) {
   # Validate the input
   if (x@method != DESEQ2 && x@method != EDGER) {
     stop("The method is not supported")

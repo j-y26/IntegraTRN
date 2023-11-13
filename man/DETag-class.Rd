@@ -60,5 +60,5 @@ deTag
 \references{
 \insertRef{robinson2010edger}{IntegraTRN}
 
-\insertRef{love2014deseq2}{IntegraTRN}
+\insertRef{love2014moderated}{IntegraTRN}
 }

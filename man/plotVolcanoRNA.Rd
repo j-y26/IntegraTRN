@@ -8,7 +8,6 @@ plotVolcanoRNA(
   objMOList,
   log2FC = 1,
   adjP = 0.05,
-  geneList = NULL,
   upColor = "firebrick3",
   downColor = "dodgerblue3",
   title = NULL
@@ -21,8 +20,6 @@ results for mRNA.}
 \item{log2FC}{The cutoff for log2 fold change. Default is 1.}
 
 \item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
-
-\item{geneList}{A vector of genes to highlight in the plot. Default is NULL.}
 
 \item{upColor}{The color for up-regulated genes. Default is "firebrick3".}
 
@@ -53,7 +50,6 @@ plotVolcanoRNA(expMOList)
 plotVolcanoRNA(expMOList,
   log2FC = 0,
   adjP = 0.01,
-  geneList = c("MYH7B", "NELFCD", "KDM8"),
   upColor = "purple",
   downColor = "green",
   title = "Volcano plot for DE mRNA"
@@ -62,8 +58,6 @@ plotVolcanoRNA(expMOList,
 }
 \references{
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
-
-\insertRef{ggrepel}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
 }
