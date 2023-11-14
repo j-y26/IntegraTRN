@@ -182,9 +182,10 @@ setMethod(
     # Regulator vertices
     regulatorVertices <- edgeMetadata[, c("regulator", "regulatorType")]
     colnames(regulatorVertices) <- c("name", "type")
-    regulatorVertices <- regulatorVertices[!duplicated(regulatorVertices), ]
     # Combine target and regulator vertices
     vertexMetadata <- rbind(targetVertices, regulatorVertices)
+    # Remove duplicated vertices
+    vertexMetadata <- vertexMetadata[!duplicated(vertexMetadata$name), ]
     return(vertexMetadata)
   }
 )
