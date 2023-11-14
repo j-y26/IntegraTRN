@@ -74,11 +74,11 @@ This function performs data filtering, normalization, batch
 # Generate example datasets
 rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
 rnaseqSGroupBy <- rep(c("A", "B"), each = 5)
-smallRNAseq <- matrix(sample(0:100, 1000, replace = TRUE),
+smallRNAseq <- matrix(sample(0:100, 500, replace = TRUE),
   nrow = 100, ncol = 5
 )
 smallRNAseqSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
-protein <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 5)
+protein <- matrix(sample(0:100, 500, replace = TRUE), nrow = 100, ncol = 5)
 proteinSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
 
 # Create a MOList object
