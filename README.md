@@ -287,6 +287,48 @@ issues](https://github.com/j-y26/IntegraTRN/issues).
 
 ## Author’s note
 
+### Installing `IntegraTRN` from source (GitHub)
+
+Successful installation from Github using the
+`devtools::install_github()` command requires correctly managing package
+dependencies from Bioconductor. Since `devtools` will not automatically
+install Bioconductor packages, users are recommended to run the
+following commands or check for their existing installation:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install(c(
+  "BiocGenerics", "Biostrings", "ChIPseeker", "DESeq2",
+  "edgeR", "GENIE3", "GenomicRanges", "monaLisa",
+  "Repitools", "SummarizedExperiment"
+))
+```
+
+If also building vignettes, please install the `suggested` packages
+using the following commands:
+
+``` r
+install.packages("ggpubr")
+BiocManager::install(c(
+  "BSgenome.Hsapiens.UCSC.hg38",
+  "org.Hs.eg.db",
+  "TxDb.Hsapiens.UCSC.hg38.knownGene"
+))
+```
+
+A recent version of Bioconductor release is recommended. The author used
+Bioconductor 3.18 for the development of this package.
+
+To set Bioconductor version:
+
+``` r
+BiocManager::install(version = "3.18") # or another recent version
+```
+
+### Local build
+
 Users are encouraged to clone the repository locally to build the
 package. However, when running `R CMD` check using `devtools::check()`,
 one warning is expected:
