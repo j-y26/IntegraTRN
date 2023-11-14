@@ -130,7 +130,7 @@ validateMatrix <- function(matrix, groupBy) {
 #'
 #' @references
 #' \insertRef{genomictools}{IntegraTRN}
-#' 
+#'
 validateMOInputs <- function(RNAseq,
                              RNAGroupBy,
                              smallRNAseq,
@@ -764,16 +764,16 @@ setMethod("ATACpeaks<-", "MOList", function(x, value) {
 #' @examples
 #' # Use the package-provided example MOList object
 #' data("expMOList")
-#' 
+#'
 #' # Example 1: Retrieving the RNAseq raw counts
 #' getRawData(expMOList, omics = "RNAseq")
-#' 
+#'
 #' # Example 2: Retrieving the smallRNAseq raw counts
 #' getRawData(expMOList, omics = "smallRNAseq")
-#' 
+#'
 #' # Example 3: Retrieving the proteomics raw counts
 #' getRawData(expMOList, omics = "proteomics")
-#' 
+#'
 #' # Example 4: Retrieving the ATAC peaks as a list
 #' getRawData(expMOList, omics = "ATAC")
 #'
@@ -832,10 +832,10 @@ setMethod("getSampleInfo", "MOList", function(x, experiment) {
 #' @examples
 #' # Use the package-provided example MOList object
 #' data("expMOList")
-#' 
+#'
 #' # Print the MOList object
 #' print(expMOList)
-#' 
+#'
 #' # or simply type the object name
 #' expMOList
 #'

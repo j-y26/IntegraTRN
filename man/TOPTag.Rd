@@ -26,7 +26,7 @@ differential genes or the number (1-Inf) of top differential
 genes. If the number specified is greater than the number of
 DE genes based on logFCCutoff and pCutoff, then topGenes will
 be set to the number of DE genes. Default to select the top
-10\% of differential genes.}
+10 percent of differential genes.}
 
 \item{direction}{A character string indicating the direction of the
 differential expression. Default to "both". Other options

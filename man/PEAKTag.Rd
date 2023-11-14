@@ -38,6 +38,7 @@ atacPEAKTag <- PEAKTag(atacDETag)
 # Example 2: Construct a PEAKTag object with annotation
 # Suppose TxDB and annoDB are already loaded
 \dontrun{
+TxDB <- TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene
 atacPEAKTag <- PEAKTag(atacDETag, TxDB = TxDB, annoDB = "org.Hs.eg.db")
 }
 

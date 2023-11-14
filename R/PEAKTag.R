@@ -95,6 +95,7 @@ setClass("PEAKTag",
 #' # Example 2: Construct a PEAKTag object with annotation
 #' # Suppose TxDB and annoDB are already loaded
 #' \dontrun{
+#' TxDB <- TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene
 #' atacPEAKTag <- PEAKTag(atacDETag, TxDB = TxDB, annoDB = "org.Hs.eg.db")
 #' }
 #'
@@ -170,8 +171,12 @@ setMethod(
       "A PEAKTag object containing", nrow(object@DEResult),
       "differential peaks.\n"
     )
-    cat("Annotation databases: ", object@annoDB, "\n")
-    cat("Transcript databases: ", object@TxDB$packageName, "\n\n")
+    if (length(object@annoDB) > 0) {
+      cat("Annotation databases: ", object@annoDB, "\n")
+      cat("Transcript databases: ", object@TxDB$packageName, "\n\n")
+    } else {
+      cat("No available peak annotation.\n")
+    }
     cat(
       "Number of peaks in condition 1: ",
       sum(object@DEResult$Condition == "-"), "\n"
@@ -181,14 +186,12 @@ setMethod(
       sum(object@DEResult$Condition == "+"), "\n\n"
     )
     cat("A snapshot of the peaks:\n")
-    anno <- object@annotatedPeaks
-    if (is.null(anno)) {
+    if (length(object@annoDB) == 0) {
       print(utils::head(object@DEResult, 5))
     } else {
-      peakDF <- csAnnoToDF(object@annotatedPeaks)
-      print(utils::head(peakDF, 5))
+      csAnnoToDF(object@annotatedPeaks) %>%
+        utils::head(5)
     }
-    rm(anno, peakDF)
     return(invisible(NULL))
   }
 )
@@ -212,6 +215,7 @@ setMethod(
 #' data(expMOList)
 #'
 #' # Convert the object to a GRanges object
+#' # Requires that annotation has been performed
 #' \dontrun{
 #' asGRanges(expMOList$DEATAC)
 #' }
@@ -259,6 +263,7 @@ setMethod(
 #' data(expMOList)
 #'
 #' # Convert the object to a data frame
+#' # Requires that annotation has been performed
 #' \dontrun{
 #' as.data.frame(expMOList$DEATAC)
 #' }

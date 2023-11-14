@@ -34,8 +34,8 @@ SRNA_SUFFIX <- "_smallRNA"
 validateSampleDFs <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   # Check of sample numbers
   if (length(objMOList@RNAseqSamples$samples) != nrow(sampleDFRNAseq) ||
-        length(objMOList@smallRNAseqSamples$samples) !=
-          nrow(sampleDFSmallRNAseq)) {
+    length(objMOList@smallRNAseqSamples$samples) !=
+      nrow(sampleDFSmallRNAseq)) {
     stop("The number of samples in the sample data frames does not match the
       number of samples in the MOList object.")
   } else {
@@ -43,58 +43,14 @@ validateSampleDFs <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
   }
   # Check for sample name matches
   if (!all(objMOList@RNAseqSamples$samples %in% rownames(sampleDFRNAseq)) ||
-        !all(objMOList@smallRNAseqSamples$samples %in%
-          rownames(sampleDFSmallRNAseq))) {
+    !all(objMOList@smallRNAseqSamples$samples %in%
+      rownames(sampleDFSmallRNAseq))) {
     stop("The sample names in the sample data frames do not match the sample
     names in the MOList object.")
   } else {
     # Continue
   }
   return(invisible(NULL))
-}
-
-
-#' Match RNAseq and small RNAseq samples based on random matching
-#' 
-#' @keywords internal
-#' 
-#' @description This function performs random matching for RNAseq and small
-#'              RNAseq samples.
-#' 
-#' @param sampleDF A data frame containing the sample information.
-#'                 Must follow the following format:
-#' \itemize{
-#' \item{row.names}{The sample names that correspond to the sample names in
-#'                 the MOList object, with a suffix "_smallRNA" for small
-#'                 RNAseq samples.}
-#' \item{groupBy}{The grouping variable for matching.}
-#' \item{seq}{A variable indicating whether the sample belongs to a group of
-#'           smaller sample size.}
-#' }
-#' 
-#' @return A data frame containing the matched sample information, with the
-#'         following format:
-#' \itemize{
-#' \item{smallRNA}{The sample names of the small RNAseq samples. No suffix.}
-#' \item{RNA}{The sample names of the RNAseq samples.}
-#' }
-#' 
-matchRandom <- function(sampleDF) {
-  nSample <- sum(sampleDF$seq == 1)
-  # set seed for reproducible results
-  set.seed(91711)
-  # Randomly select nSample samples from the larger group and all samples from
-  # the smaller group
-  selSmallRNA <- grepl(SRNA_SUFFIX, row.names(sampleDF))
-  matchResult <- data.frame(
-    smallRNA = rownames(sampleDF)[selSmallRNA] %>%
-      sample(nSample) %>%
-      gsub(SRNA_SUFFIX, "", .),
-    RNA = rownames(sampleDF)[!selSmallRNA] %>%
-      sample(nSample)
-  )
-  set.seed(NULL)
-  return(matchResult)
 }
 
 
@@ -131,6 +87,9 @@ matchRandom <- function(sampleDF) {
 #' \insertRef{gong2020optmatch}{IntegraTRN}
 #'
 matchContinuous <- function(sampleDF) {
+  # First drop any non-variating variables
+  sampleDF <- sampleDF[sapply(sampleDF, function(x) length(unique(x)) > 1)]
+
   # Use continuous matching algorithm
   matchVars <- colnames(sampleDF)[colnames(sampleDF) != "groupBy"]
   weight <- length(matchVars)
@@ -169,6 +128,76 @@ matchContinuous <- function(sampleDF) {
 }
 
 
+#' Match RNAseq and small RNAseq samples within a single group
+#'
+#' @keywords internal
+#'
+#' @description This function performs optimal pair matching, a variant of
+#'              nearest neighbor marching for RNAseq and small RNAseq samples
+#'              within a single group defined from binary classification
+#'
+#' @param sampleDF A data frame containing the sample information. Must follow
+#'                the following format:
+#' \itemize{
+#' \item{row.names}{The sample names that correspond to the sample names in
+#'                  the MOList object, with a suffix "_smallRNA" for small
+#'                  RNAseq samples.}
+#' \item{groupBy}{The grouping variable for matching.}
+#' }
+#'
+#' @return A data frame containing the matched sample information, with the
+#'         following format:
+#' \itemize{
+#' \item{smallRNA}{The sample names of the small RNAseq samples. No suffix.}
+#' \item{RNA}{The sample names of the RNAseq samples.}
+#' }
+#'
+#' @importFrom MatchIt matchit
+#'
+#' @references
+#' \insertRef{stuart2011matchit}{IntegraTRN}
+#'
+matchInGroup <- function(sampleDF) {
+  # Drop any non-variating variables
+  sampleDF <- sampleDF[sapply(sampleDF, function(x) length(unique(x)) > 1)]
+  # No "groupBy" variable should appear in the column names
+  matchVar <- colnames(sampleDF)[colnames(sampleDF) != "seq"]
+  # Random matching or nearest neighbor matching depending if any variating
+  # variables are present
+  if (length(matchVar) > 0) {
+    # Perform matching using optimal pair
+    matchFormula <- stats::as.formula(paste0(
+      "seq ~ ",
+      paste(matchVar, collapse = " + ")
+    ))
+    matchResult <- MatchIt::matchit(
+      matchFormula,
+      data = sampleDF,
+      method = "optimal",
+      distance = "mahalanobis",
+      ratio = 1
+    ) %>% matchResultToDF()
+  } else {
+    # No additional variables for matching, performs random matching
+    nSample <- sum(sampleDF$seq == 1)
+    # set seed for reproducible results
+    set.seed(91711)
+    # Randomly select nSample samples from the larger group and all samples from
+    # the smaller group
+    selSmallRNA <- grepl(SRNA_SUFFIX, row.names(sampleDF))
+    matchResult <- data.frame(
+      smallRNA = rownames(sampleDF)[selSmallRNA] %>%
+        sample(nSample) %>%
+        gsub(SRNA_SUFFIX, "", .),
+      RNA = rownames(sampleDF)[!selSmallRNA] %>%
+        sample(nSample)
+    )
+    set.seed(NULL)
+  }
+  return(matchResult)
+}
+
+
 #' Match RNAseq and small RNAseq samples based on binary grouping variable
 #'
 #' @keywords internal
@@ -203,47 +232,15 @@ matchContinuous <- function(sampleDF) {
 #' \insertRef{gong2020optmatch}{IntegraTRN}
 #'
 matchBinary <- function(sampleDF) {
-  # Covariates for matching
-  matchVars <- colnames(sampleDF)[colnames(sampleDF) != "groupBy"]
-
   # Separate the sample data frame into two data frames based on the grouping
   # variable
   group1 <- sampleDF$groupBy == unique(sampleDF$groupBy)[1]
   sampleDF1 <- sampleDF[group1, , drop = FALSE] %>%
-      labelSmallSizeGroup(SRNA_SUFFIX, "seq")
+    labelSmallSizeGroup(SRNA_SUFFIX, "seq")
   sampleDF2 <- sampleDF[!group1, , drop = FALSE] %>%
-      labelSmallSizeGroup(SRNA_SUFFIX, "seq")
-
-  # Performs matching within each group
-  if (length(matchVars) > 0) {
-    # Matching formula
-    matchFormula <- stats::as.formula(paste0(
-      "seq ~ ",
-      paste(matchVars, collapse = " + ")
-    ))
-
-    # Perform matching using optimal pair
-    matchResult1 <- MatchIt::matchit(
-      matchFormula,
-      data = sampleDF1,
-      method = "optimal",
-      distance = "mahalanobis",
-      ratio = 1
-    ) %>% matchResultToDF()
-    matchResult2 <- MatchIt::matchit(
-      matchFormula,
-      data = sampleDF2,
-      method = "optimal",
-      distance = "mahalanobis",
-      ratio = 1
-    ) %>% matchResultToDF()
-    
-  } else {
-    # No additional variables for matching, performs random matching within
-    # each group
-    matchResult1 <- matchRandom(sampleDF1)
-    matchResult2 <- matchRandom(sampleDF2)
-  }
+    labelSmallSizeGroup(SRNA_SUFFIX, "seq")
+  matchResult1 <- matchInGroup(sampleDF1)
+  matchResult2 <- matchInGroup(sampleDF2)
   # Finalize the match result
   matchedSampleDF <- rbind(matchResult1, matchResult2)
   return(matchedSampleDF)
@@ -326,7 +323,6 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 }
 
 
-
 #' Match RNAseq and small RNAseq samples
 #'
 #' @aliases matchSamplesRNAsmallRNA
@@ -383,19 +379,18 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #' rnaGroup <- c("A", "A", "B", "B", "B")
 #' smallRNAseqMatrix <- matrix(sample(1:100, 100), ncol = 5)
 #' smallRNAseqGroup <- c("A", "A", "B", "B", "B")
-#' myMOList <- MOList(RNAseq = rnaMatrix,
-#'                    RNAGroupBy = rnaGroup,
-#'                    smallRNAseq = smallRNAseqMatrix,
-#'                    smallRNAGroupBy = smallRNAseqGroup)
+#' myMOList <- MOList(
+#'   RNAseq = rnaMatrix,
+#'   RNAGroupBy = rnaGroup,
+#'   smallRNAseq = smallRNAseqMatrix,
+#'   smallRNAGroupBy = smallRNAseqGroup
+#' )
 #'
 #' # Example 1: No additional sample information provided
-#' \dontrun{
-#' # Perform matching
 #' myMOList <- matchSamplesRNAsmallRNA(myMOList)
-#' }
+#'
 #'
 #' # Example 2: Additional sample information provided
-#' \dontrun{
 #' # Suppose we have two data frames containing the sample information
 #' sampleDFRNAseq <- data.frame(
 #'   Age = c(1, 2, 3, 4, 5),
@@ -406,18 +401,18 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'   Age = c(1, 2, 3, 4, 5),
 #'   Sex = c("M", "M", "F", "F", "F")
 #' )
-#' rownames(sampleDFSmallRNAseq) <- paste0("sample_", 
-#'                                          seq_len(nrow(sampleDFSmallRNAseq)))
+#' rownames(sampleDFSmallRNAseq) <- paste0(
+#'   "sample_",
+#'   seq_len(nrow(sampleDFSmallRNAseq))
+#' )
 #' # Perform matching
 #' myMOList <- matchSamplesRNAsmallRNA(myMOList,
 #'   sampleDFRNAseq = sampleDFRNAseq,
 #'   sampleDFSmallRNAseq = sampleDFSmallRNAseq
 #' )
-#' # Will account for both age and sex
-#' }
+#'
 #'
 #' # Example 3: Additional sample information provided, with matching variables
-#' \dontrun{
 #' # Suppose we just want to match based on age
 #' myMOList <- matchSamplesRNAsmallRNA(myMOList,
 #'   sampleDFRNAseq = sampleDFRNAseq,
@@ -425,7 +420,6 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'   varMatch = "Age"
 #' )
 #' # Will only account for age
-#' }
 #'
 matchSamplesRNAsmallRNA <- function(objMOList,
                                     sampleDFRNAseq = NULL,
@@ -449,21 +443,30 @@ matchSamplesRNAsmallRNA <- function(objMOList,
         colnames(sampleDFSmallRNAseq)
       ))
       if (length(invalidVars) > 0) {
-        warning(paste("The following variables are not present in both sample
-                      data frames and are ignored:", invalidVars))
+        warning(paste("The following variable(s) are not present in both sample
+        data frames and are ignored:", invalidVars))
         varMatch <- setdiff(varMatch, invalidVars)
       } else {
         # Continue
       }
     } else {
+      # Using all common variables
       varMatch <- intersect(
         colnames(sampleDFRNAseq),
         colnames(sampleDFSmallRNAseq)
       )
     }
     # Keep only the usable sample information
-    sampleDFRNAseq <- sampleDFRNAseq[, varMatch]
-    sampleDFSmallRNAseq <- sampleDFSmallRNAseq[, varMatch]
+    if (length(varMatch) > 0) {
+      sampleDFRNAseq <- sampleDFRNAseq[, varMatch, drop = FALSE]
+      sampleDFSmallRNAseq <- sampleDFSmallRNAseq[, varMatch, drop = FALSE]
+    } else {
+      # No usable sample information
+      sampleDFRNAseq <- data.frame(groupBy = groupByRNA)
+      rownames(sampleDFRNAseq) <- objMOList@RNAseqSamples$samples
+      sampleDFSmallRNAseq <- data.frame(groupBy = groupBySmallRNA)
+      rownames(sampleDFSmallRNAseq) <- objMOList@smallRNAseqSamples$samples
+    }
 
     # Since the key grouping variable may or may not be present in the selected
     # matching variables, we need to check if it is present, and if not, add it
@@ -478,8 +481,10 @@ matchSamplesRNAsmallRNA <- function(objMOList,
       objMOList@smallRNAseqSamples$samples,
       rownames(sampleDFSmallRNAseq)
     )
-    sampleDFRNAseq <- sampleDFRNAseq[indexRNAMOList, ]
-    sampleDFSmallRNAseq <- sampleDFSmallRNAseq[indexSmallRNAMOList, ]
+    sampleDFRNAseq <- sampleDFRNAseq[indexRNAMOList, , drop = FALSE]
+    sampleDFSmallRNAseq <- sampleDFSmallRNAseq[indexSmallRNAMOList, ,
+      drop = FALSE
+    ]
     # Identify if the grouping variable is present in the sample data frames by
     # checking if the groupBy variable matches one column in the sample data
     # frames
@@ -544,13 +549,10 @@ matchSamplesRNAsmallRNA <- function(objMOList,
 #' @export
 #'
 #' @examples
-#' # Suppose we have an MOList object with RNAseq and small RNAseq data
-#' \dontrun{
-#' # Perform matching
-#' myMOList <- matchSamplesRNAsmallRNA(myMOList)
+#' # Use the package data
+#' data("expMOList")
 #' # Export the match result
-#' exportMatchResult(myMOList)
-#' }
+#' exportMatchResult(expMOList)
 #'
 exportMatchResult <- function(objMOList) {
   if (is.null(objMOList$matchingRNAsmallRNA)) {

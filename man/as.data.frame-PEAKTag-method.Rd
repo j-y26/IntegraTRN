@@ -20,6 +20,7 @@ Convert to a data frame
 data(expMOList)
 
 # Convert the object to a data frame
+# Requires that annotation has been performed
 \dontrun{
 as.data.frame(expMOList$DEATAC)
 }

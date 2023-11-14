@@ -21,12 +21,9 @@ This function exports the match result of RNAseq and small
              RNAseq samples.
 }
 \examples{
-# Suppose we have an MOList object with RNAseq and small RNAseq data
-\dontrun{
-# Perform matching
-myMOList <- matchSamplesRNAsmallRNA(myMOList)
+# Use the package data
+data("expMOList")
 # Export the match result
-exportMatchResult(myMOList)
-}
+exportMatchResult(expMOList)
 
 }

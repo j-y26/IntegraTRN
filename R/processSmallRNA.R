@@ -140,9 +140,7 @@ checkSmallAnnoCoverage <- function(objMOList, anno) {
 #'
 extractTranscriptFromAnno <- function(annoDF, category) {
   # Extract small RNA transcripts belonging to the specified category
-  transcripts <- annoDF %>%
-    dplyr::filter(grepl(category, .[, 2], ignore.case = TRUE)) %>%
-    dplyr::pull(1)
+  transcripts <- annoDF[grepl(category, annoDF[, 2], ignore.case = TRUE), 1]
 
   # Check if it is empty
   if (length(transcripts) == 0) {
@@ -168,7 +166,7 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'              6. snoRNA
 #'
 #' @param objMOList A object of class MOList
-#' @param anno A data frame or a path to a tab-delimited file containing
+#' @param anno A data frame containing
 #'             annotation information for small RNA transcripts. The first
 #'             column should be the transcript name of the small RNAs, and
 #'             the second column should be the category of the small RNAs.
@@ -188,6 +186,8 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'             7. piRNACluster
 #'             Please see the reference for more details on how the annotation
 #'             was generated.
+#' \itemize{
+#'
 #'
 #' @return A MOList object with the annotation information added to the
 #'        annoSncRNA element.
@@ -217,7 +217,19 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'
 #' @examples
 #' # Example 1: Adding user-defined annotation
-#' # Assuming we have an MOList object called objMOList
+#' # Generate some sample RNAseq and smallRNAseq data
+#' rnaMatrix <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100)
+#' rownames(rnaMatrix) <- paste0("gene_", seq_len(100))
+#' rnaGroupBy <- rep(c("group1", "group2"), each = 5)
+#' smallRNAMatrix <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100)
+#' rownames(smallRNAMatrix) <- paste0("transcript_", seq_len(100))
+#' smallRNAGroupBy <- rep(c("group1", "group2"), each = 5)
+#'
+#' # Create example MOList object
+#' objMOList <- MOList(
+#'   RNAseq = rnaMatrix, RNAGroupBy = rnaGroupBy,
+#'   smallRNAseq = smallRNAMatrix, smallRNAGroupBy = smallRNAGroupBy
+#' )
 #'
 #' # Create example annotation
 #' anno <- data.frame(
@@ -227,19 +239,18 @@ extractTranscriptFromAnno <- function(annoDF, category) {
 #'   )
 #' )
 #'
-#' \dontrun{
 #' # Annotate small RNA transcripts
 #' annotateSmallRNA(objMOList, anno)
-#' }
 #'
 #' # Example 2: Using the preprocessed annotation provided by the package
-#' \dontrun{
+#' # This time we use the package provided example data
+#' data(expMOList)
+#'
 #' # Annotate small RNA transcripts
-#' annotateSmallRNA(objMOList, anno = "human")
+#' annotateSmallRNA(expMOList, anno = "human")
 #'
 #' # or simply use the default parameter
-#' annotateSmallRNA(objMOList)
-#' }
+#' annotateSmallRNA(expMOList)
 #'
 annotateSmallRNA <- function(objMOList, anno = "human") {
   # Construct annotation based on the input
@@ -250,23 +261,7 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
     userAnno <- anno
 
     # Check of valid input as a data frame or a string
-    if (is.character(userAnno)) {
-      # Assumed to be a path to a tab-delimited file
-      if (file.exists(userAnno)) {
-        # Read in the annotation
-        userAnno <- utils::read.table(userAnno,
-          sep = "\t", header = FALSE,
-          stringsAsFactors = FALSE
-        )
-        # Check if header is present
-        noHeader <- userAnno[1, 2] %in% SMALLRNA_CATEGORIES
-        ifelse(noHeader, userAnno <- userAnno, userAnno <- userAnno[-1, ])
-      } else {
-        stop("File does not exist. Please provide a valid path to a
-        tab-delimited file or a loaded data frame. See ?annotateSmallRNA for
-        more details.")
-      }
-    } else if (inherits(userAnno, "data.frame")) {
+    if (inherits(userAnno, "data.frame")) {
       # Do nothing
     } else {
       stop("Invalid annotation input. Please provide a valid path to a

@@ -314,8 +314,6 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @export
 #'
 #' @examples
-#' # Suppose that myMOList is an object of class MOList with $DEATAC containing
-#' # the ATACseq peaks as a DETag object
 #' \dontrun{
 #' # Generate position-weight matrices (PWMs) from the JASPAR database
 #' pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
@@ -324,13 +322,19 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #'     tax_group = "vertebrates"
 #'   )
 #' )
+#' # Alternatively, the package has provided a pre-generated PWM list
+#' data(pwmL)
+#'
+#' # Make use of the package's provided example data
+#' data(expMOList)
+#'
 #' # Annotate the ATACseq peaks with genomic features and perform motif
 #' # enrichment analysis
-#' myMOList <- annotateATACPeaksMotif(myMOList,
+#' expMOList <- annotateATACPeaksMotif(expMOList,
 #'   tssRegion = c(-3000, 3000),
-#'   TxDb = TxDb.Hsapiens.UCSC.hg38.knownGene,
+#'   TxDb = TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene,
 #'   annoDb = "org.Hs.eg.db",
-#'   bsgenome = BSgenome.Hsapiens.UCSC.hg38,
+#'   bsgenome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
 #'   pwmL = pwmL,
 #'   fixedWidth = 500
 #' )

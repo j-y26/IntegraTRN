@@ -20,7 +20,7 @@ COUNT_OMICS <- c(RNA, SMALLRNA, PROTEIN)
 #' @description This function validates the input data and annotations on the
 #'              samples. The input data must be a MOList object, and the
 #'              annotations on the samples must be a list containing the
-#'              annotations on the RNAseq, small RNAseq, and protein data, in 
+#'              annotations on the RNAseq, small RNAseq, and protein data, in
 #'              the order of RNAseq, small RNAseq, and protein.
 #'
 #' @param objMOList A MOList object containing the omics data
@@ -56,7 +56,7 @@ validateDataAnno <- function(objMOList, annoList) {
 
 
 #' Filter the gene counts for the count-based omics data
-#' 
+#'
 #' @keywords internal
 #'
 #' @description Filtering is based on the design of the experiment. If the

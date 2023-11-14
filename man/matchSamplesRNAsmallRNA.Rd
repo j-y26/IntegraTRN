@@ -59,38 +59,40 @@ rnaMatrix <- matrix(sample(1:100, 100), ncol = 5)
 rnaGroup <- c("A", "A", "B", "B", "B")
 smallRNAseqMatrix <- matrix(sample(1:100, 100), ncol = 5)
 smallRNAseqGroup <- c("A", "A", "B", "B", "B")
-myMOList <- MOList(RNAseq = rnaMatrix,
-                   RNAGroupBy = rnaGroup,
-                   smallRNAseq = smallRNAseqMatrix,
-                   smallRNAGroupBy = smallRNAseqGroup)
+myMOList <- MOList(
+  RNAseq = rnaMatrix,
+  RNAGroupBy = rnaGroup,
+  smallRNAseq = smallRNAseqMatrix,
+  smallRNAGroupBy = smallRNAseqGroup
+)
 
 # Example 1: No additional sample information provided
-\dontrun{
-# Perform matching
 myMOList <- matchSamplesRNAsmallRNA(myMOList)
-}
+
 
 # Example 2: Additional sample information provided
-\dontrun{
 # Suppose we have two data frames containing the sample information
 sampleDFRNAseq <- data.frame(
   Age = c(1, 2, 3, 4, 5),
   Sex = c("M", "M", "F", "F", "F")
 )
+rownames(sampleDFRNAseq) <- paste0("sample_", seq_len(nrow(sampleDFRNAseq)))
 sampleDFSmallRNAseq <- data.frame(
   Age = c(1, 2, 3, 4, 5),
   Sex = c("M", "M", "F", "F", "F")
+)
+rownames(sampleDFSmallRNAseq) <- paste0(
+  "sample_",
+  seq_len(nrow(sampleDFSmallRNAseq))
 )
 # Perform matching
 myMOList <- matchSamplesRNAsmallRNA(myMOList,
   sampleDFRNAseq = sampleDFRNAseq,
   sampleDFSmallRNAseq = sampleDFSmallRNAseq
 )
-# Will account for both age and sex
-}
+
 
 # Example 3: Additional sample information provided, with matching variables
-\dontrun{
 # Suppose we just want to match based on age
 myMOList <- matchSamplesRNAsmallRNA(myMOList,
   sampleDFRNAseq = sampleDFRNAseq,
@@ -98,7 +100,6 @@ myMOList <- matchSamplesRNAsmallRNA(myMOList,
   varMatch = "Age"
 )
 # Will only account for age
-}
 
 }
 \references{

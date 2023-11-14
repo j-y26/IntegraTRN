@@ -247,7 +247,7 @@ setMethod("show", "DETag", function(object) {
 #' # Use the package-provided example data
 #' data("expMOList")
 #' deTag <- expMOList$DERNAseq
-#' 
+#'
 #' # Example 1: export the package default results
 #' exportDE(deTag)
 #'
@@ -304,7 +304,7 @@ setMethod("exportDE", "DETag", function(x, original = FALSE) {
 #' # Use the package-provided example data
 #' data("expMOList")
 #' deTag <- expMOList$DERNAseq
-#' 
+#'
 #' # Export the normalized counts
 #' exportNormalizedCounts(deTag)
 #'
