@@ -26,7 +26,8 @@ package for custom annotation databases.}
 packages}
 }
 \value{
-A csAnno object containing the annotated peaks, as defined by the
+A MOList object containing a csAnno object of annotated peaks, as
+        defined by the
         ChIPseeker package. In particular, the original "Condition"
         annotation is preserved.
 }

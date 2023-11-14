@@ -67,9 +67,11 @@ test_that("match result to data frame", {
     seq = c(1, 0, 0)
   )
   # Name the samples
-  rownames(df) <- c("sample_1",
-                    paste0("sample_2", SRNA_SUFFIX),
-                    paste0("sample_3", SRNA_SUFFIX))
+  rownames(df) <- c(
+    "sample_1",
+    paste0("sample_2", SRNA_SUFFIX),
+    paste0("sample_3", SRNA_SUFFIX)
+  )
   # Generate a example result
   matchResult <- MatchIt::matchit(
     seq ~ age + sex + treat,
@@ -97,9 +99,11 @@ test_that("RNA samples fewer", {
     treat = c("A", "B", "A")
   )
   # Name the samples
-  rownames(df) <- c("sample_1",
-                    paste0("sample_2", SRNA_SUFFIX),
-                    paste0("sample_3", SRNA_SUFFIX))
+  rownames(df) <- c(
+    "sample_1",
+    paste0("sample_2", SRNA_SUFFIX),
+    paste0("sample_3", SRNA_SUFFIX)
+  )
   # Label with "seq" column
   df <- labelSmallSizeGroup(df, SRNA_SUFFIX, "seq")
   # Check the result
@@ -113,9 +117,11 @@ test_that("smallrnaseq samples fewer", {
     treat = c("A", "B", "A")
   )
   # Name the samples
-  rownames(df) <- c("sample_1",
-                    "sample_2",
-                    paste0("sample_3", SRNA_SUFFIX))
+  rownames(df) <- c(
+    "sample_1",
+    "sample_2",
+    paste0("sample_3", SRNA_SUFFIX)
+  )
   # Label with "seq" column
   df <- labelSmallSizeGroup(df, SRNA_SUFFIX, "seq")
   # Check the result
@@ -129,9 +135,11 @@ test_that("different colname", {
     treat = c("A", "B", "A")
   )
   # Name the samples
-  rownames(df) <- c("sample_1",
-                    paste0("sample_2", SRNA_SUFFIX),
-                    paste0("sample_3", SRNA_SUFFIX))
+  rownames(df) <- c(
+    "sample_1",
+    paste0("sample_2", SRNA_SUFFIX),
+    paste0("sample_3", SRNA_SUFFIX)
+  )
   # Label with "seq" column
   df <- labelSmallSizeGroup(df, SRNA_SUFFIX, "something")
   # Check the result
@@ -144,8 +152,8 @@ test_that("different colname", {
 test_that("no upregulated genes", {
   # fake DE results
   deRes <- data.frame(
-      logFC = c(-1, -2, -3),
-      padj = c(0.1, 0.2, 0.3)
+    logFC = c(-1, -2, -3),
+    padj = c(0.1, 0.2, 0.3)
   )
   rownames(deRes) <- c("gene_1", "gene_2", "gene_3")
   # extract directional genes
@@ -158,8 +166,8 @@ test_that("no upregulated genes", {
 test_that("no downregulated genes", {
   # fake DE results
   deRes <- data.frame(
-      logFC = c(1, 2, 3),
-      padj = c(0.1, 0.2, 0.3)
+    logFC = c(1, 2, 3),
+    padj = c(0.1, 0.2, 0.3)
   )
   rownames(deRes) <- c("gene_1", "gene_2", "gene_3")
   # extract directional genes
@@ -172,8 +180,8 @@ test_that("no downregulated genes", {
 test_that("both upregulated and downregulated genes", {
   # fake DE results
   deRes <- data.frame(
-      logFC = c(-1, 2, 3),
-      padj = c(0.1, 0.2, 0.3)
+    logFC = c(-1, 2, 3),
+    padj = c(0.1, 0.2, 0.3)
   )
   rownames(deRes) <- c("gene_1", "gene_2", "gene_3")
   # extract directional genes
@@ -186,8 +194,8 @@ test_that("both upregulated and downregulated genes", {
 test_that("empty DE results", {
   # fake DE results
   deRes <- data.frame(
-      logFC = numeric(0),
-      padj = numeric(0)
+    logFC = numeric(0),
+    padj = numeric(0)
   )
   rownames(deRes) <- character(0)
   # extract directional genes

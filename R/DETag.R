@@ -77,7 +77,7 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
   # method
   if (!is.character(method) || !method %in% METHODS) {
     stop("The method slot must be a valid character string, see ?DETag for
-         more information")
+    more information")
   } else {
     # Do nothing
   }
@@ -241,6 +241,8 @@ setMethod("show", "DETag", function(object) {
 #'
 #' @export
 #'
+#' @importFrom dplyr select all_of %>%
+#'
 #' @references
 #' \insertRef{robinson2010edger}{IntegraTRN}
 #'
@@ -276,9 +278,9 @@ setMethod("exportDE", "DETag", function(x, original = FALSE) {
     # Based on the type of the method, extract the results of count-based DE
     deResult <- x@DEResult
     if (x@method == DESEQ2) {
-      deResult <- deResult %>% dplyr::select(DESEQ2_FIELDS)
+      deResult <- deResult %>% dplyr::select(dplyr::all_of(DESEQ2_FIELDS))
     } else if (x@method == EDGER) {
-      deResult <- deResult %>% dplyr::select(EDGER_FIELDS)
+      deResult <- deResult %>% dplyr::select(dplyr::all_of(EDGER_FIELDS))
     } else {
       stop("The method is not supported") # never happen for a valid DETag obj
     }

@@ -122,7 +122,8 @@ processPeakOverlap <- function(objMOList) {
 #'               of the package. For details, see the vignette of the ChIPseeker
 #'               package for custom annotation databases.
 #'
-#' @return A csAnno object containing the annotated peaks, as defined by the
+#' @return A MOList object containing a csAnno object of annotated peaks, as
+#'         defined by the
 #'         ChIPseeker package. In particular, the original "Condition"
 #'         annotation is preserved.
 #'
@@ -160,7 +161,6 @@ annotatePeaks <- function(objMOList,
   objMOList$DEATAC <- peakTag
   return(objMOList)
 }
-
 
 
 #' Perform motif enrichment analysis on peaks with binary conditions

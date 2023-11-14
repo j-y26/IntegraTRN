@@ -231,7 +231,7 @@ setMethod(
   signature(x = "PEAKTag"),
   function(x) {
     # Determine if an annotation exists
-    if (is.null(x@annotatedPeaks)) {
+    if (length(x@annotatedPeaks@hasGenomicAnnotation) == 0) {
       # No annotation
       peakGR <- GenomicRanges::makeGRangesFromDataFrame(
         x@DEResult,
@@ -273,7 +273,7 @@ setMethod(
   signature(x = "PEAKTag"),
   function(x) {
     # Determine if an annotation exists
-    if (is.null(x@annotatedPeaks)) {
+    if (length(x@annotatedPeaks@hasGenomicAnnotation) == 0) {
       # No annotation
       peakDF <- x@DEResult
     } else {

@@ -152,16 +152,18 @@ TOPTag <- function(object,
   deGenes <- object %>%
     exportDE() %>%
     dplyr::filter(
-      abs(logFC) >= logFCCutoff,
-      padj <= pCutoff
+      abs(logFC) > logFCCutoff,
+      padj < pCutoff
     )
   # Directional filtering
   if (direction == "up") {
     deGenes <- deGenes %>% dplyr::filter(logFC > 0)
   } else if (direction == "down") {
     deGenes <- deGenes %>% dplyr::filter(logFC < 0)
-  } else {
+  } else if (direction == "both") {
     # Do nothing
+  } else {
+    stop("The direction must be either up, down or both.")
   }
 
   if (topGenes > 1 && topGenes > nrow(deGenes)) {
@@ -195,8 +197,16 @@ TOPTag <- function(object,
     )
   } else {
     # Select the top genes based on the fraction
-    topDE <- deGenes %>%
-      dplyr::filter(abs(rank) <= round(nrow(deGenes) * topGenes))
+    nUpGenes <- sum(deGenes$logFC > 0)
+    nDownGenes <- sum(deGenes$logFC < 0)
+    topDE <- rbind(
+      deGenes %>%
+        dplyr::filter(rank > 0) %>%
+        dplyr::filter(rank <= round(nUpGenes * topGenes)),
+      deGenes %>%
+        dplyr::filter(rank < 0) %>%
+        dplyr::filter(rank >= -round(nDownGenes * topGenes))
+    )
   }
 
   # Construct the TOPTag object
