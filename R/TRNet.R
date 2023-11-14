@@ -208,8 +208,10 @@ setMethod(
 #'            respective package documentation for details.
 #'
 #' @return NULL
-#' @importFrom igraph plot.igraph layout_with_drl categorical_pal
+#' @importFrom igraph plot.igraph categorical_pal
+#' @importFrom igraph V ecount vcount layout_on_sphere layout_nicely
 #' @importFrom networkD3 igraph_to_networkD3 forceNetwork
+#' @importFrom stats setNames
 #'
 #' @export
 #'
@@ -268,16 +270,20 @@ setMethod(
       colors <- igraph::categorical_pal(length(unique(vertexMetadata)))
       colors <- stats::setNames(colors, unique(vertexMetadata))
       igraph::V(network)$color <- colors[igraph::V(network)$type]
-      # Define layout
-      layout <- igraph::layout_with_drl(network)
+      # Define layout based on the size of the network
+      if (igraph::vcount(network) > 25) {
+        layout <- igraph::layout_on_sphere(network)
+      } else {
+        layout <- igraph::layout_nicely(network)
+      }
       # Plot static network
       igraph::plot.igraph(network,
         layout = layout,
         vertex.color = igraph::V(network)$color,
         vertex.label = igraph::V(network)$name,
         vertex.label.color = "black",
-        vertex.label.cex = 0.8,
-        vertex.label.dist = 0.5,
+        vertex.label.cex = 0.6,
+        vertex.label.dist = 0.3,
         edge.arrow.size = 0.3,
         edge.arrow.width = 0.3,
         edge.width = 0.5,

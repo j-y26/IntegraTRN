@@ -251,9 +251,6 @@ genesToLabel <- exportDE(myRNADETag) %>%
 
 Then we again plot the volcano plot, with some genes labeled.
 
-```{r message = FALSE, tidy=TRUE}
-```
-
 We can make use of the **`ggrepel`** package to label the genes on the plot.
 
 ```{r message = FALSE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
@@ -586,7 +583,7 @@ When predicted interactions are used, we can make the process faster by
 using multiple threads, and a random seed can be specified or reproducibility
 [@huynh2010inferring].
 
-```{r message = FALSE, warning=FALSE, results='hide'}
+```{r message = FALSE, warning=FALSE}
 myTRNet <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   smallRNAtypes = "all",
@@ -617,12 +614,12 @@ cutoff.
 ```{r message = FALSE}
 omiCutoffs2 <- omiCutoffs
 omiCutoffs2$rnaAdjPval <- 0.01
-omiCutoffs2$rnaLogFC <- 0.3
+omiCutoffs2$rnaLogFC <- 0.2
 ```
 
 Let us construct a new TRN.
 
-```{r message = FALSE, warning=FALSE, results='hide'}
+```{r message = FALSE, warning=FALSE}
 myTRNet2 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs2,
   smallRNAtypes = "miRNA",
@@ -638,7 +635,7 @@ plotNetwork(myTRNet2, vertex.size = 10)
 ```
 
 Some times it is hard to use the default parameters to plot a publication-level
-network. However, users can easily customize the network using the **`igraph`**
+network. However, users can customize the network using the **`igraph`**
 package. We can extract the network as an **`igraph`** object and performs 
 further customization [@csardi2006igraph].
 
