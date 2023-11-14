@@ -43,10 +43,11 @@ Raw counts are normalized by RLE method and then transformed by
 \examples{
 # Use the package-provided example data
 data(expMOList)
+data(RNAseq_heart_samples)
 
 # Extract the information needed for PCA analysis for example RNAseq data
 matrixRNAseq <- getRawData(expMOList, "RNAseq")
-groupBy <- getSampleInfo(expMOList, "RNAseq")$groupBy
+groupBy <- RNAseq_heart_samples$Age
 
 # Example 1: Perform PCA analysis without batch effect correction
 pcaPlot <- countPCA(matrixRNAseq, groupBy)

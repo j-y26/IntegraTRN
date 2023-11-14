@@ -899,6 +899,7 @@ setMethod("show", "MOList", function(object) {
 #' @return An object of class MOList
 #'
 #' @examples
+#' \dontrun{
 #' # Create example RNAseq and proteomics data
 #' rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
 #' rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
@@ -923,6 +924,7 @@ setMethod("show", "MOList", function(object) {
 #'
 #' # Set the conversion information to the MOList object
 #' objMOList <- setGene2Protein(objMOList, conversion)
+#' }
 #'
 setGeneric(
   "setGene2Protein",
