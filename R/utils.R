@@ -111,7 +111,7 @@ matchResultToDF <- function(matchResult) {
 #' @param identifier A string to identify the samples in sample names
 #' @param colname The column name to be added to the data frame
 #'
-#' @return A data frame with the column added
+#' @return A data frame with the column with "colname" added
 #'
 labelSmallSizeGroup <- function(sampleDF, identifier, colname) {
   identified <- grepl(identifier, row.names(sampleDF))

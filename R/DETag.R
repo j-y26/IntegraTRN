@@ -244,21 +244,15 @@ setMethod("show", "DETag", function(object) {
 #' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' @examples
+#' # Use the package-provided example data
+#' data("expMOList")
+#' deTag <- expMOList$DERNAseq
+#' 
 #' # Example 1: export the package default results
-#'
-#' \dontrun{
-#' # Assuming the deTag object is already created from a differential analysis
-#'
-#' # Export the results
 #' exportDE(deTag)
-#' }
 #'
-#' # Example 2: export the original results
-#'
-#' \dontrun{
-#' # Export the results while keeping the original results from DESeq2 or edgeR
+#' # Example 2: export the original results as formatted by DESeq2 or edgeR
 #' exportDE(deTag, original = TRUE)
-#' }
 #'
 setGeneric("exportDE", function(x, original = FALSE) {
   standardGeneric("exportDE")
@@ -307,12 +301,12 @@ setMethod("exportDE", "DETag", function(x, original = FALSE) {
 #' @export
 #'
 #' @examples
-#' # Assuming the deTag object is already created from a differential analysis
-#'
+#' # Use the package-provided example data
+#' data("expMOList")
+#' deTag <- expMOList$DERNAseq
+#' 
 #' # Export the normalized counts
-#' \dontrun{
 #' exportNormalizedCounts(deTag)
-#' }
 #'
 setGeneric("exportNormalizedCounts", function(x) {
   standardGeneric("exportNormalizedCounts")

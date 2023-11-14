@@ -37,3 +37,4 @@ Filtering is based on the design of the experiment. If the
 \references{
 \insertRef{robinson2010edger}{IntegraTRN}
 }
+\keyword{internal}

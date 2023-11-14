@@ -53,7 +53,16 @@ This function generates a one-to-one matching between the
              variable and other variables in the sample data frames.
 }
 \examples{
-# Suppose we have an MOList object with RNAseq and small RNAseq data
+# Create a MOList object with RNAseq and small RNAseq data,
+# each containing 5 samples
+rnaMatrix <- matrix(sample(1:100, 100), ncol = 5)
+rnaGroup <- c("A", "A", "B", "B", "B")
+smallRNAseqMatrix <- matrix(sample(1:100, 100), ncol = 5)
+smallRNAseqGroup <- c("A", "A", "B", "B", "B")
+myMOList <- MOList(RNAseq = rnaMatrix,
+                   RNAGroupBy = rnaGroup,
+                   smallRNAseq = smallRNAseqMatrix,
+                   smallRNAGroupBy = smallRNAseqGroup)
 
 # Example 1: No additional sample information provided
 \dontrun{

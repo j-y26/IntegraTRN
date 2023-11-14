@@ -20,11 +20,11 @@ This function extracts the normalized counts from the DETag
              analysis
 }
 \examples{
-# Assuming the deTag object is already created from a differential analysis
+# Use the package-provided example data
+data("expMOList")
+deTag <- expMOList$DERNAseq
 
 # Export the normalized counts
-\dontrun{
 exportNormalizedCounts(deTag)
-}
 
 }

@@ -64,7 +64,7 @@ omiCutoffs <- setOmicCutoffs() # use default cutoffs
 
 # Construct the network
 \dontrun{
-myTRNet <- constructTRN(myMOList, omiCutoffs)
+myTRNet <- constructTRN(expMOList, omiCutoffs)
 }
 
 }

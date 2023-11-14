@@ -14,9 +14,13 @@
 This function prints the MOList object
 }
 \examples{
-\dontrun{
-# Assuming myMOList is a MOList object
-print(myMOList)
-}
+# Use the package-provided example MOList object
+data("expMOList")
+
+# Print the MOList object
+print(expMOList)
+
+# or simply type the object name
+expMOList
 
 }

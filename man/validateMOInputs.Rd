@@ -42,17 +42,6 @@ This function validates the inputs for the MOList constructor.
              data, and checks for missing values in the chromosome
              information in the ATAC peaks.
 }
-\examples{
-\dontrun{
-# Assuming RNAseq, smallRNAseq, and proteomics are matrices of count data
-
-# Validating the inputs for the MOList constructor
-validateMOInputs(
-  RNAseq, RNAGroupBy, smallRNAseq, smallRNAGroupBy,
-  proteomics, proteomicsGroupBy, peakCond1, peakCond2
-)
-}
-}
 \references{
 \insertRef{genomictools}{IntegraTRN}
 }

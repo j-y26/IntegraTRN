@@ -14,7 +14,7 @@ labelSmallSizeGroup(sampleDF, identifier, colname)
 \item{colname}{The column name to be added to the data frame}
 }
 \value{
-A data frame with the column added
+A data frame with the column with "colname" added
 }
 \description{
 Label the samples with smaller sample size as 1

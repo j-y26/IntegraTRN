@@ -24,12 +24,19 @@ This function is a getter for the count-based omics data from
              smallRNAseq, and proteomics data from the MOList object.
 }
 \examples{
-\dontrun{
-# Using the example MOList object
-dataRNAseq <- getRawData(myMOList, "RNAseq")
-dataSmallRNAseq <- getRawData(myMOList, "smallRNAseq")
-dataProteomics <- getRawData(myMOList, "proteomics")
-dataATAC <- getRawData(myMOList, "ATAC")
-}
+# Use the package-provided example MOList object
+data("expMOList")
+
+# Example 1: Retrieving the RNAseq raw counts
+getRawData(expMOList, omics = "RNAseq")
+
+# Example 2: Retrieving the smallRNAseq raw counts
+getRawData(expMOList, omics = "smallRNAseq")
+
+# Example 3: Retrieving the proteomics raw counts
+getRawData(expMOList, omics = "proteomics")
+
+# Example 4: Retrieving the ATAC peaks as a list
+getRawData(expMOList, omics = "ATAC")
 
 }
