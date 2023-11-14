@@ -188,7 +188,7 @@ Toronto, Toronto, CANADA. `IntegraTRN` welcomes issues,
 enhancement requests, and other contributions. To submit an issue,
 use the [GitHub issues](https://github.com/j-y26/IntegraTRN/issues).
 
-# Author's note
+## Author's note
 
 Users are encouraged to clone the repository locally to build the package.
 However, when running ` R CMD` check using `devtools::check()`, one warning is

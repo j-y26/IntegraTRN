@@ -293,9 +293,7 @@ Users are encouraged to clone the repository locally to build the
 package. However, when running `R CMD` check using `devtools::check()`,
 one warning is expected:
 
-``` r
-Requries (indirectly) orphaned package: 'plotrix'
-```
+    Requires (indirectly) orphaned package: 'plotrix'
 
 This is due to the `plotrix` package being orphaned, which is imported
 by one of the package dependency, `ChIPseeker`.
