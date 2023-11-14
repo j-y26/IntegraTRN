@@ -39,18 +39,18 @@ In particular, the most common may to construct a transcriptional regulatory
 network (TRN) involves using known interactions at a certain condition.
 However, this method is insufficient to explain the dynamics of the TRN in terms
 of the changes observed between biological conditions. In this vignette, we
-demonstrate how to use the `IntegraTRN` package to construct a TRN using multi-
-omics data. 
+demonstrate how to use the **`IntegraTRN`** package to construct a TRN using 
+multi-omics data. 
 
-The package `IntegraTRN` is designed to integrate differential analysis based on
-multiple omics data and construct a TRN based on both curated and predicted
+The package **`IntegraTRN`** is designed to integrate differential analysis based 
+on multiple omics data and construct a TRN based on both curated and predicted
 interactions that underlie the differential expression of genes. In the mean
 time, the curation of multi-omics data could be difficult, so the package
 provides a flexibility to allow users to decide what data can be integrated
 based on their own knowledge. The analysis pipeline can be primarily divided
 into two parts: 1) differential analysis of omics data; and 2) construction of 
 the TRN. In this vignette, we will demonstrate how to use the package to
-construct a TRN using transcriptomic, small RNAomic, and chromatin accessibility
+construct a TRN using **transcriptomic**, **small RNAomic**, and **chromatin accessibility**
 data.
 
 See `help(package = "IntegraTRN")` for more information about the package and
@@ -73,8 +73,7 @@ ls("package:IntegraTRN")
 
 The package has provided datasets for demonstration purposes. The datasets are
 fully simulated or partially simulated based on real data [@adar2023integrate]. 
-Here is an overview
-of the basic omics data used in this package:
+Here is an overview of the basic omics data used in this vignette:
 
 ```{r message = FALSE, tidy=TRUE}
 data("RNAseq_heart") # RNAseq count matrix
@@ -82,6 +81,9 @@ data("RNAseq_heart_samples") # RNAseq sample information
 data("smallRNAseq_heart") # small RNAseq count matrix
 data("smallRNAseq_heart_samples") # small RNAseq sample information
 ```
+
+These are RNAseq and small RNAseq data from human fetal heart tissues, as well
+as the information about the samples.
 
 Please use `?<dataset>` to see the details of each dataset.
 
@@ -98,16 +100,16 @@ alterations in the transcriptome can explain difference in the phenotype of
 interest, and what variations in any of the regulatory players could potentially
 contribute to these changes.
 
-### Generate `MOList` object using multi omics data
+### Generate **`MOList`** object using multi omics data
 
-To get started, we first need to generate a `MOList` object. The `MOList` object
-stands for `multi-omics list`, which is the core of entire analysis pipeline as
+To get started, we first need to generate a **`MOList`** object. The **`MOList`** object
+stands for **`multi-omics list`**, which is the core of entire analysis pipeline as
 it preserves our input data and the results of the differential analysis in a
-centralized object. The `MOList` object can be generated using the `MOList`
+centralized object. The **`MOList`** object can be generated using the **`MOList`**
 function.
 
-The `MOList` constructor has a large flexibility in terms of what input omics
-data are available. At the minimum, when constructing a `MOList` object for the
+The **`MOList`** constructor has a large flexibility in terms of what input omics
+data are available. At the minimum, when constructing a **`MOList`** object for the
 first time, we need to provide the RNAseq data and the sample grouping
 information. For any count-based omics data (RNAseq, small RNAseq, and 
 proteomics), the constructor takes a numeric matrix of counts, where each row
@@ -115,8 +117,9 @@ represents a gene or a protein, and each column represents a sample. The
 grouping information can be any vector of the same length as the number of
 samples, in the same order to the columns of the count matrix. A continuous
 or a binary variable can be used. However, we need to make sure we are supplying
-the same grouping criteria for all omics data. Here we create `myMOList` using
-only RNAseq and small RNAseq data.
+the same grouping criteria for all omics data. Here we create a **`myMOList`**
+using only RNAseq and small RNAseq data, using the **`age`** of the samples as 
+the grouping criteria for downstream differential analysis.
 
 ```{r message = FALSE}
 myMOList <- MOList(
@@ -127,25 +130,27 @@ myMOList <- MOList(
 )
 ```
 
-As long as a MOList object is constructed with RNAseq data, additional omics
+As long as a **`MOList`** object is constructed with RNAseq data, additional omics
 data can be added to the existing object using the same syntax. Any existing
 data can also be replaced by new data using the same syntax.
 
 Specifically for ATACseq data, we need to provide the path to the peak files
-instead of the count matrix. Since most peak callers output peak files in BED
-format, we can simply provide a path to a BED file, for each condition. Our 
-package has already provided two simulated peak files in the `extdata` folder.
+instead of the count matrix. Since most peak callers output peak files in [BED
+format](https://genome.ucsc.edu/FAQ/FAQformat.html), we can simply provide a 
+path to a BED file, for each condition. Our 
+package has already provided two simulated peak files in the **`extdata`** folder.
 
 ```{r message = FALSE, tidy=TRUE}
 atacPeak1Path <- system.file("extdata", "peak1.bed", package = "IntegraTRN")
 atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
 ```
 
-A unified peak file should be provided for each condition. When biological
+A consensus peak file should be provided for each condition. When biological
 replicates are used for the ATACseq experiment, the peak files should be merged
-into one and filtered for blacklisted regions before being provided to the
-constructor [@amemiya2019encode]. 
-Here, we simply use the previously created `myMOList` object to
+into one and filtered for 
+[blacklisted regions](https://github.com/Boyle-Lab/Blacklist) before being 
+provided to the constructor [@amemiya2019encode]. 
+Here, we simply use the previously created **`myMOList`** object to
 append the ATACseq data.
 
 ```{r message = FALSE}
@@ -157,18 +162,18 @@ myMOList <- MOList(myMOList,
 
 ### Differential analysis of omics data
 
-Once the `MOList` object is created, we can perform differential analysis on
+Once the **`MOList`** object is created, we can perform differential analysis on
 each omics data separately. However, since differential analysis on count-based
 data is different that that of the epigenomic data, the process is slightly
 different.
 
 #### Differential analysis of count-based omics data
 
-For count-based omics data, we can use the `diffOmics` function to perform
-differential analysis. To simplify the process, the `diffOmics` function
+For count-based omics data, we can use the **`diffOmics`** function to perform
+differential analysis. To simplify the process, the **`diffOmics`** function
 essentially performs differential expression analysis on all available count
-based omics data in the `MOList` object. Since we can specify to use either
-`DESeq2` or `edgeR` for the differential analysis, our underlying assumption
+based omics data in the **`MOList`** object. Since we can specify to use either
+**`DESeq2`** or **`edgeR`** for the differential analysis, our underlying assumption
 is that the expression data follows a negative binomial distribution 
 [@love2014moderated] [@robinson2010edger].
 Furthermore, the differential expression analysis utilizes a generalized
@@ -183,8 +188,8 @@ myMOList <- diffOmics(myMOList,
 )
 ```
 
-The `batch` argument follow the same criteria as the grouping information
-provided during the construction of the `MOList` object. Therefore, this 
+The **`batch`** argument follow the same criteria as the grouping information
+provided during the construction of the **`MOList`** object. Therefore, this 
 argument is not limited to the batch effect, but can be any covariate that
 we want to adjust for.
 
@@ -214,8 +219,8 @@ plotVolcanoRNA(myMOList, log2FC = 0.1)
 The plot also directly indicates the number of up- and down-regulated genes.
 
 For any count-based differential expression analysis, the result is stored in a
-`DETag` object as an list element of the `MOList` object. We can simply subset
-`myMOList` as a list.
+**`DETag`** object as an list element of the **`MOList`** object. The 
+**`myMOList`** object can simply be subsetted as a regular list.
 
 ```{r message = FALSE, tidy=TRUE}
 myRNADETag <- myMOList$DERNAseq
@@ -228,7 +233,7 @@ myRNADETag
 ```
 
 Or if we want to retrieve the entire differential expression result, we can use
-the `exportDE` function.
+the **`exportDE`** function.
 
 ```{r message = FALSE, tidy=TRUE}
 exportDE(myRNADETag) %>% head(5) # For the first 5 genes
@@ -249,7 +254,7 @@ Then we again plot the volcano plot, with some genes labeled.
 ```{r message = FALSE, tidy=TRUE}
 ```
 
-We can make use of the `ggrepel` package to label the genes on the plot.
+We can make use of the **`ggrepel`** package to label the genes on the plot.
 
 ```{r message = FALSE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
 rnaVPlot <- plotVolcanoRNA(myMOList, log2FC = 0.1)
@@ -258,9 +263,7 @@ rnaVPlot <- rnaVPlot + ggrepel::geom_label_repel(
   mapping = ggplot2::aes(
     x = logFC,
     y = -log10(padj),
-    label = rownames(rnaVPlot$data[
-      rownames(rnaVPlot$data) %in% genesToLabel,
-    ])
+    label = rownames(rnaVPlot$data[rownames(rnaVPlot$data) %in% genesToLabel, ])
   ),
   box.padding = 0.5,
   size = 3
@@ -274,7 +277,6 @@ rnaVPlot
 Before moving on to small RNAseq data, we first need to annotate the small
 RNAs for their types. To do so, we need to provide a data frame of small RNA
 annotation, as in the name of the transcripts for each type of small RNA.
-A path to a tab-delimited file could also work.
 The following is an example:
 
 ```{r message = FALSE}
@@ -284,7 +286,7 @@ smallRNAAnnotation <- data.frame(
 )
 ```
 
-To annotate the small RNAseq data, we can use the `annotateSmallRNA` function.
+To annotate the small RNAseq data, we can use the **`annotateSmallRNA`** function.
 
 ```{r message = FALSE, eval=FALSE}
 # NOT run, just illustrate the usage of the smallRNAAnnotation argument
@@ -305,7 +307,7 @@ internal database.
 myMOList <- annotateSmallRNA(myMOList, anno = "human")
 ```
 
-The `annotateSmallRNA` function will automatically checks for the coverage of
+The **`annotateSmallRNA`** function will automatically checks for the coverage of
 each small RNA type and will alert the user if the annotation does not cover
 all existing transcripts.
 
@@ -329,7 +331,7 @@ analysis (PCA) on each type of small RNA separately.
 pcaPlotList <- plotSmallRNAPCAs(myMOList)
 ```
 
-The `plotSmallRNAPCAs` function returns a list of PCA plots, one for each type
+The **`plotSmallRNAPCAs`** function returns a list of PCA plots, one for each type
 of small RNA. We can check the length of the list to see how many PCA plots
 are generated.
 
@@ -346,7 +348,7 @@ pcaPlotList$miRNA
 ```
 
 Or, we can generate a combined PCA plot for all small RNA types by making use
-of the `ggpubr` package.
+of the **`ggpubr`** package.
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=9, fig.height=6, fig.cap="Figure 5. Combined PCA plot of all small RNA types"}
 ggpubr::ggarrange(pcaPlotList$miRNA,
@@ -376,18 +378,18 @@ the TFs that are potentially involved in the regulation of the differentially
 expressed genes.
 
 To do so, we first need additional annotation information. Here, we make use of 
-the annotation database from the `TxDb.Hsapiens.UCSC.hg38.knownGene` package,
-which is a `TxDb` object that contains the genomic coordinates of all known
+the annotation database from the **`TxDb.Hsapiens.UCSC.hg38.knownGene`** package,
+which is a **`TxDb`** object that contains the genomic coordinates of all known
 genes in the `hg38` genome assembly [@TxDb.Hsapiens.UCSC.hg38.knownGene]. 
 We also need to provide a more general
-annotation database, which is the `org.Hs.eg.db` package to extract the gene
+annotation database, which is the **`org.Hs.eg.db`** package to extract the gene
 information [@org.Hs.eg.db]. 
 Finally, scanning the open chromatin regions for TF binding motifs
 requires identifying the sequence of the open chromatin regions. 
 Here, we use the corresponding genome FASTA database from the
- `BSgenome.Hsapiens.UCSC.hg38` package [@BSgenome]. 
+**`BSgenome.Hsapiens.UCSC.hg38`** package [@BSgenome]. 
 
-```{r message = FALSE, tidy=TRUE, echo=FALSE, warning=FALSE}
+```{r message = FALSE, tidy=TRUE, warning=FALSE}
 # Annotate ATAC Peaks
 library("TxDb.Hsapiens.UCSC.hg38.knownGene")
 library("org.Hs.eg.db")
@@ -400,26 +402,26 @@ bsgenome <- BSgenome.Hsapiens.UCSC.hg38
 Motif enrichment analysis would also require a known set of position weight
 matrices (PWMs) for all known curated TFs. The PWM is a matrix that contains
 the probability of each nucleotide (A, T, C, G) at every position of the
-binding motif. The `IntegraTRN` package has already provided a list of PWMs
-from the `JASPAR2022` database for vertebrates. We can load the PWMs using the
+binding motif. The **`IntegraTRN`** package has already provided a list of PWMs
+from the **`JASPAR2022`** database for vertebrates. We can load the PWMs using the
 following command:
 
-```{r message = FALSE, tidy=TRUE, echo=FALSE}
+```{r message = FALSE, tidy=TRUE}
 # Load PWMs from JASPAR
 data("jasparVertebratePWM")
 ```
 
-This is a `PWMatrixList` object defined in the `TFBSTools` package 
+This is a **`PWMatrixList`** object defined in the **`TFBSTools`** package 
 [@tan2016tfbstools]. This package
 also provides additional functionality to retrieve PWMs from other databases or
 tools, such as HOMER etc. Here, we will use our package-provided PWMs from
-`JASPAR2022` [@castro2022jaspar].
+**`JASPAR2022`** [@castro2022jaspar].
 
-The `annotateATACPeaksMotif` function performs both peak annotation and motif
+The **`annotateATACPeaksMotif`** function performs both peak annotation and motif
 enrichment analysis via a single call. Here, we define the promoter region as
-the region 3kb upstream and 3kb downstream of the transcription start site.
+the region **3kb** upstream and **3kb** downstream of the transcription start site.
 
-```{r message = FALSE, warning=FALSE}
+```{r message = FALSE, warning=FALSE, results='hide'}
 myMOList <- annotateATACPeaksMotif(myMOList,
   tssRegion = c(-3000, 3000),
   TxDb = txdb,
@@ -457,7 +459,7 @@ enriched motifs. Typically, the differential motif enrichment can be very
 stringent especially when the ATACseq libraries are not sequenced very deeply
 (less than 100 million reads) [@yan2020reads]. 
 Therefore, we can use a more relaxed cutoff for
-the p-value. The `plotATACMotifHeatmap` function by default utilizes adjusted
+the p-value. The **`plotATACMotifHeatmap`** function by default utilizes adjusted
 p-value, but when a unadjusted p-value is provided, it will use the unadjusted
 one and ignore the default. Since our ATACseq data is simulated, here we use
 a relaxed cutoff.
@@ -499,7 +501,7 @@ variables used for matching using the `varMatch` argument.
 
 Here, we use all common variables, which are `Age` and `Sex` for matching.
 
-```{r message = FALSE, tidy=TRUE, echo=FALSE}
+```{r message = FALSE, tidy=FALSE, warning=FALSE}
 myMOList <- matchSamplesRNAsmallRNA(myMOList,
   sampleDFRNAseq = RNAseq_heart_samples,
   sampleDFSmallRNAseq = smallRNAseq_heart_samples
@@ -525,7 +527,7 @@ interactions to be part of the TRN. For example, the miRNet tools provides
 a comprehensive database of miRNA-target interactions, but the information
 are usually not tissue-specific or all relevant to the biological question 
 [@chang2020mirnet].
-However, `IntegraTRN` provides a flexibility to allow users to import
+However, **`IntegraTRN`** provides a flexibility to allow users to import
 externally curated interactions, and during the construction of the TRN,
 these external interactions are intersected with the predicted interactions
 as well as the differential genes/enriched motifs to provide a more focused
@@ -572,7 +574,7 @@ omiCutoffs
 
 ### Constructing and exploring the TRN
 
-Finally, we can construct the TRN using the `constructTRN` function. This 
+Finally, we can construct the TRN using the **`constructTRN`** function. This 
 function contains the logic to deal with different availability of the omics
 data as well as the availability of external interactions. We can specify
 whether we want to focus only on the up or down regulated genes, or both. We
@@ -595,7 +597,7 @@ myTRNet <- constructTRN(myMOList,
 )
 ```
 
-We can easily plot the network using the `plotNetwork` function. We can decide
+We can easily plot the network using the **`plotNetwork`** function. We can decide
 whether we want an interactive network. For large networks, the interactive
 network provides a better way to explore the interactions [@networkd3].
 
@@ -608,14 +610,14 @@ of the element (target gene, miRNA, piRNA, TF etc.) are color coded. The layout
 of the network is computed by a force-directed algorithm, but we can simply
 drag the nodes to better visualize the interactions.
 
-We can also plot a static network using the `plotNetwork` function. But this
+We can also plot a static network using the **`plotNetwork`** function. But this
 time, we only plot the up-regulated genes and miRNAs with a more stringent
 cutoff.
 
 ```{r message = FALSE}
 omiCutoffs2 <- omiCutoffs
 omiCutoffs2$rnaAdjPval <- 0.01
-omiCutoffs2$rnaLogFC <- 0.2
+omiCutoffs2$rnaLogFC <- 0.3
 ```
 
 Let us construct a new TRN.
@@ -636,8 +638,8 @@ plotNetwork(myTRNet2, vertex.size = 10)
 ```
 
 Some times it is hard to use the default parameters to plot a publication-level
-network. However, users can easily customize the network using the `igraph`
-package. We can extract the network as an `igraph` object and performs 
+network. However, users can easily customize the network using the **`igraph`**
+package. We can extract the network as an **`igraph`** object and performs 
 further customization [@csardi2006igraph].
 
 ```{r message = FALSE, tidy=TRUE, warning=FALSE}
