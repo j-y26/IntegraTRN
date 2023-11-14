@@ -88,20 +88,18 @@ omcis data available. `IntegraTRN` provides functions:
 11. ***plotATACMotifHeatmap*** for visualizing the motif enrichment
     analysis as a heatmap comparing differentially enriched motifs
     between the two testing conditions
-12. ***plotATACProfileHeatmap*** for visualizing the profile plot to see
-    the distribution of peaks around the TSS
-13. ***matchSamplesRNAsmallRNA*** for matching the samples between
+12. ***matchSamplesRNAsmallRNA*** for matching the samples between
     RNAseq and small RNAseq data
-14. ***exportMatchResult*** for exporting the matching results to a data
+13. ***exportMatchResult*** for exporting the matching results to a data
     frame
-15. ***loadExtInteractions*** for loading external interaction data for
+14. ***loadExtInteractions*** for loading external interaction data for
     small RNA - gene and TF - gene interactions
-16. ***setOmicCutoffs*** for setting the cutoffs for differential
+15. ***setOmicCutoffs*** for setting the cutoffs for differential
     expression and accessibility used to filter the key elements in the
     TRN
-17. ***constructTRN*** for constructing the TRN
-18. ***plotNetwork*** for visualizing the TRN
-19. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN
+16. ***constructTRN*** for constructing the TRN
+17. ***plotNetwork*** for visualizing the TRN
+18. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN
     to retrieve the key elements in the TRN
 
 The package also provides several datasets: - An RNAseq count matrix
