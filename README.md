@@ -284,4 +284,30 @@ Visualization.” *Bioinformatics* 31 (14): 2382–83.
 This package was developed as part of an assessment for 2023 BCB410H:
 Applied Bioinformatics course at the University of Toronto, Toronto,
 CANADA. `IntegraTRN` welcomes issues, enhancement requests, and other
-contributions. To submit an issue, use the GitHub issues.
+contributions. To submit an issue, use the [GitHub
+issues](https://github.com/j-y26/IntegraTRN/issues).
+
+# Author’s note
+
+Users are encouraged to clone the repository locally to build the
+package. However, when running `R CMD` check using `devtools::check()`,
+one warning is expected:
+
+``` r
+Requries (indirectly) orphaned package: 'plotrix'
+```
+
+This is due to the `plotrix` package being orphaned, which is imported
+by one of the package dependency, `ChIPseeker`.
+
+According to
+[CRAN](https://cran.r-project.org/web/packages/plotrix/index.html),
+which is updated on Nov. 10, 2023, the `plotrix` package is orphaned.
+The the maintainer of the `plotrix` package has passed away, and the
+package is current searching for a new maintainer. Since `ChIPseeker`
+presents a core functionality of `IntegraTRN` and that the `plotrix`
+package has been stable for an extended period, the recent change on the
+status of `plotrix` should not affect the functionality of `IntegraTRN`.
+Hence, the warning can be safely ignored.
+
+Any suggestions or comments on this issue are welcome.

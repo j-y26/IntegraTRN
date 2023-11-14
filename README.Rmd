@@ -28,7 +28,23 @@ knitr::opts_chunk$set(
 
 ## Description
 
-The R package `IntegraTRN` integrates transcriptomic, small RNAomic, proteomic, and epigenomic data to construct a transcriptional regulatory network (TRN) underlying the gene expression changes in a developmental or disease (or any continuous/binary) biological context. In particular, the TRN is a network of interacting factors, in which one element can exert a regulatory effect (activating or inhibitory) on the expression of one or more elements. Given the complex nature of transcriptional regulation, the package reveals the key players of such regulation, including transcriptional factors (TFs) and small RNAs. Since gene/protein expression changes are usually the most direct molecular cause of observed phenotypic alterations, the core TRN deciphers changes between two or more conditions and infers the upstream regulatory factors that mediate such changes. The analysis pipeline provided by this package is primarily composed of a two-step process: (1) elucidating the transcriptional and regulatory changes that take place during a biological process, such as development or disease; and (2) performing correlational analysis with rigorous filtering based on biological data to identify the regulatory interactions that are responsible for the observed changes.
+The R package `IntegraTRN` integrates transcriptomic, small RNAomic, proteomic, 
+and epigenomic data to construct a transcriptional regulatory network (TRN) 
+underlying the gene expression changes in a developmental or disease (or any 
+continuous/binary) biological context. In particular, the TRN is a network of 
+interacting factors, in which one element can exert a regulatory effect 
+(activating or inhibitory) on the expression of one or more elements. Given the 
+complex nature of transcriptional regulation, the package reveals the key 
+players of such regulation, including transcriptional factors (TFs) and small 
+RNAs. Since gene/protein expression changes are usually the most direct 
+molecular cause of observed phenotypic alterations, the core TRN deciphers 
+changes between two or more conditions and infers the upstream regulatory 
+factors that mediate such changes. The analysis pipeline provided by this 
+package is primarily composed of a two-step process: (1) elucidating the 
+transcriptional and regulatory changes that take place during a biological 
+process, such as development or disease; and (2) performing correlational 
+analysis with rigorous filtering based on biological data to identify the 
+regulatory interactions that are responsible for the observed changes.
 
 The package is developed under the following environment:
 
@@ -126,7 +142,8 @@ An overview of the analysis pipeline is shown below:
 ## Contributions
 
 The author of the package is Jielin Yang. The author defined all data structures
-used in this package, including the S4 classes `MOList`, `DETag`, `TOPTag`, `PEAKTag`, and `TRNet`. The author wrote the `MOList` function to construct the
+used in this package, including the S4 classes `MOList`, `DETag`, `TOPTag`, 
+`PEAKTag`, and `TRNet`. The author wrote the `MOList` function to construct the
 key data structure and performs validations on the input omics data. The package
 `GenomicTools.fileHandler` is used to read bed files. The function `diffOmics`
 performs differential expression on RNAseq, small RNAseq, and proteomics data
@@ -169,4 +186,28 @@ This package was developed as part of an assessment for 2023
 BCB410H: Applied Bioinformatics course at the University of
 Toronto, Toronto, CANADA. `IntegraTRN` welcomes issues,
 enhancement requests, and other contributions. To submit an issue,
-use the GitHub issues.
+use the [GitHub issues](https://github.com/j-y26/IntegraTRN/issues).
+
+# Author's note
+
+Users are encouraged to clone the repository locally to build the package.
+However, when running ` R CMD` check using `devtools::check()`, one warning is
+expected:
+
+```{r, eval=FALSE}
+Requries (indirectly) orphaned package: 'plotrix'
+```
+
+This is due to the `plotrix` package being orphaned, which is imported by one of
+the package dependency, `ChIPseeker`.
+
+According to [CRAN](https://cran.r-project.org/web/packages/plotrix/index.html),
+which is updated on Nov. 10, 2023, the `plotrix` package is orphaned. The
+the maintainer of the `plotrix` package has passed away, and the package is
+current searching for a new maintainer. Since `ChIPseeker` presents a core
+functionality of `IntegraTRN` and that the `plotrix` package has been stable for
+an extended period, the recent change on the status of `plotrix` should not
+affect the functionality of `IntegraTRN`. Hence, the warning can be safely
+ignored.
+
+Any suggestions or comments on this issue are welcome.
