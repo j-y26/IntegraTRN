@@ -52,6 +52,7 @@ Imports:
     Rdpack,
     Repitools,
     shiny,
+    shinyalert,
     SummarizedExperiment
 RdMacros: Rdpack
 URL: https://github.com/j-y26/IntegraTRN
