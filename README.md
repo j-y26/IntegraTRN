@@ -179,10 +179,10 @@ the author’s discretion.
 
 <div id="ref-adar2023integrate" class="csl-entry">
 
-Aharon-Yariv, Adar, Yaxu Wang, Abdalla Ahmed, and Paul Delgado-Olguin.
+Aharon-Yariv, Adar, Yaxu Wang, Abdalla Ahmed, and Paul Delgado-Olguı́n.
 2023. “Integrated Small RNA, mRNA and Protein Omics Reveal a miRNA
 Network Orchestrating Metabolic Maturation of the Developing Human
-Heart.” *BMC Genomics*.
+Heart.” *BMC Genomics* 24 (1): 1–18.
 
 </div>
 
@@ -233,6 +233,14 @@ Machlab, Dania, Lukas Burger, Charlotte Soneson, Filippo M Rijli, Dirk
 Schübeler, and Michael B Stadler. 2022. “monaLisa: An r/Bioconductor
 Package for Identifying Regulatory Motifs.” *Bioinformatics* 38 (9):
 2624–25.
+
+</div>
+
+<div id="ref-R" class="csl-entry">
+
+R Core Team. 2023. *R: A Language and Environment for Statistical
+Computing*. Vienna, Austria: R Foundation for Statistical Computing.
+<https://www.R-project.org/>.
 
 </div>
 

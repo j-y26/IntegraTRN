@@ -2,7 +2,7 @@
 output: github_document
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
-  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @yu2015chipseeker, @machlab2022monalisa
+  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @yu2015chipseeker, @machlab2022monalisa, @R
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
