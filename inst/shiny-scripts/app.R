@@ -85,26 +85,17 @@ ui <- fluidPage(
       downloadLink(outputId = "download_rnaseq_sample_metadata",
                    label = "Download example RNAseq sample metadata for human
                             fetal heart development (.csv)"),
-
-
+      br(),
+      # Select the grouping variable for RNAseq samples
+      uiOutput("rnaseq_sample_attributes")
     ),
-
-
-
-
-
-
-
-
-
-
 
     # Main panel for displaying outputs
     mainPanel(
 
     ),
 
-  ),          
+  ),
 )
 
 
@@ -158,6 +149,18 @@ server <- function(input, output) {
       write.csv(RNAseq_heart_samples, file, row.names = TRUE)
     }
   )
+  # Retrieve the attribute (column) names of the sample metadata
+  rnaseq_sample_attributes <- reactive({
+    req(input$rnaseq_sample_metadata)
+    colnames(rnaseq_sample_metadata())
+  })
+  # Render selector UI for sample attributes for RNAseq
+  output$rnaseq_sample_attributes <- renderUI({
+    selectInput(inputId = "rnaseq_sample_grouping",
+                label = "Select the grouping variable for RNAseq samples:",
+                choices = rnaseq_sample_attributes(),
+                multiple = FALSE)
+  })
 
 
 
