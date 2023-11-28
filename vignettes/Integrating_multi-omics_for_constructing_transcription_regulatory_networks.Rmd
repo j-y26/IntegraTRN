@@ -6,8 +6,8 @@ output:
     toc_depth: 3
 vignette: >
   %\VignetteIndexEntry{Integrating multi-omics for constructing transcriptional regulatory networks}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
   @chang2020mirnet, @villanueva2019ggplot2, @dplyr

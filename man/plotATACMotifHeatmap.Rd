@@ -42,21 +42,38 @@ The motif enrichment analysis can be exceptionally stringent for
          pValueAdj will be ignored.
 }
 \examples{
+\dontrun{
 # Use the package-provided example data
 data(expMOList)
 
+# Annotates the peaks in the example data and performs motif enrichment
+# Using human annotations as an example
+library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+library("org.Hs.eg.db")
+library("BSgenome.Hsapiens.UCSC.hg38")
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+annoDb <- "org.Hs.eg.db"
+bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+
+# Load PWMs from JASPAR
+data("jasparVertebratePWM")
+
+# Performs the annotation and motif enrichment
+expMOList <- annotateATACPeaksMotif(expMOList,
+  tssRegion = c(-3000, 3000),
+  TxDb = txdb,
+  annoDb = annoDb,
+  bsgenome = bsgenome,
+  pwmL = jasparVertebratePWM
+)
+
 # Example 1: Plot the motif heatmap by default parameters
-\dontrun{
 plotATACMotifHeatmap(expMOList)
-}
 
 # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
-\dontrun{
 plotATACMotifHeatmap(expMOList, pValue = 0.01)
-}
 
 # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
-\dontrun{
 plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
 }
 

@@ -30,12 +30,28 @@ This function generates a PCA plot for each type of small RNA
              separating samples based on their phenotypes.
 }
 \examples{
-# Use the package-provided example data
-data(expMOList)
+\dontrun{
+# Loading example smallRNAseq data
+data("expMOList")
+data("smallRNAseq_heart") # small RNAseq count matrix
+data("smallRNAseq_heart_samples") # small RNAseq sample information
+
+# Adding the smallRNAseq data to the example MOList object
+expMOList <- MOList(expMOList, 
+                    smallRNAseq = smallRNAseq_heart,
+                    smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+
+# Annotate the small RNAs using the package-provided human annotation
+expMOList <- annotateSmallRNA(expMOList, "human")
 
 # Generate a list of PCA plots for each type of small RNA
-\dontrun{
 pcaPlotList <- plotSmallRNAPCAs(expMOList)
+
+# Plot the PCA plot for miRNA
+pcaPlotList$miRNA
+
+# Plot the PCA plot for piRNA
+pcaPlotList$piRNA
 }
 
 }

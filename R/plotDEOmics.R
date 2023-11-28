@@ -249,7 +249,8 @@ annoSncList <- function(deg, annoList) {
 #' @param colScheme A RColorBrewer color scheme for color-coding each type of
 #'                  small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
 #'                  for details.
-#' @param title The title for the plot. Default is NULL.
+#' @param title A character vector specifying the title for the plot. Default
+#'              is NULL.
 #'
 #' @return A ggplot object
 #'
@@ -507,12 +508,28 @@ countPCA <- function(matrix,
 #' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' @examples
-#' # Use the package-provided example data
-#' data(expMOList)
-#'
-#' # Generate a list of PCA plots for each type of small RNA
 #' \dontrun{
+#' # Loading example smallRNAseq data
+#' data("expMOList")
+#' data("smallRNAseq_heart") # small RNAseq count matrix
+#' data("smallRNAseq_heart_samples") # small RNAseq sample information
+#' 
+#' # Adding the smallRNAseq data to the example MOList object
+#' expMOList <- MOList(expMOList, 
+#'                     smallRNAseq = smallRNAseq_heart,
+#'                     smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+#' 
+#' # Annotate the small RNAs using the package-provided human annotation
+#' expMOList <- annotateSmallRNA(expMOList, "human")
+#' 
+#' # Generate a list of PCA plots for each type of small RNA
 #' pcaPlotList <- plotSmallRNAPCAs(expMOList)
+#' 
+#' # Plot the PCA plot for miRNA
+#' pcaPlotList$miRNA
+#' 
+#' # Plot the PCA plot for piRNA
+#' pcaPlotList$piRNA
 #' }
 #'
 plotSmallRNAPCAs <- function(objMOList,
@@ -618,11 +635,32 @@ plotSmallRNAPCAs <- function(objMOList,
 #' \insertRef{lawrence2013software}{IntegraTRN}
 #'
 #' @examples
+#' \dontrun{
 #' # Use the package-provided example data
 #' data(expMOList)
 #'
+#' # Annotates the peaks in the example data and performs motif enrichment
+#' # Using human annotations as an example
+#' library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+#' library("org.Hs.eg.db")
+#' library("BSgenome.Hsapiens.UCSC.hg38")
+#' txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+#' annoDb <- "org.Hs.eg.db"
+#' bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+#'
+#' # Load PWMs from JASPAR
+#' data("jasparVertebratePWM")
+#'
+#' # Performs the annotation and motif enrichment
+#' expMOList <- annotateATACPeaksMotif(expMOList,
+#'   tssRegion = c(-3000, 3000),
+#'   TxDb = txdb,
+#'   annoDb = annoDb,
+#'   bsgenome = bsgenome,
+#'   pwmL = jasparVertebratePWM
+#' )
+#'
 #' # Plotting the coverage plot
-#' \dontrun{
 #' plotATACCoverage(expMOList)
 #' }
 #'
@@ -667,11 +705,32 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
 #' \insertRef{yu2015chipseeker}{IntegraTRN}
 #'
 #' @examples
+#' \dontrun{
 #' # Use the package-provided example data
 #' data(expMOList)
 #'
+#' # Annotates the peaks in the example data and performs motif enrichment
+#' # Using human annotations as an example
+#' library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+#' library("org.Hs.eg.db")
+#' library("BSgenome.Hsapiens.UCSC.hg38")
+#' txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+#' annoDb <- "org.Hs.eg.db"
+#' bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+#'
+#' # Load PWMs from JASPAR
+#' data("jasparVertebratePWM")
+#'
+#' # Performs the annotation and motif enrichment
+#' expMOList <- annotateATACPeaksMotif(expMOList,
+#'   tssRegion = c(-3000, 3000),
+#'   TxDb = txdb,
+#'   annoDb = annoDb,
+#'   bsgenome = bsgenome,
+#'   pwmL = jasparVertebratePWM
+#' )
+#'
 #' # Plotting the annotation pie chart
-#' \dontrun{
 #' plotATACAnno(expMOList)
 #' }
 #'
@@ -729,21 +788,38 @@ plotATACAnno <- function(objMOList) {
 #'
 #'
 #' @examples
+#' \dontrun{
 #' # Use the package-provided example data
 #' data(expMOList)
 #'
+#' # Annotates the peaks in the example data and performs motif enrichment
+#' # Using human annotations as an example
+#' library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+#' library("org.Hs.eg.db")
+#' library("BSgenome.Hsapiens.UCSC.hg38")
+#' txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+#' annoDb <- "org.Hs.eg.db"
+#' bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+#'
+#' # Load PWMs from JASPAR
+#' data("jasparVertebratePWM")
+#'
+#' # Performs the annotation and motif enrichment
+#' expMOList <- annotateATACPeaksMotif(expMOList,
+#'   tssRegion = c(-3000, 3000),
+#'   TxDb = txdb,
+#'   annoDb = annoDb,
+#'   bsgenome = bsgenome,
+#'   pwmL = jasparVertebratePWM
+#' )
+#'
 #' # Example 1: Plot the motif heatmap by default parameters
-#' \dontrun{
 #' plotATACMotifHeatmap(expMOList)
-#' }
 #'
 #' # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
-#' \dontrun{
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01)
-#' }
 #'
 #' # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
-#' \dontrun{
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
 #' }
 #'

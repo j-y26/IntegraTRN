@@ -51,6 +51,7 @@ Imports:
     RColorBrewer (>= 1.1-2),
     Rdpack,
     Repitools,
+    shiny,
     SummarizedExperiment
 RdMacros: Rdpack
 URL: https://github.com/j-y26/IntegraTRN

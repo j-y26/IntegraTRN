@@ -20,11 +20,32 @@ This function generates a pie chart for the annotation of
              ChIPseeker package.
 }
 \examples{
+\dontrun{
 # Use the package-provided example data
 data(expMOList)
 
+# Annotates the peaks in the example data and performs motif enrichment
+# Using human annotations as an example
+library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+library("org.Hs.eg.db")
+library("BSgenome.Hsapiens.UCSC.hg38")
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+annoDb <- "org.Hs.eg.db"
+bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+
+# Load PWMs from JASPAR
+data("jasparVertebratePWM")
+
+# Performs the annotation and motif enrichment
+expMOList <- annotateATACPeaksMotif(expMOList,
+  tssRegion = c(-3000, 3000),
+  TxDb = txdb,
+  annoDb = annoDb,
+  bsgenome = bsgenome,
+  pwmL = jasparVertebratePWM
+)
+
 # Plotting the annotation pie chart
-\dontrun{
 plotATACAnno(expMOList)
 }
 

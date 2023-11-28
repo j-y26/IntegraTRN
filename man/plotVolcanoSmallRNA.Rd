@@ -24,7 +24,8 @@ results for small RNAs.}
 small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
 for details.}
 
-\item{title}{The title for the plot. Default is NULL.}
+\item{title}{A character vector specifying the title for the plot. Default
+is NULL.}
 }
 \value{
 A ggplot object
