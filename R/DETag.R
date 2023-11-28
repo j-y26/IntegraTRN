@@ -2,7 +2,7 @@
 # Author: Jielin Yang
 # Date: 2023-10-30
 # Version: 1.0
-# Bugs and Issues: Currently, only DESeq2 is supported for differential analysis
+# Bugs and Issues: None
 
 
 # Define global variables
