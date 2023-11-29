@@ -42,10 +42,10 @@ ui <- fluidPage(
         # Panel title
         tags$h4("Introduction"),
         br(),
-        br(),
 
         # Description of the app
-        tags$p(tags$b("Description:"), "The IntegraTRN shiny app 
+        tags$b("Package Description:"),
+        tags$p("The IntegraTRN shiny app 
           performs integrative analysis of multi-omics data to infer 
           the core transcriptional regulatory networks (TRNs) that 
           explains the condition-specific transcriptomic alterations. 
@@ -61,6 +61,13 @@ ui <- fluidPage(
           high-confidence interactions."),
 
         # Empty space
+        br(),
+        
+        # Image summary of the package
+        tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/Schematics.jpg",
+                  width = "550px", align = "center"),
+        tags$p("Schematics of the IntegraTRN package workflow"),
+
         br(),
         br(),
 
