@@ -8,6 +8,14 @@
 library(shiny)
 library(shinyalert)
 
+# Define some global variables
+# Note that RNA, SMALLRNA, ATAC, and PROTEIN is already defined within the
+# package
+# The following variables are used to define external data types
+# Note these definitions are only available within the app
+MIRNA <- "miRNA_target"
+TF <- "TF_target"
+
 
 # Define the UI for the application
 ui <- fluidPage(
@@ -64,7 +72,7 @@ ui <- fluidPage(
         br(),
         
         # Image summary of the package
-        tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/Schematics.jpg",
+        tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/Schematics.jpg",   # link cannot be broken to shorten the line
                   width = "550px", align = "center"),
         tags$p("Schematics of the IntegraTRN package workflow"),
 
@@ -103,26 +111,60 @@ ui <- fluidPage(
         tags$p(tags$b("Note:"), "Select the type of data for the analysis by 
           checking the corresponding boxes."),
 
-        br(),
-        br(),
-
         # For each type, provide an image on the left and a checkbox with the
         # name of the type on the right
-        # RNAseq
-        tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/RNAseq.jpg",
-                  width = "200px", align = "center"),
-        checkboxInput(inputId = "rnaseq", label = "RNAseq", value = TRUE),
+        # RNAseq (not a checkbox, required)
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_rnaseq.jpg",
+                        width = "200px", align = "center"),
+               div(style = "margin-top: 10px"),
+               tags$b("RNAseq (required)"), align = "center"),
+
+        # Small RNAseq
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_smallrnaseq.jpg",
+                        width = "200px", align = "center"),
+               checkboxInput(inputId = "omicSmallRNA", 
+                             label = tags$b("Small RNAseq"),
+                             value = FALSE), align = "center"),
+        
+        # Proteomics
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_proteomics.jpg",
+                        width = "200px", align = "center"),
+               checkboxInput(inputId = "omicProteomics", 
+                             label = tags$b("Proteomics"),
+                             value = FALSE), align = "center"),
+        
+        # ATACseq
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_atac.jpg",
+                        width = "200px", align = "center"),
+               checkboxInput(inputId = "omicATAC", 
+                             label = tags$b("ATACseq"),
+                             value = FALSE), align = "center"),
+        
+        # External data
+        # miRNA - target gene interactions
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_mirna.jpg",
+                        width = "200px", align = "center"),
+               checkboxInput(inputId = "externalmiRNA", 
+                             label = tags$b("microRNA - Target Interactions"),
+                             value = FALSE), align = "center"),
+        
+        # TF - target gene interactions
+        column(width = 6,
+               tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_tf.jpg",
+                        width = "200px", align = "center"),
+               checkboxInput(inputId = "externalTF", 
+                             label = tags$b("TF - Target Interactions"),
+                             value = FALSE), align = "center"),
+
         br(),
-
-
-
-
-
-
-
-
-
-
+        tags$p("Please upload the selected data types in the following 
+                sections."),
+        ),
 
         # === Panel for section 2: raw data input ==============================
         tabPanel("Section 2",
@@ -286,7 +328,41 @@ ui <- fluidPage(
 
     # Main panel for displaying outputs
     mainPanel(
+      # Create a tabset panel for different output sections
+      tabsetPanel(
+        
 
+
+
+
+        # ======================================================================
+        # === FOR OUTPUT TESTING ONLY, REMOVE LATER ============================
+        # ======================================================================
+        tabPanel("Output Testing",
+        tags$h4("Output Testing"),
+        br(),
+
+        # Test correct selection of omics data types
+        tags$p("The following text should be the selected omics data types:"),
+        textOutput(outputId = "omicsDataTypes"),
+        br(),
+
+
+
+
+
+
+
+
+
+
+        ),
+      
+      
+      
+      
+      
+      ),
     ),
   ),
   
@@ -301,6 +377,42 @@ ui <- fluidPage(
 
 # Define the server for the application
 server <- function(input, output) {
+
+  # === Section 1: select omics data ===========================================
+  # RNAseq (required)
+  # Small RNAseq (optional)
+  # Proteomics (optional)
+  # ATACseq (optional)
+  # External data
+  # miRNA - target gene interactions (optional)
+  # TF - target gene interactions (optional)
+
+  # Define a vector of user-selected omics data types
+  omicsDataTypes <- reactive({
+    # RNAseq is required
+    omicsDataTypes <- c(RNA)
+    # Add other data types if selected
+    if (input$omicSmallRNA) {
+      omicsDataTypes <- c(omicsDataTypes, SMALLRNA)
+    }
+    if (input$omicProteomics) {
+      omicsDataTypes <- c(omicsDataTypes, PROTEIN)
+    }
+    if (input$omicATAC) {
+      omicsDataTypes <- c(omicsDataTypes, ATAC)
+    }
+    if (input$externalmiRNA) {
+      omicsDataTypes <- c(omicsDataTypes, MIRNA)
+    }
+    if (input$externalTF) {
+      omicsDataTypes <- c(omicsDataTypes, TF)
+    }
+    return(omicsDataTypes)
+  })
+
+
+
+
   
   # RNAseq data input
 
@@ -497,6 +609,24 @@ server <- function(input, output) {
   # Integrative input validation
   # Check that all provided inputs satisfy the requirements for integrative
   # analysis, in addition to the specific requirements for each data type
+
+
+
+
+
+
+
+  # ============================================================================
+  # === FOR OUTPUT TESTING ONLY, REMOVE LATER ==================================
+  # ============================================================================
+
+  # Check that the omics data types are correctly selected
+  output$omicsDataTypes <- renderText({
+    paste(omicsDataTypes(), collapse = ", ")
+  })
+
+
+
 
 
 
