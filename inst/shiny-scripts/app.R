@@ -247,8 +247,14 @@ ui <- fluidPage(
     mainPanel(
 
     ),
-
   ),
+  
+  # Add a footer to the app
+  tags$footer("© 2023 Package IntegraTRN. Developed and maintained by Jielin
+              Yang."),
+  tags$footer("To view the source code or report issues, visit the ",
+              tags$a(href = "https://github.com/j-y26/IntegraTRN", 
+              "package Github page"), "."),
 )
 
 
