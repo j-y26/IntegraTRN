@@ -83,9 +83,50 @@ ui <- fluidPage(
                 corresponding data type is not provided."),
         ),
 
-        # === Panel for section 1: raw data input ==============================
+        # === Panel for section 1: select omics data ===========================
         tabPanel("Section 1",
-        tags$h4("Section 1: Raw Data Input"),
+        tags$h4("Section 1: Select Omics Data"),
+        br(),
+
+        # Description of the section
+        tags$p(tags$b("Description:"), "In this section, please select the 
+          omics data types that you would like to analyze. The app will 
+          automatically perform the corresponding analysis based on the 
+          data types provided."),
+        br(),
+        tags$p(tags$b("Note:"), "RNAseq data is required for the analysis. 
+          Additional data types are optional. However, it is recommended
+          to provide a comprehensive set of data to generate a more biologically
+          relevant TRN. Example data sets for each type are provided for 
+          download in the following sections."),
+        br(),
+        tags$p(tags$b("Note:"), "Select the type of data for the analysis by 
+          checking the corresponding boxes."),
+
+        br(),
+        br(),
+
+        # For each type, provide an image on the left and a checkbox with the
+        # name of the type on the right
+        # RNAseq
+        tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/RNAseq.jpg",
+                  width = "200px", align = "center"),
+        checkboxInput(inputId = "rnaseq", label = "RNAseq", value = TRUE),
+        br(),
+
+
+
+
+
+
+
+
+
+
+
+        # === Panel for section 2: raw data input ==============================
+        tabPanel("Section 2",
+        tags$h4("Section 2: Raw Data Input"),
         br(),
 
         # Description of the section
@@ -145,7 +186,7 @@ ui <- fluidPage(
                   accept = c(".csv")),
         div(style = "margin-top: -35px"),    # move the download link up
         downloadLink(outputId = "downloadSmallRnaseqCountMatrix",
-                    label = "Download example small RNAseq count matrix for
+                     label = "Download example small RNAseq count matrix for
                               human fetal heart development (.csv)"),
         br(),
         br(),
@@ -201,9 +242,9 @@ ui <- fluidPage(
         uiOutput("proteomicsSampleGrouping"),
       ),
 
-        # === Panel for section 2: annotations and external data ===============
-        tabPanel("Section 2",
-        tags$h4("Section 2: Annotations and Externally Curated Regulatory
+        # === Panel for section 3: annotations and external data ===============
+        tabPanel("Section 3",
+        tags$h4("Section 3: Annotations and Externally Curated Regulatory
                 Interactions"),
         br(),
 
@@ -224,9 +265,9 @@ ui <- fluidPage(
 
         ),
 
-        # === Panel for section 3: integrative analysis ========================
-        tabPanel("Section 3",
-        tags$h4("Section 3: Integrative Analysis"),
+        # === Panel for section 4: integrative analysis ========================
+        tabPanel("Section 4",
+        tags$h4("Section 4: Integrative Analysis"),
         br(),
 
         # Description of the section
@@ -250,7 +291,7 @@ ui <- fluidPage(
   ),
   
   # Add a footer to the app
-  tags$footer("© 2023 Package IntegraTRN. Developed and maintained by Jielin
+  tags$footer("© 2023 R Package IntegraTRN. Developed and maintained by Jielin
               Yang."),
   tags$footer("To view the source code or report issues, visit the ",
               tags$a(href = "https://github.com/j-y26/IntegraTRN", 
