@@ -313,7 +313,6 @@ ui <- fluidPage(
           annotation files for small RNAs and proteins, as well as
           externally curated regulatory interactions, such as TF-target
           gene and miRNA-target gene interactions."),
-        br(),
 
         tags$p("An example tool to search for externally curated interactions is
                 miRNet, available ",
@@ -322,18 +321,16 @@ ui <- fluidPage(
         br(),
 
         tags$h5("Part 1: Annotations"),
-        selectInput(inputId = "species",
-                    label = "Please select the species:",
+        selectInput(inputId = "genAssembly",
+                    label = "Please select the genome assembly:",
                     choices = c(HSAPIENS, MMUSCULUS),
                     selected = HSAPIENS),
-        br(),
         
         # Small RNA annotation
         uiOutput("smallRNAAnnotation"),
 
-        # Protein name conversion (to be implemented later) ====================
-        # uiOutput("proteinNameConversion"),
-
+        # Protein name conversion
+        uiOutput("proteinNameConversion"),
 
         # Check annotation coverage button
         uiOutput("checkAnnotationCoverage"),
@@ -426,6 +423,18 @@ ui <- fluidPage(
         # Test correct input of TF - target interactions
         tags$p("TF - target interactions:"),
         tableOutput(outputId = "TFTargetTest"),
+
+        # Test correct input of small RNA annotation
+        tags$p("Small RNA annotation:"),
+        tableOutput(outputId = "smallRNAAnnotationTest"),
+
+        # Test correct input of protein name conversion
+        tags$p("Protein name conversion:"),
+        tableOutput(outputId = "proteinNameConversionTest"),
+
+        # Test correct genome assembly selection
+        tags$p("Genome assembly:"),
+        textOutput(outputId = "genAssemblyTest"),
 
 
 
@@ -626,9 +635,16 @@ server <- function(input, output) {
   )
   output$downloadsmallRNAAnnotation <- downloadsmallRNAAnnotation
 
-  ##############################################################################
-  # Protein name conversion to be implemented later
-  ##############################################################################
+  # Protein to Gene Name Conversion
+  downloadproteinNameConversion <- downloadHandler(
+    filename = function() {
+      paste("protein_name_conversion_partial", "csv", sep = ".")
+    },
+    content = function(file) {
+      write.csv(proteinGeneIDConvert, file, row.names = FALSE)
+    }
+  )
+  output$downloadproteinNameConversion <- downloadproteinNameConversion
 
 
 
@@ -942,10 +958,10 @@ server <- function(input, output) {
 
   # Part 1: annotations
 
-  # Species selection
-  species <- reactive({
-    req(input$species)
-    return(input$species)
+  # Selecting the genome assembly
+  genAssembly <- reactive({
+    req(input$genAssembly)
+    return(input$genAssembly)
   })
 
   # Small RNA annotation (dynamic UI)
@@ -982,6 +998,7 @@ server <- function(input, output) {
         downloadLink(outputId = "onsiteDownloadsmallRNAAnnotation",
               label = "Download small RNA annotation (.csv)"),
         br(),
+        br(),
       )
     }
   })
@@ -991,32 +1008,87 @@ server <- function(input, output) {
   # First provide a download link
   output$onsiteDownloadsmallRNAAnnotation <- downloadsmallRNAAnnotation
 
-  # # Protein name conversion (dynamic UI)
-  # output$proteinNameConversion <- renderUI({
-  #   if (useProteomics()) {
-  #     tagList(
-  #       # User should upload a protein name conversion file
-  #       tags$b("Upload gene - protein name conversion (.csv):"),
-  #       fileInput(inputId = "proteinNameConversion",
-  #               label = "A .csv file with the first column as gene names
-  #               and the second column as protein names. The first row should
-  #               be column names: 'gene' and 'protein'.",
-  #               accept = c(".csv")),
-  #       div(style = "margin-top: -20px"),)
-  #   }
-  # })
+  # Retrieve the small RNA annotation
+  smallRNAAnnotation <- reactive({
+    req(input$smallRNAAnnotation)
 
-  # # Protein name conversion (server)
-  # # First provide a download link
-  # output$onsiteDownloadproteinNameConversion <- downloadproteinNameConversion
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$smallRNAAnnotation$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    smallRNAAnnotation <- read.csv(input$smallRNAAnnotation$datapath,
+                                   header = TRUE, stringsAsFactors = FALSE)
+    smallRNAAnnotation <- smallRNAAnnotation[, 1:2] %>% 
+                          setNames(c("transcript", "type"))
+    return(smallRNAAnnotation)
+  })
+
+  # Protein name conversion (dynamic UI)
+  output$proteinNameConversion <- renderUI({
+    if (useProteomics()) {
+      tagList(
+        # User should upload a protein name conversion file
+        tags$b("Upload gene - protein name conversion (.csv):"),
+        fileInput(inputId = "proteinNameConversion",
+                label = "A .csv file with the first column as protein names
+                and the second column as gene names. The first row should
+                be column names: 'gene' and 'protein'. Use consistent naming
+                with the RNAseq and proteomics data.",
+                accept = c(".csv")),
+        div(style = "margin-top: -20px"),
+        tags$b(id = "proteinNameConversionNote", 
+                "Note on ID conversion (click here to see details):"),
+        bsPopover(id = "proteinNameConversionNote",
+            title = "Converting protein IDs to gene IDs",
+            content = paste0("ID mapping is a key issue in bioinformatics. It ",
+                      "is recommended that the users use official tools that ",
+                      "provide a comprehensive mapping between gene and ",
+                      "protein IDs. It is required that the IDs of genes and ",
+                      "proteins are consistent with the RNAseq and proteomics ",
+                      "data. The provided example file illustrates an ",
+                      "non-comprehensive case, where the example does not ",
+                      "fully cover the proteins in the proteomics data. The ",
+                      "programs can handle these cases by ignoring the ",
+                      "unmapped proteins, but the constructed TRN may lose ",
+                      "some information."),
+            placement = "right",
+            trigger = "click"),
+        tags$p("An example gene - protein name conversion file is available 
+                for download:"),
+        div(style = "margin-top: -10px"),
+        downloadLink(outputId = "onsiteDownloadproteinNameConversion",
+              label = "Download gene - protein name conversion (.csv)"),
+        br(),
+        br(),
+      )
+    }
+  })
+
+  # Protein name conversion (server)
+  # First provide a download link
+  output$onsiteDownloadproteinNameConversion <- downloadproteinNameConversion
+
+  # Retrieve the protein name conversion
+  proteinNameConversion <- reactive({
+    req(input$proteinNameConversion)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$proteinNameConversion$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    proteinNameConversion <- read.csv(input$proteinNameConversion$datapath,
+                                      header = TRUE, stringsAsFactors = FALSE)
+    proteinNameConversion <- proteinNameConversion[, 1:2] %>% 
+                              setNames(c("protein", "gene"))
+    return(proteinNameConversion)
+  })
 
   # Button to check for annotation coverage (dynamic UI)
   output$checkAnnotationCoverage <- renderUI({
     if (useSmallRNAseq() || useProteomics()) {
        tagList(
-        br(),
         actionButton(inputId = "checkAnnotationCoverage",
                     label = "Check Annotation Coverage"),
+        br(),
+        br(),
        )
     }
   })
@@ -1029,7 +1101,6 @@ server <- function(input, output) {
     if (usemiRNATarget() || useTFTarget()) {
       tagList(
         tags$h5("Part 2: Externally Curated Regulatory Interactions"),
-        br(),
       )
     }
   })
@@ -1208,6 +1279,22 @@ server <- function(input, output) {
   output$TFTargetTest <- renderTable({
     TFTarget()[1:2, ]
   })
+
+  # Display the first 2 rows of the small RNA annotation
+  output$smallRNAAnnotationTest <- renderTable({
+    smallRNAAnnotation()[1:2, ]
+  })
+
+  # Display the first 2 rows of the protein name conversion
+  output$proteinNameConversionTest <- renderTable({
+    proteinNameConversion()[1:2, ]
+  })
+
+  # Display the genome assembly
+  output$genAssemblyTest <- renderText({
+    genAssembly()
+  })
+
 
 
 
