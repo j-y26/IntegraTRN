@@ -109,7 +109,8 @@ ui <- fluidPage(
           download in the following sections."),
         br(),
         tags$p(tags$b("Note:"), "Select the type of data for the analysis by 
-          checking the corresponding boxes."),
+          checking the corresponding boxes. Hover over the text or check the 
+          boxes to learn about each data type."),
 
         # For each type, provide an image on the left and a checkbox with the
         # name of the type on the right
@@ -118,7 +119,15 @@ ui <- fluidPage(
                tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/icon_rnaseq.jpg",
                         width = "200px", align = "center"),
                div(style = "margin-top: 10px"),
-               tags$b("RNAseq (required)"), align = "center"),
+               tags$b(id = "omicRNA", "RNAseq (required)"), align = "center"),
+               bsTooltip(id = "omicRNA",
+                         title = paste0("Bulk RNA sequencing (RNAseq) data is ",
+                         "required for the analysis, which provides a full ",
+                         "transcriptomic profile of gene expression for the ",
+                         "tissue/biological system of interest.")),
+        # The use of bsTooltip is to add hover-over tooltips is derived from
+        # https://stackoverflow.com/questions/16449252/tooltip-on-shiny-r
+        # by Praneeth Jagarapu
 
         # Small RNAseq
         column(width = 6,
@@ -127,6 +136,12 @@ ui <- fluidPage(
                checkboxInput(inputId = "omicSmallRNA", 
                              label = tags$b("Small RNAseq"),
                              value = FALSE), align = "center"),
+               bsTooltip(id = "omicSmallRNA",
+                         title = paste0("Small RNA sequencing (small RNAseq) ",
+                          "data is optional for the analysis, which provides ",
+                          "insights into the expression of small RNAs, such ",
+                          "as miRNAs, piRNAs, and snoRNAs. They are important ",
+                          "regulators of gene expression.")),
         
         # Proteomics
         column(width = 6,
@@ -135,6 +150,11 @@ ui <- fluidPage(
                checkboxInput(inputId = "omicProteomics", 
                              label = tags$b("Proteomics"),
                              value = FALSE), align = "center"),
+               bsTooltip(id = "omicProteomics",
+                          title = paste0("Proteomics data is optional for the ",
+                            "analysis. Cross referencing transcriptomic and ",
+                            "proteomic data can further validate gene ",
+                            "expression changes at the protein level.")),
         
         # ATACseq
         column(width = 6,
@@ -143,6 +163,11 @@ ui <- fluidPage(
                checkboxInput(inputId = "omicATAC", 
                              label = tags$b("ATACseq"),
                              value = FALSE), align = "center"),
+               bsTooltip(id = "omicATAC",
+                          title = paste0("ATACseq data is optional. It ",
+                            "provides valuable information on chromatin ",
+                            "accessibility, which reflects putative ",
+                            "binding sites of transcription factors. ")),
         
         # External data
         # miRNA - target gene interactions
@@ -152,6 +177,14 @@ ui <- fluidPage(
                checkboxInput(inputId = "externalmiRNA", 
                              label = tags$b("microRNA - Target Interactions"),
                              value = FALSE), align = "center"),
+               bsTooltip(id = "externalmiRNA",
+                          title = paste0("microRNAs (miRNAs) are important ",
+                            "regulators of gene expression by binding to ",
+                            "target genes and leading to their degradation ",
+                            "or translational repression. Curated miRNA - ",
+                            "target gene interactions are available from ",
+                            "external databases, and can be used to establish ",
+                            "a non-tissue-specific context for the analysis.")),
         
         # TF - target gene interactions
         column(width = 6,
@@ -160,6 +193,15 @@ ui <- fluidPage(
                checkboxInput(inputId = "externalTF", 
                              label = tags$b("TF - Target Interactions"),
                              value = FALSE), align = "center"),
+               bsTooltip(id = "externalTF",
+                          title = paste0("Transcription factors (TFs) ",
+                            "can mediate transcriptional activation or ",
+                            "repression of target genes. Curated TF - ",
+                            "target gene interactions are available from ",
+                            "previous ChIP-seq studies, but may lack ",
+                            "tissue-specificity. Intersecting with ATACseq ",
+                            "data can help to identify tissue-specific ",
+                            "TF - target gene interactions.")),
 
         br(),
         tags$p("Please upload the selected data types in the following 
