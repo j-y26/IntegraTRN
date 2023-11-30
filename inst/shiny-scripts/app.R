@@ -16,6 +16,8 @@ library(shinyBS)
 # Note these definitions are only available within the app
 MIRNA <- "miRNA_target"
 TF <- "TF_target"
+HSAPIENS <- "Human (hg38)"
+MMUSCULUS <- "Mouse (mm10)"
 
 
 # Define the UI for the application
@@ -34,8 +36,7 @@ ui <- fluidPage(
 
   # Title of the application, consistent with Github repo
   titlePanel(tags$h1(tags$b("IntegraTRN:"), "Integrating multi-omics data for 
-    the exploration of regulatory mechanisms and the inference of core TRNs 
-    underlying transcriptomic alterations")),
+    the inference of core transcriptional regulatory networks")),
   
   # Use sidebar layout with a sidebar panel and a main panel
   sidebarLayout(
@@ -301,28 +302,55 @@ ui <- fluidPage(
         uiOutput("atacRawData"),
         ),
 
-      #   # === Panel for section 3: annotations and external data ===============
-      #   tabPanel("Section 3",
-      #   tags$h4("Section 3: Annotations and Externally Curated Regulatory
-      #           Interactions"),
-      #   br(),
+        # === Panel for section 3: annotations and external data ===============
+        tabPanel("Section 3",
+        tags$h4("Section 3: Annotations and Externally Curated Regulatory
+                Interactions"),
+        br(),
 
-      #   # Description of the section
-      #   tags$p(tags$b("Description:"), "In this section, please upload 
-      #     annotation files for small RNAs and proteins, as well as
-      #     externally curated regulatory interactions, such as TF-target
-      #     gene and miRNA-target gene interactions."),
-      #   br(),
+        # Description of the section
+        tags$p(tags$b("Description:"), "In this section, please upload
+          annotation files for small RNAs and proteins, as well as
+          externally curated regulatory interactions, such as TF-target
+          gene and miRNA-target gene interactions."),
+        br(),
 
-      #   tags$p("An example tool to search for externally curated interactions is
-      #           miRNet, available ",
-      #           tags$a(href = "https://www.mirnet.ca/", "miRNet"), "."),
+        tags$p("An example tool to search for externally curated interactions is
+                miRNet, available ",
+                tags$a(href = "https://www.mirnet.ca/", "miRNet"), "."),
+        br(),
+        br(),
+
+        tags$h5("Part 1: Annotations"),
+        selectInput(inputId = "species",
+                    label = "Please select the species:",
+                    choices = c(HSAPIENS, MMUSCULUS),
+                    selected = HSAPIENS),
+        br(),
+        
+        # Small RNA annotation
+        uiOutput("smallRNAAnnotation"),
+
+        # Protein name conversion (to be implemented later) ====================
+        # uiOutput("proteinNameConversion"),
+        br(),
+
+        # External data
+        uiOutput("externalRawData"),
+
+        # miRNA - target interactions
+        uiOutput("miRNATargetRawData"),
+
+        # TF - target interactions
+        uiOutput("tfTargetRawData"),
 
         
 
-      #   # Space holder, implement later
+        
 
-      #   ),
+        # Space holder, implement later
+
+        ),
 
       #   # === Panel for section 4: integrative analysis ========================
       #   tabPanel("Section 4",
@@ -583,7 +611,7 @@ server <- function(input, output) {
   # Small RNA Annotation
   downloadsmallRNAAnnotation <- downloadHandler(
     filename = function() {
-      paste("small_rna_annotation", "csv", sep = ".")
+      paste("small_rna_annotation_hsapiens", "csv", sep = ".")
     },
     content = function(file) {
       SNCANNOLIST_HSAPIENS %>%
@@ -908,8 +936,53 @@ server <- function(input, output) {
 
   # === Section 3: annotations and external data ===============================
 
+  # Part 1: annotations
+
+  # Species selection
+  species <- reactive({
+    req(input$species)
+    return(input$species)
+  })
+
+  # Small RNA annotation (dynamic UI)
+  output$smallRNAAnnotation <- renderUI({
+    if (useSmallRNAseq()) {
+      tagList(
+        # User should upload a small RNA annotation file
+        tags$b("Upload small RNA annotation (.csv):"),
+        fileInput(inputId = "smallRNAAnnotation",
+                label = "A .csv file with the first column as small RNA names
+                and the second column as the type of small RNAs. Valid types
+                include 'miRNA', 'piRNA', 'tRNA', 'circRNA', 'snRNA', 
+                and 'snoRNA'. The first row should be column names: 'transcript'
+                and 'type'.",
+                accept = c(".csv")),
+        div(style = "margin-top: -20px"),
+        tags$p("A pre-compiled small RNA annotation file for human is available 
+                for download:"),
+        div(style = "margin-top: -10px"),
+        downloadLink(outputId = "onsiteDownloadsmallRNAAnnotation",
+              label = "Download small RNA annotation (.csv)"),
+        br(),
+      )
+    }
+  })
+  
+  # Small RNA annotation (server)
+  # First provide a download link
+  output$onsiteDownloadsmallRNAAnnotation <- downloadsmallRNAAnnotation
 
 
+
+  # External raw data header
+  output$externalRawData <- renderUI({
+    if (usemiRNATarget() || useTFTarget()) {
+      tagList(
+        tags$h5("Part 2: Externally Curated Regulatory Interactions"),
+        br(),
+      )
+    }
+  })
 
 
   # External miRNA - target interactions (dynamic UI)
@@ -919,12 +992,8 @@ server <- function(input, output) {
 
   output$miRNATargetRawData <- renderUI({
     if (usemiRNATarget()) {
-      # Calculate a part number
-      partNumber <- which(omicsDataTypes() == MIRNA)
-
       tagList(
         # miRNA - target interactions
-        tags$h5("Part ", partNumber, ": External miRNA - Target Interactions"),
         tags$b("Upload miRNA - target interactions (.csv):"),
         fileInput(inputId = "miRNATarget",
                 label = "A .csv file with the first column as miRNA names and
@@ -966,10 +1035,8 @@ server <- function(input, output) {
     if (useTFTarget()) {
       # Calculate a part number
       partNumber <- which(omicsDataTypes() == TF)
-
       tagList(
         # TF - target interactions
-        tags$h5("Part ", partNumber, ": External TF - Target Interactions"),
         tags$b("Upload TF - target interactions (.csv):"),
         fileInput(inputId = "tfTarget",
             label = "A .csv file with the first column as transcription factors
