@@ -333,6 +333,10 @@ ui <- fluidPage(
 
         # Protein name conversion (to be implemented later) ====================
         # uiOutput("proteinNameConversion"),
+
+
+        # Check annotation coverage button
+        uiOutput("checkAnnotationCoverage"),
         br(),
 
         # External data
@@ -958,6 +962,20 @@ server <- function(input, output) {
                 and 'type'.",
                 accept = c(".csv")),
         div(style = "margin-top: -20px"),
+        tags$b(id = "sncAnnoNote", "Note on small RNA annotation 
+                                    (click here to see details):"),
+        bsPopover(id = "sncAnnoNote",
+            title = "Human Small RNA Annotations",
+            content = paste0("The IntegraTRN package provides a pre-compiled ",
+                      "small RNA annotation file for human following the ",
+                      "standard hsa naming convention. This annotation ",
+                      "utilizes data from miRbase, piRNAbank, piRBase, ",
+                      "GtRNAdb, circBase, GENCODE, and piRNACluster. The ",
+                      "annotation file is compiled using the ",
+                      tags$a(href = "https://github.com/cougarlj/COMPSRA", 
+                      "COMPSRA tool"), "."),
+            placement = "right",
+            trigger = "click"),
         tags$p("A pre-compiled small RNA annotation file for human is available 
                 for download:"),
         div(style = "margin-top: -10px"),
@@ -968,9 +986,41 @@ server <- function(input, output) {
     }
   })
   
+  
   # Small RNA annotation (server)
   # First provide a download link
   output$onsiteDownloadsmallRNAAnnotation <- downloadsmallRNAAnnotation
+
+  # # Protein name conversion (dynamic UI)
+  # output$proteinNameConversion <- renderUI({
+  #   if (useProteomics()) {
+  #     tagList(
+  #       # User should upload a protein name conversion file
+  #       tags$b("Upload gene - protein name conversion (.csv):"),
+  #       fileInput(inputId = "proteinNameConversion",
+  #               label = "A .csv file with the first column as gene names
+  #               and the second column as protein names. The first row should
+  #               be column names: 'gene' and 'protein'.",
+  #               accept = c(".csv")),
+  #       div(style = "margin-top: -20px"),)
+  #   }
+  # })
+
+  # # Protein name conversion (server)
+  # # First provide a download link
+  # output$onsiteDownloadproteinNameConversion <- downloadproteinNameConversion
+
+  # Button to check for annotation coverage (dynamic UI)
+  output$checkAnnotationCoverage <- renderUI({
+    if (useSmallRNAseq() || useProteomics()) {
+       tagList(
+        br(),
+        actionButton(inputId = "checkAnnotationCoverage",
+                    label = "Check Annotation Coverage"),
+       )
+    }
+  })
+
 
 
 
