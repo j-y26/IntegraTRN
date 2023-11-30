@@ -7,6 +7,7 @@
 # Load libraries
 library(shiny)
 library(shinyalert)
+library(shinyBS)
 
 # Define some global variables
 # Note that RNA, SMALLRNA, ATAC, and PROTEIN is already defined within the
@@ -245,124 +246,60 @@ ui <- fluidPage(
       ),
 
 
+        # === Panel for section 2: raw data input ==============================
+        tabPanel("Section 2",
+        tags$h4("Section 2: Raw Data Input"),
+        br(),
 
-      #   # === Panel for section 2: raw data input ==============================
-      #   tabPanel("Section 2",
-      #   tags$h4("Section 2: Raw Data Input"),
-      #   br(),
+        # Description of the section
+        tags$p(tags$b("Description:"), "In this section, please upload 
+          the raw data files for each data type according to the selected
+          data types in the previous section."),
+        br(),
 
-      #   # Description of the section
-      #   tags$p(tags$b("Description:"), "In this section, please upload 
-      #     the raw data files for each data type."),
-      #   br(),
+        # RNAseq data input (always shown)
+        tags$h5("Part 1: RNAseq Data Input (Required)"),
 
-      #   # Data inputs
+        # RNAseq count matrix
+        tags$b("Upload RNAseq count matrix (.csv):"),
+        fileInput(inputId = "rnaseqCountMatrix",
+                  label = "A numeric matrix with genes as rows 
+                  and samples as columns. The gene names should be specified in 
+                  the first column. The first row should be sample names.",
+                  accept = c(".csv")),
+        div(style = "margin-top: -35px"),    # move the download link up
+        # The above solution to adjust the position of the download link is
+        # from https://stackoverflow.com/questions/62476054/reduce-space-between-
+        # fileinput-and-text-in-shiny by Stéphane Laurent
+        downloadLink(outputId = "onsiteDownloadRnaseqCountMatrix",
+                    label = "Download example RNAseq count matrix (.csv)"),
+        br(),
 
-      #   # RNAseq data input
-      #   tags$h5("Part 1: RNAseq Data Input (Required)"),
+        # RNAseq sample metadata
+        tags$b("Upload RNAseq sample metadata (.csv):"),
+        fileInput(inputId = "rnaseqSampleMetadata",
+                  label = "A data frame with samples as rows and attributes
+                  as columns. The first column should be sample names. The
+                  first row should be metadata names.",
+                  accept = c(".csv")),
+        div(style = "margin-top: -35px"),   # move the download link up
+        downloadLink(outputId = "onsiteDownloadRnaseqSampleMetadata",
+                    label = "Download example RNAseq sample metadata (.csv)"),
+        br(),
+        # Select the grouping variable for RNAseq samples
+        uiOutput("rnaseqSampleGrouping"),
+        br(),
+        br(),
 
-      #   # RNAseq count matrix
-      #   tags$b("Upload RNAseq count matrix (.csv):"),
-      #   fileInput(inputId = "rnaseqCountMatrix",
-      #             label = "A numeric matrix with genes as rows 
-      #             and samples as columns. The gene names should be specified in 
-      #             the first column. The first row should be sample names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),    # move the download link up
-      #   # The above solution to adjust the position of the download link is
-      #   # from https://stackoverflow.com/questions/62476054/reduce-space-between-
-      #   # fileinput-and-text-in-shiny by Stéphane Laurent
-      #   downloadLink(outputId = "downloadRnaseqCountMatrix",
-      #               label = "Download example RNAseq count matrix for human
-      #                         fetal heart development (.csv)"),
-      #   br(),
-      #   br(),
+        # Small RNAseq data input (optional)
+        uiOutput("smallRnaRawData"),
 
-      #   # RNAseq sample metadata
-      #   tags$b("Upload RNAseq sample metadata (.csv):"),
-      #   fileInput(inputId = "rnaseqSampleMetadata",
-      #             label = "A data frame with samples as rows and attributes
-      #             as columns. The first column should be sample names. The
-      #             first row should be metadata names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),   # move the download link up
-      #   downloadLink(outputId = "downloadRnaseqSampleMetadata",
-      #               label = "Download example RNAseq sample metadata for human
-      #                         fetal heart development (.csv)"),
-      #   br(),
-      #   # Select the grouping variable for RNAseq samples
-      #   uiOutput("rnaseqSampleGrouping"),
+        # Proteomics data input (optional)
+        uiOutput("proteomicsRawData"),
 
-      #   br(),
-      #   br(),
-
-      #   # Small RNAseq data input
-      #   tags$h5("Part 2: Small RNAseq Data Input (Optional)"),
-
-      #   # Small RNAseq count matrix
-      #   tags$b("Upload small RNAseq count matrix (.csv):"),
-      #   fileInput(inputId = "smallRnaseqCountMatrix",
-      #             label = "A numeric matrix with transcripts as rows 
-      #             and samples as columns. The small RNA names should be specified
-      #             in the first column. The first row should be sample names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),    # move the download link up
-      #   downloadLink(outputId = "downloadSmallRnaseqCountMatrix",
-      #                label = "Download example small RNAseq count matrix for
-      #                         human fetal heart development (.csv)"),
-      #   br(),
-      #   br(),
-
-      #   # Small RNAseq sample metadata
-      #   tags$b("Upload small RNAseq sample metadata (.csv):"),
-      #   fileInput(inputId = "smallRnaseqSampleMetadata",
-      #             label = "A data frame with samples as rows and attributes
-      #             as columns. The first column should be sample names. The
-      #             first row should be metadata names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),   # move the download link up
-      #   downloadLink(outputId = "downloadSmallRnaseqSampleMetadata",
-      #               label = "Download example small RNAseq sample metadata for
-      #                         human fetal heart development (.csv)"),
-      #   br(),
-      #   # Select the grouping variable for small RNAseq samples
-      #   uiOutput("smallRnaSampleGrouping"),
-
-      #   br(),
-      #   br(),
-
-      #   # Proteomics data input
-      #   tags$h5("Part 3: Proteomics Data Input (Optional)"),
-
-      #   # Proteomics count matrix
-      #   tags$b("Upload proteomics count matrix (.csv):"),
-      #   fileInput(inputId = "proteomicsCountMatrix",
-      #             label = "A numeric matrix with proteins as rows 
-      #             and samples as columns. The protein names should be specified
-      #             in the first column. The first row should be sample names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),    # move the download link up
-      #   downloadLink(outputId = "downloadProteomicsCountMatrix",
-      #               label = "Download example proteomics count matrix for
-      #                         human fetal heart development (.csv)"),
-      #   br(),
-      #   br(),
-
-      #   # Proteomics sample metadata
-      #   tags$b("Upload proteomics sample metadata (.csv):"),
-      #   fileInput(inputId = "proteomicsSampleMetadata",
-      #             label = "A data frame with samples as rows and attributes
-      #             as columns. The first column should be sample names. The
-      #             first row should be metadata names.",
-      #             accept = c(".csv")),
-      #   div(style = "margin-top: -35px"),   # move the download link up
-      #   downloadLink(outputId = "downloadProteomicsSampleMetadata",
-      #               label = "Download example proteomics sample metadata for
-      #                         human fetal heart development (.csv)"),
-      #   br(),
-      #   # Select the grouping variable for proteomics samples
-      #   uiOutput("proteomicsSampleGrouping"),
-      # ),
+        # ATACseq data input (optional)
+        uiOutput("atacRawData"),
+        ),
 
       #   # === Panel for section 3: annotations and external data ===============
       #   tabPanel("Section 3",
@@ -426,6 +363,40 @@ ui <- fluidPage(
         tags$p("The following text should be the selected omics data types:"),
         textOutput(outputId = "omicsDataTypes"),
         br(),
+
+        # Test correct input of RNAseq data
+        tags$p("RNAseq raw data input:"),
+        tableOutput(outputId = "rnaCM"),
+        tableOutput(outputId = "rnaSM"),
+        textOutput(outputId = "rnaSG"),
+
+        # Test correct input of small RNAseq data
+        tags$p("Small RNAseq raw data input:"),
+        tableOutput(outputId = "smallRnaCM"),
+        tableOutput(outputId = "smallRnaSM"),
+        textOutput(outputId = "smallRnaSG"),
+
+        # Test correct input of proteomics data
+        tags$p("Proteomics raw data input:"),
+        tableOutput(outputId = "proteomicsCM"),
+        tableOutput(outputId = "proteomicsSM"),
+        textOutput(outputId = "proteomicsSG"),
+
+        # Test correct input of ATACseq data
+        tags$p("ATACseq raw data input:"),
+        tableOutput(outputId = "atacPeak1Test"),
+        tableOutput(outputId = "atacPeak2Test"),
+
+        # Test correct input of miRNA - target interactions
+        tags$p("miRNA - target interactions:"),
+        tableOutput(outputId = "miRNATargetTest"),
+
+        # Test correct input of TF - target interactions
+        tags$p("TF - target interactions:"),
+        tableOutput(outputId = "TFTargetTest"),
+
+
+
 
 
 
@@ -498,7 +469,7 @@ server <- function(input, output) {
   # RNAseq, small RNAseq, and proteomics data are serialized as R objects
 
   # RNAseq Count Matrix
-  output$downloadRnaseqCountMatrix <- downloadHandler(
+  downloadRnaseqCountMatrix <- downloadHandler(
     filename = function() {
       paste("rnaseq_count_matrix_fetal_heart", "csv", sep = ".")
     },
@@ -506,8 +477,10 @@ server <- function(input, output) {
       write.csv(RNAseq_heart, file, row.names = TRUE)
     }
   )
+  output$downloadRnaseqCountMatrix <- downloadRnaseqCountMatrix
+
   # RNAseq Sample Metadata
-  output$downloadRnaseqSampleMetadata <- downloadHandler(
+  downloadRnaseqSampleMetadata <- downloadHandler(
     filename = function() {
       paste("rnaseq_sample_metadata_fetal_heart", "csv", sep = ".")
     },
@@ -515,9 +488,10 @@ server <- function(input, output) {
       write.csv(RNAseq_heart_samples, file, row.names = TRUE)
     }
   )
+  output$downloadRnaseqSampleMetadata <- downloadRnaseqSampleMetadata
 
   # Small RNAseq Count Matrix
-  output$downloadSmallRnaseqCountMatrix <- downloadHandler(
+  downloadSmallRnaseqCountMatrix <- downloadHandler(
     filename = function() {
       paste("small_rnaseq_count_matrix_fetal_heart", "csv", sep = ".")
     },
@@ -525,8 +499,10 @@ server <- function(input, output) {
       write.csv(smallRNAseq_heart, file, row.names = TRUE)
     }
   )
+  output$downloadSmallRnaseqCountMatrix <- downloadSmallRnaseqCountMatrix
+
   # Small RNAseq Sample Metadata
-  output$downloadSmallRnaseqSampleMetadata <- downloadHandler(
+  downloadSmallRnaseqSampleMetadata <- downloadHandler(
     filename = function() {
       paste("small_rnaseq_sample_metadata_fetal_heart", "csv", sep = ".")
     },
@@ -534,9 +510,10 @@ server <- function(input, output) {
       write.csv(smallRNAseq_heart_samples, file, row.names = TRUE)
     }
   )
+  output$downloadSmallRnaseqSampleMetadata <- downloadSmallRnaseqSampleMetadata
 
   # Proteomics Count Matrix
-  output$downloadProteomicsCountMatrix <- downloadHandler(
+  downloadProteomicsCountMatrix <- downloadHandler(
     filename = function() {
       paste("proteomics_count_matrix_fetal_heart", "csv", sep = ".")
     },
@@ -544,8 +521,10 @@ server <- function(input, output) {
       write.csv(protein_heart, file, row.names = TRUE)
     }
   )
+  output$downloadProteomicsCountMatrix <- downloadProteomicsCountMatrix
+
   # Proteomics Sample Metadata
-  output$downloadProteomicsSampleMetadata <- downloadHandler(
+  downloadProteomicsSampleMetadata <- downloadHandler(
     filename = function() {
       paste("proteomics_sample_metadata_fetal_heart", "csv", sep = ".")
     },
@@ -553,9 +532,10 @@ server <- function(input, output) {
       write.csv(protein_heart_samples, file, row.names = TRUE)
     }
   )
+  output$downloadProteomicsSampleMetadata <- downloadProteomicsSampleMetadata
   
   # ATACseq Peaks for Condition 1
-  output$downloadATACPeak1 <- downloadHandler(
+  downloadATACPeak1 <- downloadHandler(
     filename = function() {
       paste("atac_peaks_condition_1", "bed", sep = ".")
     },
@@ -564,8 +544,10 @@ server <- function(input, output) {
                 file)
     }
   )
+  output$downloadATACPeak1 <- downloadATACPeak1
+
   # ATACseq Peaks for Condition 2
-  output$downloadATACPeak2 <- downloadHandler(
+  downloadATACPeak2 <- downloadHandler(
     filename = function() {
       paste("atac_peaks_condition_2", "bed", sep = ".")
     },
@@ -574,9 +556,10 @@ server <- function(input, output) {
                 file)
     }
   )
+  output$downloadATACPeak2 <- downloadATACPeak2
 
   # miRNA - Target Interactions
-  output$downloadmiRNATarget <- downloadHandler(
+  downloadmiRNATarget <- downloadHandler(
     filename = function() {
       paste("mirna_target_interactions", "csv", sep = ".")
     },
@@ -584,9 +567,10 @@ server <- function(input, output) {
       write.csv(as.data.frame(miR2Genes), file, row.names = FALSE)
     }
   )
+  output$downloadmiRNATarget <- downloadmiRNATarget
   
   # TF - Target Interactions
-  output$downloadTFTarget <- downloadHandler(
+  downloadTFTarget <- downloadHandler(
     filename = function() {
       paste("tf_target_interactions", "csv", sep = ".")
     },
@@ -594,9 +578,10 @@ server <- function(input, output) {
       write.csv(as.data.frame(tf2Genes), file, row.names = FALSE)
     }
   )
+  output$downloadTFTarget <- downloadTFTarget
 
   # Small RNA Annotation
-  output$downloadsmallRNAAnnotation <- downloadHandler(
+  downloadsmallRNAAnnotation <- downloadHandler(
     filename = function() {
       paste("small_rna_annotation", "csv", sep = ".")
     },
@@ -607,6 +592,7 @@ server <- function(input, output) {
         write.csv(file, row.names = FALSE)
     }
   )
+  output$downloadsmallRNAAnnotation <- downloadsmallRNAAnnotation
 
   ##############################################################################
   # Protein name conversion to be implemented later
@@ -618,17 +604,10 @@ server <- function(input, output) {
 
   # === Section 2: raw data input ==============================================
 
-
-
-
-
-
-  
-  # RNAseq data input
-
+  # RNAseq data (required)
   # RNAseq count matrix
   rnaseqCountMatrix <- reactive({
-    req(input$rnaseqCountMatrix)  # required input
+    req(input$rnaseqCountMatrix)
 
     # Validate file extension and read the file
     ext <- tools::file_ext(input$rnaseqCountMatrix$datapath)
@@ -639,9 +618,12 @@ server <- function(input, output) {
     return(rnaseq)
   })
 
+  # Processing onsite download option
+  output$onsiteDownloadRnaseqCountMatrix <- downloadRnaseqCountMatrix
+
   # RNAseq sample metadata
   rnaseqSampleMetadata <- reactive({
-    req(input$rnaseqSampleMetadata)  # required input
+    req(input$rnaseqSampleMetadata)
     
     # Validate file extension and read the file
     ext <- tools::file_ext(input$rnaseqSampleMetadata$datapath)
@@ -651,6 +633,9 @@ server <- function(input, output) {
                                      stringsAsFactors = FALSE)
     return(rnaseqSampleMetadata)
   })
+  # Processing onsite download option
+  output$onsiteDownloadRnaseqSampleMetadata <- downloadRnaseqSampleMetadata
+
   # Retrieve the attribute (column) names of the sample metadata
   rnaseqSampleAttributes <- reactive({
     req(input$rnaseqSampleMetadata)
@@ -664,38 +649,82 @@ server <- function(input, output) {
                 multiple = FALSE)
   })
 
-  # Small RNAseq data input
-  
-  # Small RNAseq count matrix
-  smallRnaseqCountMatrix <- reactive({
-    if (!is.null(input$smallRnaseqCountMatrix)) { # optional input
-      # Validate file extension and read the file
-      ext <- tools::file_ext(input$smallRnaseqCountMatrix$datapath)
-      validate(need(ext == "csv", "Please upload a .csv file"))
-      smallRnaseq <- read.csv(input$smallRnaseqCountMatrix$datapath,
-                              header = TRUE, row.names = 1,
-                              stringsAsFactors = FALSE)
-      smallRnaseq <- as.matrix(smallRnaseq)
-      return(smallRnaseq)
-    } else {
-      return(NULL)
+  # Small RNAseq data (dynamic UI)
+  useSmallRNAseq <- reactive({
+    return(SMALLRNA %in% omicsDataTypes())
+  })
+
+  output$smallRnaRawData <- renderUI({
+    if (useSmallRNAseq()) {
+      # Calculate a part number
+      partNumber <- which(omicsDataTypes() == SMALLRNA)
+
+      tagList(
+        # Small RNAseq count matrix
+        tags$h5("Part ", partNumber, ": Small RNAseq Data Input"),
+        tags$b("Upload small RNAseq count matrix (.csv):"),
+        fileInput(inputId = "smallRnaseqCountMatrix",
+                label = "A numeric matrix with transcripts as rows 
+                and samples as columns. The small RNA names should be specified
+                in the first column. The first row should be sample names.",
+                accept = c(".csv")),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadSmallRnaseqCountMatrix",
+                  label = "Download example small RNAseq count matrix (.csv)"),
+        br(),
+        br(),
+
+        # Small RNAseq sample metadata
+        tags$b("Upload small RNAseq sample metadata (.csv):"),
+        fileInput(inputId = "smallRnaseqSampleMetadata",
+                  label = "A data frame with samples as rows and attributes
+                  as columns. The first column should be sample names. The
+                  first row should be metadata names.",
+                  accept = c(".csv")),
+        div(style = "margin-top: -35px"),   # move the download link up
+        downloadLink(outputId = "onsiteDownloadSmallRnaseqSampleMetadata",
+                label = "Download example small RNAseq sample metadata (.csv)"),
+        br(),
+        # Select the grouping variable for small RNAseq samples
+        uiOutput("smallRnaSampleGrouping"),
+        br(),
+        br(),
+      )
     }
   })
 
-  # Small RNAseq sample metadata
-  smallRnaseqSampleMetadata <- reactive({
-    if (!is.null(input$smallRnaseqSampleMetadata)) { # optional input
-      # Validate file extension and read the file
-      ext <- tools::file_ext(input$smallRnaseqSampleMetadata$datapath)
-      validate(need(ext == "csv", "Please upload a .csv file"))
-      smallRnaseqSampleMetadata <- read.csv(input$smallRnaseqSampleMetadata$datapath,
-                                            header = TRUE, row.names = 1,
-                                            stringsAsFactors = FALSE)
-      return(smallRnaseqSampleMetadata)
-    } else {
-      return(NULL)
-    }
+  # Small RNAseq count matrix (server)
+  smallRnaseqCountMatrix <- reactive({
+    req(input$smallRnaseqCountMatrix)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$smallRnaseqCountMatrix$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    smallRnaseq <- read.csv(input$smallRnaseqCountMatrix$datapath, header = TRUE,
+                            row.names = 1, stringsAsFactors = FALSE)
+    smallRnaseq <- as.matrix(smallRnaseq)
+    return(smallRnaseq)
   })
+
+  # Processing onsite download option
+  output$onsiteDownloadSmallRnaseqCountMatrix <- downloadSmallRnaseqCountMatrix
+
+  # Small RNAseq sample metadata (server)
+  smallRnaseqSampleMetadata <- reactive({
+    req(input$smallRnaseqSampleMetadata)
+    
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$smallRnaseqSampleMetadata$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    smallRnaseqSampleMetadata <- read.csv(input$smallRnaseqSampleMetadata$datapath,
+                                          header = TRUE, row.names = 1,
+                                          stringsAsFactors = FALSE)
+    return(smallRnaseqSampleMetadata)
+  })
+  
+  # Processing onsite download option
+  output$onsiteDownloadSmallRnaseqSampleMetadata <- 
+                                              downloadSmallRnaseqSampleMetadata
 
   # Retrieve the attribute (column) names of the sample metadata
   smallRnaseqSampleAttributes <- reactive({
@@ -705,43 +734,88 @@ server <- function(input, output) {
   # Render selector UI for sample attributes for small RNAseq
   output$smallRnaSampleGrouping <- renderUI({
     selectInput(inputId = "smallRnaSampleGrouping",
-                label = "Select the grouping variable for small RNA samples:",
-                choices = smallRnaseqSampleAttributes(),
-                multiple = FALSE)
+              label = "Select the grouping variable for small RNAseq samples:",
+              choices = smallRnaseqSampleAttributes(),
+              multiple = FALSE)
   })
 
-  # Proteomics data input
+  # Proteomics data (dynamic UI)
+  useProteomics <- reactive({
+    return(PROTEIN %in% omicsDataTypes())
+  })
 
-  # Proteomics count matrix
+  output$proteomicsRawData <- renderUI({
+    if (useProteomics()) {
+      # Calculate a part number
+      partNumber <- which(omicsDataTypes() == PROTEIN)
+
+      tagList(
+        # Proteomics count matrix
+        tags$h5("Part ", partNumber, ": Proteomics Data Input"),
+        tags$b("Upload proteomics count matrix (.csv):"),
+        fileInput(inputId = "proteomicsCountMatrix",
+                  label = "A numeric matrix with proteins as rows 
+                  and samples as columns. The protein names should be specified
+                  in the first column. The first row should be sample names.",
+                  accept = c(".csv")),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadProteomicsCountMatrix",
+                  label = "Download example proteomics count matrix (.csv)"),
+        br(),
+        br(),
+
+        # Proteomics sample metadata
+        tags$b("Upload proteomics sample metadata (.csv):"),
+        fileInput(inputId = "proteomicsSampleMetadata",
+                  label = "A data frame with samples as rows and attributes
+                  as columns. The first column should be sample names. The
+                  first row should be metadata names.",
+                  accept = c(".csv")),
+        div(style = "margin-top: -35px"),   # move the download link up
+        downloadLink(outputId = "onsiteDownloadProteomicsSampleMetadata",
+                label = "Download example proteomics sample metadata (.csv)"),
+        br(),
+        # Select the grouping variable for proteomics samples
+        uiOutput("proteomicsSampleGrouping"),
+        br(),
+        br(),
+      )
+    }
+  })
+
+  # Proteomics count matrix (server)
   proteomicsCountMatrix <- reactive({
-    if (!is.null(input$proteomicsCountMatrix)) { # optional input
-      # Validate file extension and read the file
-      ext <- tools::file_ext(input$proteomicsCountMatrix$datapath)
-      validate(need(ext == "csv", "Please upload a .csv file"))
-      proteomics <- read.csv(input$proteomicsCountMatrix$datapath,
-                             header = TRUE, row.names = 1,
-                             stringsAsFactors = FALSE)
-      proteomics <- as.matrix(proteomics)
-      return(proteomics)
-    } else {
-      return(NULL)
-    }
+    req(input$proteomicsCountMatrix)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$proteomicsCountMatrix$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    proteomics <- read.csv(input$proteomicsCountMatrix$datapath, header = TRUE,
+                           row.names = 1, stringsAsFactors = FALSE)
+    proteomics <- as.matrix(proteomics)
+    return(proteomics)
+  })
+  
+  # Processing onsite download option
+  output$onsiteDownloadProteomicsCountMatrix <- downloadProteomicsCountMatrix
+
+  # Proteomics sample metadata (server)
+  proteomicsSampleMetadata <- reactive({
+    req(input$proteomicsSampleMetadata)
+    
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$proteomicsSampleMetadata$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    proteomicsSampleMetadata <- read.csv(input$proteomicsSampleMetadata$datapath,
+                                         header = TRUE, row.names = 1,
+                                         stringsAsFactors = FALSE)
+    return(proteomicsSampleMetadata)
   })
 
-  # Proteomics sample metadata
-  proteomicsSampleMetadata <- reactive({
-    if (!is.null(input$proteomicsSampleMetadata)) { # optional input
-      # Validate file extension and read the file
-      ext <- tools::file_ext(input$proteomicsSampleMetadata$datapath)
-      validate(need(ext == "csv", "Please upload a .csv file"))
-      proteomicsSampleMetadata <- read.csv(input$proteomicsSampleMetadata$datapath,
-                                           header = TRUE, row.names = 1,
-                                           stringsAsFactors = FALSE)
-      return(proteomicsSampleMetadata)
-    } else {
-      return(NULL)
-    }
-  })
+  # Processing onsite download option
+  output$onsiteDownloadProteomicsSampleMetadata <- 
+                                              downloadProteomicsSampleMetadata
+
   # Retrieve the attribute (column) names of the sample metadata
   proteomicsSampleAttributes <- reactive({
     req(input$proteomicsSampleMetadata)
@@ -754,6 +828,188 @@ server <- function(input, output) {
                 choices = proteomicsSampleAttributes(),
                 multiple = FALSE)
   })
+
+  # ATACseq data (dynamic UI)
+  useATACseq <- reactive({
+    return(ATAC %in% omicsDataTypes())
+  })
+
+  # Define a set of file formats to be accepted
+  peakFormats <- c(".bed", ".narrowPeak", ".broadPeak", ".gappedPeak")
+
+  output$atacRawData <- renderUI({
+    if (useATACseq()) {
+      # Calculate a part number
+      partNumber <- which(omicsDataTypes() == ATAC)
+
+      tagList(
+        # ATACseq peaks for condition 1
+        tags$h5("Part ", partNumber, ": ATACseq Data Input)"),
+        tags$b("Upload ATACseq peaks for condition 1 (.bed):"),
+        fileInput(inputId = "atacPeak1",
+                label = "A .bed file with peaks as rows and samples as columns.
+                The first column should be peak names. The first row should be
+                sample names.",
+                accept = peakFormats),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadATACPeak1",
+              label = "Download example ATACseq peaks for condition 1 (.bed)"),
+        br(),
+        br(),
+
+        # ATACseq peaks for condition 2
+        tags$b("Upload ATACseq peaks for condition 2 (.bed):"),
+        fileInput(inputId = "atacPeak2",
+                label = "A .bed file with peaks as rows and samples as columns.
+                The first column should be peak names. The first row should be
+                sample names.",
+                accept = peakFormats),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadATACPeak2",
+              label = "Download example ATACseq peaks for condition 2 (.bed)"),
+        br(),
+        br(),
+      )
+    }
+  })
+
+  # ATACseq peaks for condition 1 (server)
+  atacPeak1 <- reactive({
+    req(input$atacPeak1)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$atacPeak1$datapath)
+    validate(need(ext == "bed", "Please upload a .bed file"))
+    atacPeak1 <- read.table(input$atacPeak1$datapath, header = FALSE)
+    atacPeak1 <- atacPeak1[, 1:3] %>% setNames(CHROMINFO)
+    return(atacPeak1) # keep as data frame
+  })
+
+  # Processing onsite download option
+  output$onsiteDownloadATACPeak1 <- downloadATACPeak1
+
+  # ATACseq peaks for condition 2 (server)
+  atacPeak2 <- reactive({
+    req(input$atacPeak2)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$atacPeak2$datapath)
+    validate(need(ext == "bed", "Please upload a .bed file"))
+    atacPeak2 <- read.table(input$atacPeak2$datapath, header = FALSE)
+    atacPeak2 <- atacPeak2[, 1:3] %>% setNames(CHROMINFO)
+    return(atacPeak2) # keep as data frame
+  })
+
+  # Processing onsite download option
+  output$onsiteDownloadATACPeak2 <- downloadATACPeak2
+
+  
+
+
+  # === Section 3: annotations and external data ===============================
+
+
+
+
+
+  # External miRNA - target interactions (dynamic UI)
+  usemiRNATarget <- reactive({
+    return(MIRNA %in% omicsDataTypes())
+  })
+
+  output$miRNATargetRawData <- renderUI({
+    if (usemiRNATarget()) {
+      # Calculate a part number
+      partNumber <- which(omicsDataTypes() == MIRNA)
+
+      tagList(
+        # miRNA - target interactions
+        tags$h5("Part ", partNumber, ": External miRNA - Target Interactions"),
+        tags$b("Upload miRNA - target interactions (.csv):"),
+        fileInput(inputId = "miRNATarget",
+                label = "A .csv file with the first column as miRNA names and
+                the second column as target gene names. The naming should be
+                consistent with the RNAseq and small RNAseq data. The first row
+                should be column names: 'regulator' and 'target'.",
+                accept = c(".csv")),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadmiRNATarget",
+              label = "Download example miRNA - target interactions (.csv)"),
+        br(),
+        br(),
+      )
+    }
+  })
+
+  # miRNA - target interactions (server)
+  miRNATarget <- reactive({
+    req(input$miRNATarget)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$miRNATarget$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    miRNATarget <- read.csv(input$miRNATarget$datapath, header = TRUE,
+                            stringsAsFactors = FALSE)
+    miRNATarget <- miRNATarget[, 1:2] %>% setNames(c("regulator", "target"))
+    return(miRNATarget)
+  })
+
+  # Processing onsite download option
+  output$onsiteDownloadmiRNATarget <- downloadmiRNATarget
+
+  # External TF - target interactions (dynamic UI)
+  useTFTarget <- reactive({
+    return(TF %in% omicsDataTypes())
+  })
+
+  output$tfTargetRawData <- renderUI({
+    if (useTFTarget()) {
+      # Calculate a part number
+      partNumber <- which(omicsDataTypes() == TF)
+
+      tagList(
+        # TF - target interactions
+        tags$h5("Part ", partNumber, ": External TF - Target Interactions"),
+        tags$b("Upload TF - target interactions (.csv):"),
+        fileInput(inputId = "tfTarget",
+            label = "A .csv file with the first column as transcription factors
+            the second column as target gene names. The naming should be
+            consistent with the RNAseq data. The first row
+            should be column names: 'regulator' and 'target'.",
+            accept = c(".csv")),
+        div(style = "margin-top: -35px"),    # move the download link up
+        downloadLink(outputId = "onsiteDownloadTFTarget",
+              label = "Download example TF - target interactions (.csv)"),
+        br(),
+        br(),
+      )
+    }
+  })
+
+  # TF - target interactions (server)
+  TFTarget <- reactive({
+    req(input$tfTarget)
+
+    # Validate file extension and read the file
+    ext <- tools::file_ext(input$tfTarget$datapath)
+    validate(need(ext == "csv", "Please upload a .csv file"))
+    TFTarget <- read.csv(input$tfTarget$datapath, header = TRUE,
+                         stringsAsFactors = FALSE)
+    TFTarget <- TFTarget[, 1:2] %>% setNames(c("regulator", "target"))
+    return(TFTarget)
+  })
+
+  # Processing onsite download option
+  output$onsiteDownloadTFTarget <- downloadTFTarget
+
+
+
+
+
+
+
+
+
 
 
 
@@ -780,6 +1036,60 @@ server <- function(input, output) {
   # Check that the omics data types are correctly selected
   output$omicsDataTypes <- renderText({
     paste(omicsDataTypes(), collapse = ", ")
+  })
+
+  # Display the first 2 rows of the RNAseq count matrix, sample metadata, and
+  # the selected grouping variable
+  output$rnaCM <- renderTable({
+    rnaseqCountMatrix()[1:2, ]
+  })
+  output$rnaSM <- renderTable({
+    rnaseqSampleMetadata()[1:2, ]
+  })
+  output$rnaSG <- renderText({
+    input$rnaseqSampleGrouping
+  })
+
+  # Display the first 2 rows of the small RNAseq count matrix, sample metadata,
+  # and the selected grouping variable
+  output$smallRnaCM <- renderTable({
+    smallRnaseqCountMatrix()[1:2, ]
+  })
+  output$smallRnaSM <- renderTable({
+    smallRnaseqSampleMetadata()[1:2, ]
+  })
+  output$smallRnaSG <- renderText({
+    input$smallRnaSampleGrouping
+  })
+
+  # Display the first 2 rows of the proteomics count matrix, sample metadata,
+  # and the selected grouping variable
+  output$proteomicsCM <- renderTable({
+    proteomicsCountMatrix()[1:2, ]
+  })
+  output$proteomicsSM <- renderTable({
+    proteomicsSampleMetadata()[1:2, ]
+  })
+  output$proteomicsSG <- renderText({
+    input$proteomicsSampleGrouping
+  })
+
+  # Display the first 2 rows of the ATACseq peaks for condition 1 and 2
+  output$atacPeak1Test <- renderTable({
+    atacPeak1()[1:2, ]
+  })
+  output$atacPeak2Test <- renderTable({
+    atacPeak2()[1:2, ]
+  })
+
+  # Display the first 2 rows of the miRNA - target interactions
+  output$miRNATargetTest <- renderTable({
+    miRNATarget()[1:2, ]
+  })
+
+  # Display the first 2 rows of the TF - target interactions
+  output$TFTargetTest <- renderTable({
+    TFTarget()[1:2, ]
   })
 
 
