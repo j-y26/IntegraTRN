@@ -19,6 +19,19 @@ TF <- "TF_target"
 HSAPIENS <- "Human (hg38)"
 MMUSCULUS <- "Mouse (mm10)"
 
+# input data names
+INPUT_LIST <- list(
+  RNAseq = c("rnaseqCountMatrix", "rnaseqSampleMetadata",
+             "rnaseqSampleGrouping"),
+  smallRNAseq = c("smallRnaseqCountMatrix", "smallRnaseqSampleMetadata",
+                  "smallRnaSampleGrouping"),
+  proteomics = c("proteomicsCountMatrix", "proteomicsSampleMetadata",
+                 "proteomicsSampleGrouping"),
+  ATACseq = c("atacPeak1", "atacPeak2"),
+  miRNA_target = "miRNATarget",
+  TF_target = "TFTarget"
+)
+
 
 # Define the UI for the application
 ui <- fluidPage(
@@ -478,6 +491,50 @@ ui <- fluidPage(
           # ATACseq
           uiOutput("atacCutoffs"),
 
+          # === Starting differential analysis ===
+          br(),
+          tags$h5("Performing differential analysis:"),
+          tags$p("By now, you should have uploaded all the required data
+                and defined the settings for the differential analysis depending
+                on the types of omic data selected."),
+          # Method selection
+          selectInput(
+            inputId = "countDEMethod",
+            label = tags$b("Select a method used for differential expression:"),
+            choices = c(DESEQ2, EDGER),
+            selected = DESEQ2
+          ),
+          # Button to start the analysis
+          tags$p("Press the button below to
+                 generate an initial set of differential analysis results."),
+          bsButton(
+            inputId = "runDifferentialAnalysis",
+            label = "Run Differential Analysis",
+            style = "primary"
+          ),
+          # Alert if not all required data are provided
+          bsAlert(anchorId = "missingInputAlert"),
+
+          # Updating results with different cutoffs without rerunning the
+          # analysis
+          br(),
+          br(),
+          tags$b("Update the cutoffs for the differential analysis:"),
+          tags$p("If you would like to explore how different cutoffs affect
+                the results, you can update the cutoffs without rerunning the
+                analysis. The results will be updated automatically."),
+          bsButton(
+            inputId = "updateDifferentialAnalysis",
+            label = "Update Differential Analysis",
+            style = "primary",
+            disabled = TRUE
+          ),
+          # Add a tooltip to the button
+          bsTooltip(
+            id = "updateDifferentialAnalysis",
+            title = "You cannot update the cutoffs until you run the analysis."
+          ),
+
             
 
         ),
@@ -574,6 +631,10 @@ ui <- fluidPage(
           textOutput(outputId = "atacUnadjPvalTest"),
           textOutput(outputId = "atacLogFCTest"),
           textOutput(outputId = "atacUseUnadjPTest"),
+
+          # Test differential analysis method selection
+          tags$p("Differential analysis method:"),
+          textOutput(outputId = "deMethodTest"),
         ),
       ),
     ),
@@ -1309,7 +1370,8 @@ server <- function(input, output, session) {
         createAlert(session,
           anchorId = "smallRNAFullCoverageAlert",
           alertId = "smallRNAFullCoverageAlertID",
-          title = "Great! All small RNAs are annotated."
+          title = "Great! All small RNAs are annotated.",
+          style = "success"
         )
       }
     }
@@ -1331,7 +1393,8 @@ server <- function(input, output, session) {
         createAlert(session,
           anchorId = "proteinFullCoverageAlert",
           alertId = "proteinFullCoverageAlertID",
-          title = "Great! All proteins are covered."
+          title = "Great! All proteins are covered.",
+          style = "success"
         )
       }
     }
@@ -1595,6 +1658,57 @@ server <- function(input, output, session) {
     return(input$useATACunadjPval)
   })
 
+  # === Perform differential analysis ==========================================
+
+  # Retrieve DE method
+  deMethod <- reactive({
+    req(input$countDEMethod)
+    return(input$countDEMethod)
+  })
+
+  # The analysis must follow a specific order of the pipeline
+  # First need to initialize a reactive value to store the MOList object
+  reactiveMOList <- reactiveVal(NULL)
+
+  # Perform differential analysis on the button click
+  observeEvent(input$runDifferentialAnalysis, {
+    # Create a Progress object
+    progress <- shiny::Progress$new(max = 10)
+    # Make sure it closes when exiting the function
+    on.exit(progress$close())
+    
+    # Step 1: Construct the MOList object
+    progress$set(message = "Constructing the MOList object...", value = 1)
+    # If any input is missing, stop the analysis
+    requiredInputs <- INPUT_LIST[omicsDataTypes()]
+    if (useSmallRNAseq()) {
+      requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
+    }
+    if (useProteomics()) {
+      requiredInputs <- c(requiredInputs, "proteinNameConversion")
+    }
+    # Check all required inputs exist
+    if (!all(requiredInputs %in% names(input))) {
+      # Render a warning message
+      createAlert(session,
+        anchorId = "missingInputAlert",
+        alertId = "missingInputAlertID",
+        title = "Missing Input",
+        content = paste0(
+          "Please make sure all required inputs are provided in the previous ",
+          "sections."
+        ),
+        style = "danger"
+      )
+    }
+
+
+
+
+
+  })
+
+
   
 
 
@@ -1744,6 +1858,13 @@ server <- function(input, output, session) {
   output$atacUseUnadjPTest <- renderText({
     atacUseUnadjP()
   })
+
+  # Differential analysis method
+  output$deMethodTest <- renderText({
+    deMethod()
+  })
+
+
 }
 
 
