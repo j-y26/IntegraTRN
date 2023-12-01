@@ -440,31 +440,52 @@ ui <- fluidPage(
 
           # TF - target interactions
           uiOutput("tfTargetRawData"),
-
-
-
-
-
-          # Space holder, implement later
         ),
 
-        #   # === Panel for section 4: integrative analysis ====================
-        #   tabPanel("Section 4",
-        #   tags$h4("Section 4: Integrative Analysis"),
-        #   br(),
+        # === Panel for section 4: differential analysis =======================
+        tabPanel(
+          "Section 4",
+          tags$h4("Section 4: Exploring Differential Analysis"),
+          br(),
 
-        #   # Description of the section
-        #   tags$p(tags$b("Description:"), "In this section, the app performs
-        #     integrative analysis of the multi-omics data to infer the core
-        #     TRNs that explains the condition-specific transcriptomic
-        #     alterations. Please provide settings to the program to define
-        #     the behavior of the analysis."),
-        #   br(),
+          # Description of the section
+          tags$p(tags$b("Description:"), "In this section, the app performs
+          differential analysis of the multi-omics data to identify
+          condition-specific transcriptomic alterations. Please provide
+          settings to the program to define the behavior of the analysis."),
+          br(),
+          
+          tags$b("Please define the settings for the differential analysis:"),
+          br(),
+          tags$b("RNAseq differential expression:"),
+          sliderInput(
+            inputId = "rnaPadj",
+            label = "Adjusted P-value threshold:",
+            min = 0, max = 0.5, value = 0.05, step = 0.001
+          ),
+          sliderInput(
+            inputId = "rnaLogFC",
+            label = "Log2 fold change threshold:",
+            min = 0, max = 10, value = 0, step = 0.1
+          ),
+        
+          # Small RNAseq
+          uiOutput("smallRnaCutoffs"),
 
-        #   # Space holder, implement later
+          # Proteomics
+          uiOutput("proteomicsCutoffs"),
 
-        #   ),
-      ),
+          # ATACseq
+          uiOutput("atacCutoffs"),
+
+            
+
+        ),
+
+
+
+          
+        ),
     ),
 
     # Main panel for displaying outputs
@@ -531,6 +552,28 @@ ui <- fluidPage(
           # Test correct genome assembly selection
           tags$p("Genome assembly:"),
           textOutput(outputId = "genAssemblyTest"),
+
+          # Test RNAseq cutoffs
+          tags$p("RNAseq cutoffs:"),
+          textOutput(outputId = "rnaPadjTest"),
+          textOutput(outputId = "rnaLogFCTest"),
+
+          # Test small RNAseq cutoffs
+          tags$p("Small RNAseq cutoffs:"),
+          textOutput(outputId = "smallRnaPadjTest"),
+          textOutput(outputId = "smallRnaLogFCTest"),
+
+          # Test proteomics cutoffs
+          tags$p("Proteomics cutoffs:"),
+          textOutput(outputId = "proteomicsPadjTest"),
+          textOutput(outputId = "proteomicsLogFCTest"),
+
+          # Test ATACseq cutoffs
+          tags$p("ATACseq cutoffs:"),
+          textOutput(outputId = "atacPadjTest"),
+          textOutput(outputId = "atacUnadjPvalTest"),
+          textOutput(outputId = "atacLogFCTest"),
+          textOutput(outputId = "atacUseUnadjPTest"),
         ),
       ),
     ),
@@ -1008,7 +1051,7 @@ server <- function(input, output, session) {
 
       tagList(
         # ATACseq peaks for condition 1
-        tags$h5("Part ", partNumber, ": ATACseq Data Input)"),
+        tags$h5("Part ", partNumber, ": ATACseq Data Input"),
         tags$b("Upload ATACseq peaks for condition 1 (.bed):"),
         fileInput(
           inputId = "atacPeak1",
@@ -1404,6 +1447,161 @@ server <- function(input, output, session) {
   # Processing onsite download option
   output$onsiteDownloadTFTarget <- downloadTFTarget
 
+  # === Section 4: differential analysis =======================================
+
+  # According to the data types selected, ask the user to define the cutoffs
+  # for differential analysis
+
+  # RNAseq cutoffs, defined in UI since mandatory
+  rnaPadj <- reactive({
+    req(input$rnaPadj)
+    return(input$rnaPadj)
+  })
+  rnaLogFC <- reactive({
+    req(input$rnaLogFC)
+    return(input$rnaLogFC)
+  })
+
+  # small RNAseq cutoffs (dynamic UI)
+  output$smallRnaCutoffs <- renderUI({
+    if (useSmallRNAseq()) {
+      tagList(
+        # Small RNAseq p-value and logFC cutoffs
+        br(),
+        tags$b("Small RNAseq differential expression:"),
+        sliderInput(
+          inputId = "smallRnaPadj",
+          label = "Adjusted P-value threshold",
+          min = 0, max = 0.5, value = 0.05, step = 0.001
+        ),
+        sliderInput(
+          inputId = "smallRnaLogFC",
+          label = "Log2 fold change threshold:",
+          min = 0, max = 10, value = 0, step = 0.1
+        ),
+      )
+    }
+  })
+  # Server for data retrieval
+  smallRnaPadj <- reactive({
+    req(input$smallRnaPadj)
+    return(input$smallRnaPadj)
+  })
+  smallRnaLogFC <- reactive({
+    req(input$smallRnaLogFC)
+    return(input$smallRnaLogFC)
+  })
+
+  # Proteomics cutoffs (dynamic UI)
+  output$proteomicsCutoffs <- renderUI({
+    if (useProteomics()) {
+      tagList(
+        # Proteomics p-value and logFC cutoffs
+        br(),
+        tags$b("Proteomics differential expression:"),
+        sliderInput(
+          inputId = "proteomicsPadj",
+          label = "Adjusted P-value threshold",
+          min = 0, max = 0.5, value = 0.05, step = 0.001
+        ),
+        sliderInput(
+          inputId = "proteomicsLogFC",
+          label = "Log2 fold change threshold:",
+          min = 0, max = 10, value = 0, step = 0.1
+        ),
+      )
+    }
+  })
+  # Server for data retrieval
+  proteomicsPadj <- reactive({
+    req(input$proteomicsPadj)
+    return(input$proteomicsPadj)
+  })
+  proteomicsLogFC <- reactive({
+    req(input$proteomicsLogFC)
+    return(input$proteomicsLogFC)
+  })
+
+  # ATACseq cutoffs (dynamic UI)
+  output$atacCutoffs <- renderUI({
+    if (useATACseq()) {
+      tagList(
+        br(),
+        # Checkbox to choose whether to use p-value cutoff
+        tags$b("ATACseq differential motif enrichment:"),
+        # Use conditionalPanel to hide/show one of the two options
+        conditionalPanel(
+          condition = "input.useATACunadjPval == false",
+          sliderInput(
+            inputId = "atacPadj",
+            label = "Adjusted P-value threshold:",
+            min = 0, max = 0.5, value = 0.05, step = 0.001
+          )
+        ),
+        conditionalPanel(
+          condition = "input.useATACunadjPval == true",
+          sliderInput(
+            inputId = "atacUnadjPval",
+            label = "Unadjusted P-value threshold:",
+            min = 0, max = 0.5, value = 0.05, step = 0.001
+          )
+        ),
+        # A checkbox to choose whether to use unadjusted p-value
+        checkboxInput(
+          inputId = "useATACunadjPval",
+          label = "Use unadjusted P-value instead?",
+          value = FALSE
+        ),
+        div(style = "margin-top: -10px"),
+        tags$p(id = "useATACunadjPvalNote", "Why using unadjusted P-value? 
+        (click here to see details)"),
+        # add a pop-up to explain the use of unadjusted p-value
+        bsPopover(
+        id = "useATACunadjPvalNote",
+        title = "Choosing P-value in differential motif enrichment analysis",
+        content = paste0(
+      "Differential motif enrichment analysis tests for transcription factor ",
+      "or cis-regulatory motifs that are found to be differentially enriched ",
+      "between two conditions. It requires that a motif must be enriched in ",
+      "at least one condition, and at the same time there must be a ",
+      "significant difference in enrichment between the two conditions. ",
+      "Therefore, this analysis can be very stringent. It is up to the ",
+      "users to decide whether to lessen the stringency by using unadjusted ",
+      "p-value instead of adjusted p-value."), trigger = "click"),
+        # and finally the fold enrichment cutoff
+        sliderInput(
+          inputId = "atacLogFC",
+          label = "Log2 fold enrichment threshold:",
+          min = 0, max = 10, value = 0, step = 0.1
+        ),
+      )
+    }
+  })
+  
+  # Server for data retrieval
+  atacPadj <- reactive({
+    req(input$atacPadj)
+    return(input$atacPadj)
+  })
+  atacUnadjPval <- reactive({
+    req(input$atacUnadjPval)
+    return(input$atacUnadjPval)
+  })
+  atacLogFC <- reactive({
+    req(input$atacLogFC)
+    return(input$atacLogFC)
+  })
+  atacUseUnadjP <- reactive({
+    return(input$useATACunadjPval)
+  })
+
+  
+
+
+  
+
+
+
 
 
 
@@ -1507,6 +1705,44 @@ server <- function(input, output, session) {
   # Display the genome assembly
   output$genAssemblyTest <- renderText({
     genAssembly()
+  })
+
+  # Display the RNAseq cutoffs
+  output$rnaPadjTest <- renderText({
+    rnaPadj()
+  })
+  output$rnaLogFCTest <- renderText({
+    rnaLogFC()
+  })
+
+  # Display the small RNAseq cutoffs
+  output$smallRnaPadjTest <- renderText({
+    smallRnaPadj()
+  })
+  output$smallRnaLogFCTest <- renderText({
+    smallRnaLogFC()
+  })
+
+  # Display the proteomics cutoffs
+  output$proteomicsPadjTest <- renderText({
+    proteomicsPadj()
+  })
+  output$proteomicsLogFCTest <- renderText({
+    proteomicsLogFC()
+  })
+
+  # Display the ATACseq cutoffs
+  output$atacPadjTest <- renderText({
+    atacPadj()
+  })
+  output$atacUnadjPvalTest <- renderText({
+    atacUnadjPval()
+  })
+  output$atacLogFCTest <- renderText({
+    atacLogFC()
+  })
+  output$atacUseUnadjPTest <- renderText({
+    atacUseUnadjP()
   })
 }
 
