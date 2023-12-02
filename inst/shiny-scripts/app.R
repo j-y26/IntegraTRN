@@ -44,9 +44,8 @@ ui <- fluidPage(
   tags$style(HTML("h5 { font-weight: bold;
                         font-style: italic;
                         font-size: 1.1em; }")),
-  tags$h4("Section 1: Raw Data Input"),
 
-  # Title of the application, consistent with Github repo
+  # Title of the application
   titlePanel(tags$h1(tags$b("IntegraTRN:"), "Integrating multi-omics data for
     the inference of core transcriptional regulatory networks")),
 
@@ -467,8 +466,8 @@ ui <- fluidPage(
           condition-specific transcriptomic alterations. Please provide
           settings to the program to define the behavior of the analysis."),
           br(),
-          
-          tags$b("Please define the settings for the differential analysis:"),
+
+          tags$h5("Please define the settings for the differential analysis:"),
           br(),
           tags$b("RNAseq differential expression:"),
           sliderInput(
@@ -481,7 +480,7 @@ ui <- fluidPage(
             label = "Log2 fold change threshold:",
             min = 0, max = 10, value = 0, step = 0.1
           ),
-        
+
           # Small RNAseq
           uiOutput("smallRnaCutoffs"),
 
@@ -490,6 +489,14 @@ ui <- fluidPage(
 
           # ATACseq
           uiOutput("atacCutoffs"),
+
+          # Batch effect correction variable selection
+          br(),
+          tags$h5("Please select the variable for batch effect correction:"),
+          uiOutput("rnaBatchCorrection"),
+          uiOutput("smallRnaBatchCorrection"),
+          uiOutput("proteomicsBatchCorrection"),
+
 
           # === Starting differential analysis ===
           br(),
@@ -514,6 +521,12 @@ ui <- fluidPage(
           ),
           # Alert if not all required data are provided
           bsAlert(anchorId = "missingInputAlert"),
+          # Modal that shows up if the analysis has been run previously
+          bsModal(id = "rerunDEModal",
+            title = "Re-run the analysis? This will overwrite the previous
+                    results.",
+            trigger = NULL
+          ),
 
           # Updating results with different cutoffs without rerunning the
           # analysis
@@ -523,25 +536,19 @@ ui <- fluidPage(
           tags$p("If you would like to explore how different cutoffs affect
                 the results, you can update the cutoffs without rerunning the
                 analysis. The results will be updated automatically."),
-          bsButton(
-            inputId = "updateDifferentialAnalysis",
-            label = "Update Differential Analysis",
-            style = "primary",
-            disabled = TRUE
-          ),
           # Add a tooltip to the button
           bsTooltip(
             id = "updateDifferentialAnalysis",
             title = "You cannot update the cutoffs until you run the analysis."
           ),
 
-            
+
 
         ),
 
 
 
-          
+
         ),
     ),
 
@@ -635,6 +642,31 @@ ui <- fluidPage(
           # Test differential analysis method selection
           tags$p("Differential analysis method:"),
           textOutput(outputId = "deMethodTest"),
+
+
+
+          # Show all existing inputs
+          tags$p("All existing inputs:"),
+          textOutput(outputId = "allInputs"),
+          tags$p("Required inputs:"),
+          textOutput(outputId = "requiredInputs"),
+
+          # Print the MOList
+          tags$p("MOList:"),
+          verbatimTextOutput(outputId = "MOListTest"),
+
+          # Show batch correction variable selection
+          tags$p("Batch correction variable selection:"),
+          textOutput(outputId = "rnaBatchVarTest"),
+          textOutput(outputId = "smallRnaBatchVarTest"),
+          textOutput(outputId = "proteomicsBatchVarTest"),
+
+          # Run DE analysis?
+          tags$p("Run DE analysis?"),
+          textOutput(outputId = "runDETest"),
+
+
+
         ),
       ),
     ),
@@ -945,17 +977,20 @@ server <- function(input, output, session) {
 
   # Small RNAseq count matrix (server)
   smallRnaseqCountMatrix <- reactive({
-    req(input$smallRnaseqCountMatrix)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$smallRnaseqCountMatrix$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    smallRnaseq <- read.csv(input$smallRnaseqCountMatrix$datapath,
-      header = TRUE,
-      row.names = 1, stringsAsFactors = FALSE
-    )
-    smallRnaseq <- as.matrix(smallRnaseq)
-    return(smallRnaseq)
+    if (useSmallRNAseq()) {
+      req(input$smallRnaseqCountMatrix)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$smallRnaseqCountMatrix$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      smallRnaseq <- read.csv(input$smallRnaseqCountMatrix$datapath,
+        header = TRUE,
+        row.names = 1, stringsAsFactors = FALSE
+      )
+      smallRnaseq <- as.matrix(smallRnaseq)
+      return(smallRnaseq)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -963,16 +998,20 @@ server <- function(input, output, session) {
 
   # Small RNAseq sample metadata (server)
   smallRnaseqSampleMetadata <- reactive({
-    req(input$smallRnaseqSampleMetadata)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$smallRnaseqSampleMetadata$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    smallRnaseqSampleMetadata <- read.csv(input$smallRnaseqSampleMetadata$datapath,
-      header = TRUE, row.names = 1,
-      stringsAsFactors = FALSE
-    )
-    return(smallRnaseqSampleMetadata)
+    if (useSmallRNAseq()) {
+      req(input$smallRnaseqSampleMetadata)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$smallRnaseqSampleMetadata$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      smallRnaseqSampleMetadata <- read.csv(
+        input$smallRnaseqSampleMetadata$datapath,
+        header = TRUE, row.names = 1,
+        stringsAsFactors = FALSE
+      )
+      return(smallRnaseqSampleMetadata)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -981,8 +1020,11 @@ server <- function(input, output, session) {
 
   # Retrieve the attribute (column) names of the sample metadata
   smallRnaseqSampleAttributes <- reactive({
-    req(input$smallRnaseqSampleMetadata)
-    colnames(smallRnaseqSampleMetadata())
+    if (useSmallRNAseq()) {
+      colnames(smallRnaseqSampleMetadata())
+    } else {
+      return(NULL)
+    }
   })
   # Render selector UI for sample attributes for small RNAseq
   output$smallRnaSampleGrouping <- renderUI({
@@ -1048,17 +1090,20 @@ server <- function(input, output, session) {
 
   # Proteomics count matrix (server)
   proteomicsCountMatrix <- reactive({
-    req(input$proteomicsCountMatrix)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$proteomicsCountMatrix$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    proteomics <- read.csv(input$proteomicsCountMatrix$datapath,
-      header = TRUE,
-      row.names = 1, stringsAsFactors = FALSE
-    )
-    proteomics <- as.matrix(proteomics)
-    return(proteomics)
+    if (useProteomics()) {
+      req(input$proteomicsCountMatrix)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$proteomicsCountMatrix$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      proteomics <- read.csv(input$proteomicsCountMatrix$datapath,
+        header = TRUE,
+        row.names = 1, stringsAsFactors = FALSE
+      )
+      proteomics <- as.matrix(proteomics)
+      return(proteomics)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -1066,16 +1111,20 @@ server <- function(input, output, session) {
 
   # Proteomics sample metadata (server)
   proteomicsSampleMetadata <- reactive({
-    req(input$proteomicsSampleMetadata)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$proteomicsSampleMetadata$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    proteomicsSampleMetadata <- read.csv(input$proteomicsSampleMetadata$datapath,
-      header = TRUE, row.names = 1,
-      stringsAsFactors = FALSE
-    )
-    return(proteomicsSampleMetadata)
+    if (useProteomics()) {
+      req(input$proteomicsSampleMetadata)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$proteomicsSampleMetadata$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      proteomicsSampleMetadata <- read.csv(
+        input$proteomicsSampleMetadata$datapath,
+        header = TRUE, row.names = 1,
+        stringsAsFactors = FALSE
+      )
+      return(proteomicsSampleMetadata)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -1084,8 +1133,11 @@ server <- function(input, output, session) {
 
   # Retrieve the attribute (column) names of the sample metadata
   proteomicsSampleAttributes <- reactive({
-    req(input$proteomicsSampleMetadata)
-    colnames(proteomicsSampleMetadata())
+    if (useProteomics()) {
+      colnames(proteomicsSampleMetadata())
+    } else {
+      return(NULL)
+    }
   })
   # Render selector UI for sample attributes for proteomics
   output$proteomicsSampleGrouping <- renderUI({
@@ -1151,14 +1203,17 @@ server <- function(input, output, session) {
 
   # ATACseq peaks for condition 1 (server)
   atacPeak1 <- reactive({
-    req(input$atacPeak1)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$atacPeak1$datapath)
-    validate(need(ext == "bed", "Please upload a .bed file"))
-    atacPeak1 <- read.table(input$atacPeak1$datapath, header = FALSE)
-    atacPeak1 <- atacPeak1[, 1:3] %>% setNames(CHROMINFO)
-    return(atacPeak1) # keep as data frame
+    if (useATACseq()) {
+      req(input$atacPeak1)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$atacPeak1$datapath)
+      validate(need(ext == "bed", "Please upload a .bed file"))
+      atacPeak1 <- read.table(input$atacPeak1$datapath, header = FALSE)
+      atacPeak1 <- atacPeak1[, 1:3] %>% setNames(CHROMINFO)
+      return(atacPeak1) # keep as data frame
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -1166,20 +1221,21 @@ server <- function(input, output, session) {
 
   # ATACseq peaks for condition 2 (server)
   atacPeak2 <- reactive({
-    req(input$atacPeak2)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$atacPeak2$datapath)
-    validate(need(ext == "bed", "Please upload a .bed file"))
-    atacPeak2 <- read.table(input$atacPeak2$datapath, header = FALSE)
-    atacPeak2 <- atacPeak2[, 1:3] %>% setNames(CHROMINFO)
-    return(atacPeak2) # keep as data frame
+    if (useATACseq()) {
+      req(input$atacPeak2)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$atacPeak2$datapath)
+      validate(need(ext == "bed", "Please upload a .bed file"))
+      atacPeak2 <- read.table(input$atacPeak2$datapath, header = FALSE)
+      atacPeak2 <- atacPeak2[, 1:3] %>% setNames(CHROMINFO)
+      return(atacPeak2) # keep as data frame
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
   output$onsiteDownloadATACPeak2 <- downloadATACPeak2
-
-
 
 
   # === Section 3: annotations and external data ===============================
@@ -1247,17 +1303,20 @@ server <- function(input, output, session) {
 
   # Retrieve the small RNA annotation
   smallRNAAnnotation <- reactive({
-    req(input$smallRNAAnnotation)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$smallRNAAnnotation$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    smallRNAAnnotation <- read.csv(input$smallRNAAnnotation$datapath,
-      header = TRUE, stringsAsFactors = FALSE
-    )
-    smallRNAAnnotation <- smallRNAAnnotation[, 1:2] %>%
-      setNames(c("transcript", "type"))
-    return(smallRNAAnnotation)
+    if (useSmallRNAseq()) {
+      req(input$smallRNAAnnotation)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$smallRNAAnnotation$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      smallRNAAnnotation <- read.csv(input$smallRNAAnnotation$datapath,
+        header = TRUE, stringsAsFactors = FALSE
+      )
+      smallRNAAnnotation <- smallRNAAnnotation[, 1:2] %>%
+        setNames(c("transcript", "type"))
+      return(smallRNAAnnotation)
+    } else {
+      return(NULL)
+    }
   })
 
   # Protein name conversion (dynamic UI)
@@ -1317,17 +1376,20 @@ server <- function(input, output, session) {
 
   # Retrieve the protein name conversion
   proteinNameConversion <- reactive({
-    req(input$proteinNameConversion)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$proteinNameConversion$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    proteinNameConversion <- read.csv(input$proteinNameConversion$datapath,
-      header = TRUE, stringsAsFactors = FALSE
-    )
-    proteinNameConversion <- proteinNameConversion[, 1:2] %>%
-      setNames(c("protein", "gene"))
-    return(proteinNameConversion)
+    if (useProteomics()) {
+      req(input$proteinNameConversion)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$proteinNameConversion$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      proteinNameConversion <- read.csv(input$proteinNameConversion$datapath,
+        header = TRUE, stringsAsFactors = FALSE
+      )
+      proteinNameConversion <- proteinNameConversion[, 1:2] %>%
+        setNames(c("protein", "gene"))
+      return(proteinNameConversion)
+    } else {
+      return(NULL)
+    }
   })
 
   # Button to check for annotation coverage (dynamic UI)
@@ -1384,7 +1446,8 @@ server <- function(input, output, session) {
           alertId = "proteinCoverageAlertID",
           title = "Incomplete Protein Coverage",
           content = paste0(
-            "The protein-gene ID conversion infomration does not cover all ", "proteins in the ",
+            "The protein-gene ID conversion infomration does not cover all ",
+            "proteins in the ",
             "proteomics data. Uncovered proteins and their corresoinding ",
             "genes may be lost during TRN construction."
           )
@@ -1399,8 +1462,6 @@ server <- function(input, output, session) {
       }
     }
   })
-
-
 
   # Part 2: external interaction data
 
@@ -1445,17 +1506,20 @@ server <- function(input, output, session) {
 
   # miRNA - target interactions (server)
   miRNATarget <- reactive({
-    req(input$miRNATarget)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$miRNATarget$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    miRNATarget <- read.csv(input$miRNATarget$datapath,
-      header = TRUE,
-      stringsAsFactors = FALSE
-    )
-    miRNATarget <- miRNATarget[, 1:2] %>% setNames(c("regulator", "target"))
-    return(miRNATarget)
+    if (usemiRNATarget()) {
+      req(input$miRNATarget)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$miRNATarget$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      miRNATarget <- read.csv(input$miRNATarget$datapath,
+        header = TRUE,
+        stringsAsFactors = FALSE
+      )
+      miRNATarget <- miRNATarget[, 1:2] %>% setNames(c("regulator", "target"))
+      return(miRNATarget)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -1494,17 +1558,20 @@ server <- function(input, output, session) {
 
   # TF - target interactions (server)
   TFTarget <- reactive({
-    req(input$tfTarget)
-
-    # Validate file extension and read the file
-    ext <- tools::file_ext(input$tfTarget$datapath)
-    validate(need(ext == "csv", "Please upload a .csv file"))
-    TFTarget <- read.csv(input$tfTarget$datapath,
-      header = TRUE,
-      stringsAsFactors = FALSE
-    )
-    TFTarget <- TFTarget[, 1:2] %>% setNames(c("regulator", "target"))
-    return(TFTarget)
+    if (useTFTarget()) {
+      req(input$tfTarget)
+      # Validate file extension and read the file
+      ext <- tools::file_ext(input$tfTarget$datapath)
+      validate(need(ext == "csv", "Please upload a .csv file"))
+      TFTarget <- read.csv(input$tfTarget$datapath,
+        header = TRUE,
+        stringsAsFactors = FALSE
+      )
+      TFTarget <- TFTarget[, 1:2] %>% setNames(c("regulator", "target"))
+      return(TFTarget)
+    } else {
+      return(NULL)
+    }
   })
 
   # Processing onsite download option
@@ -1547,12 +1614,20 @@ server <- function(input, output, session) {
   })
   # Server for data retrieval
   smallRnaPadj <- reactive({
-    req(input$smallRnaPadj)
-    return(input$smallRnaPadj)
+    if (useSmallRNAseq()) {
+      req(input$smallRnaPadj)
+      return(input$smallRnaPadj)
+    } else {
+      return(NULL)
+    }
   })
   smallRnaLogFC <- reactive({
-    req(input$smallRnaLogFC)
-    return(input$smallRnaLogFC)
+    if (useSmallRNAseq()) {
+      req(input$smallRnaLogFC)
+      return(input$smallRnaLogFC)
+    } else {
+      return(NULL)
+    }
   })
 
   # Proteomics cutoffs (dynamic UI)
@@ -1577,12 +1652,20 @@ server <- function(input, output, session) {
   })
   # Server for data retrieval
   proteomicsPadj <- reactive({
-    req(input$proteomicsPadj)
-    return(input$proteomicsPadj)
+    if (useProteomics()) {
+      req(input$proteomicsPadj)
+      return(input$proteomicsPadj)
+    } else {
+      return(NULL)
+    }
   })
   proteomicsLogFC <- reactive({
-    req(input$proteomicsLogFC)
-    return(input$proteomicsLogFC)
+    if (useProteomics()) {
+      req(input$proteomicsLogFC)
+      return(input$proteomicsLogFC)
+    } else {
+      return(NULL)
+    }
   })
 
   # ATACseq cutoffs (dynamic UI)
@@ -1616,7 +1699,7 @@ server <- function(input, output, session) {
           value = FALSE
         ),
         div(style = "margin-top: -10px"),
-        tags$p(id = "useATACunadjPvalNote", "Why using unadjusted P-value? 
+        tags$p(id = "useATACunadjPvalNote", "Why using unadjusted P-value?
         (click here to see details)"),
         # add a pop-up to explain the use of unadjusted p-value
         bsPopover(
@@ -1640,23 +1723,82 @@ server <- function(input, output, session) {
       )
     }
   })
-  
+
   # Server for data retrieval
   atacPadj <- reactive({
-    req(input$atacPadj)
-    return(input$atacPadj)
+    if (useATACseq()) {
+      req(input$atacPadj)
+      return(input$atacPadj)
+    } else {
+      return(NULL)
+    }
   })
   atacUnadjPval <- reactive({
-    req(input$atacUnadjPval)
-    return(input$atacUnadjPval)
+    if (useATACseq()) {
+      req(input$atacUnadjPval)
+      return(input$atacUnadjPval)
+    } else {
+      return(NULL)
+    }
   })
   atacLogFC <- reactive({
-    req(input$atacLogFC)
-    return(input$atacLogFC)
+    if (useATACseq()) {
+      req(input$atacLogFC)
+      return(input$atacLogFC)
+    } else {
+      return(NULL)
+    }
   })
   atacUseUnadjP <- reactive({
     return(input$useATACunadjPval)
   })
+
+  # Batch correction (dynamic UI)
+  # Even though this input for RNAseq is always required, the presence of the
+  # UI depends on whether user has uploaded RNAseq sample metadata
+  output$rnaBatchCorrection <- renderUI({
+    selectInput(
+      inputId = "rnaBatchVar",
+      label = "Batch variable for RNAseq:",
+      choices = c("None", rnaseqSampleAttributes()),
+      multiple = FALSE,
+      selected = "NULL"
+    )
+  })
+  output$smallRnaBatchCorrection <- renderUI({
+    if (useSmallRNAseq()) {
+      selectInput(
+        inputId = "smallRnaBatchVar",
+        label = "Batch variable for small RNAseq:",
+        choices = c("None", smallRnaseqSampleAttributes()),
+        multiple = FALSE,
+        selected = "NULL"
+      )
+    }
+  })
+  output$proteomicsBatchCorrection <- renderUI({
+    if (useProteomics()) {
+      selectInput(
+        inputId = "proteomicsBatchVar",
+        label = "Batch variable for proteomics:",
+        choices = c("None", proteomicsSampleAttributes()),
+        multiple = FALSE,
+        selected = "NULL"
+      )
+    }
+  })
+
+  # Server for batch variable retrieval
+  rnaBatchVar <- reactive({
+    return(input$rnaBatchVar)
+  })                              # If user choose "None", returns NULL
+  smallRnaBatchVar <- reactive({
+    return(input$smallRnaBatchVar)
+  })
+  proteomicsBatchVar <- reactive({
+    return(input$proteomicsBatchVar)
+  })
+
 
   # === Perform differential analysis ==========================================
 
@@ -1668,51 +1810,215 @@ server <- function(input, output, session) {
 
   # The analysis must follow a specific order of the pipeline
   # First need to initialize a reactive value to store the MOList object
-  reactiveMOList <- reactiveVal(NULL)
+  reactiveMOList <- reactiveValues(objMOList = NULL)
+  # Logic for checking whether the analysis has been performed
+  reactiveOverwrite <- reactiveValues(overwrite = FALSE, previous = FALSE)
 
   # Perform differential analysis on the button click
   observeEvent(input$runDifferentialAnalysis, {
-    # Create a Progress object
-    progress <- shiny::Progress$new(max = 10)
-    # Make sure it closes when exiting the function
-    on.exit(progress$close())
-    
-    # Step 1: Construct the MOList object
-    progress$set(message = "Constructing the MOList object...", value = 1)
-    # If any input is missing, stop the analysis
-    requiredInputs <- INPUT_LIST[omicsDataTypes()]
-    if (useSmallRNAseq()) {
-      requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
-    }
-    if (useProteomics()) {
-      requiredInputs <- c(requiredInputs, "proteinNameConversion")
-    }
-    # Check all required inputs exist
-    if (!all(requiredInputs %in% names(input))) {
-      # Render a warning message
-      createAlert(session,
-        anchorId = "missingInputAlert",
-        alertId = "missingInputAlertID",
-        title = "Missing Input",
-        content = paste0(
-          "Please make sure all required inputs are provided in the previous ",
-          "sections."
-        ),
-        style = "danger"
+    # Depending on whether the analysis has been performed, create a modal
+    # to warn users that re-running the analysis will overwrite the previous
+    # results
+    if (!is.null(reactiveMOList$objMOList)) {
+      # DE analysis has been performed, open a modal
+      reactiveOverwrite$previous <- TRUE
+      showModal(
+        modalDialog(
+          title = "Re-run differential analysis?",
+          "A previous differential analysis has been found. Re-running the ",
+          "analysis will overwrite the previous results. Are you sure you ",
+          "want to continue?",
+          footer = tagList(
+            modalButton("Cancel"),
+            actionButton("confirmOverwrite", "Continue", class = "btn-primary")
+          )
+        )
       )
+      # If the user confirms, set the reactive value to TRUE
+      observeEvent(input$confirmOverwrite, {
+        reactiveOverwrite$overwrite <- TRUE
+        removeModal()
+      })
+    } else {
+      # Do nothing
     }
 
+    # Run the analysis only if this is a new analysis or the user confirms
+    # overwriting the previous results
+    if (!reactiveOverwrite$previous ||
+        (reactiveOverwrite$previous && reactiveOverwrite$overwrite)) {
+      # Perform the analysis
+      # Create a Progress object
+      progress <- shiny::Progress$new(max = 10)
+      # Make sure it closes when exiting the function
+      on.exit(progress$close())
+
+      # Step 1: Construct the MOList object
+      progress$set(message = "Constructing the MOList object...", value = 1)
+      # If any input is missing, stop the analysis
+      requiredInputs <- INPUT_LIST[omicsDataTypes()] %>% unlist()
+      if (useSmallRNAseq()) {
+        requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
+      }
+      if (useProteomics()) {
+        requiredInputs <- c(requiredInputs, "proteinNameConversion")
+      }
+      # Check all required inputs exist
+      if (!all(requiredInputs %in% names(input))) {
+        # Render a warning message
+        createAlert(session,
+          anchorId = "missingInputAlert",
+          alertId = "missingInputAlertID",
+          title = "Missing Input",
+          content = paste0(
+            "Please make sure all required inputs are provided in the ",
+            "previous sections."
+          ),
+          style = "danger"
+        )
+      } else {
+        # Proceed to construct the MOList object
+        objMOList <- MOList(
+          RNAseq = rnaseqCountMatrix(),
+          RNAGroupBy = rnaseqSampleMetadata()[[input$rnaseqSampleGrouping]],
+          smallRNAseq = smallRnaseqCountMatrix(),
+          smallRNAGroupBy =
+            smallRnaseqSampleMetadata()[[input$smallRnaSampleGrouping]],
+          proteomics = proteomicsCountMatrix(),
+          proteomicsGroupBy =
+            proteomicsSampleMetadata()[[input$proteomicsSampleGrouping]],
+          ATACpeak1 = atacPeak1(),
+          ATACpeak2 = atacPeak2()
+        )
+
+        # Step 2: Perform differential analysis
+        omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
+        progress$set(message = "Performing differential analysis...",
+                     detail = paste0("on ", paste(omicsData, collapse = ", ")),
+                     value = 4)
+        objMOList <- diffOmics(objMOList,
+                        rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
+                        smallRnaBatch = 
+                          smallRnaseqSampleMetadata()[[smallRnaBatchVar()]],
+                        proteinBatch = 
+                          proteomicsSampleMetadata()[[proteomicsBatchVar()]],
+                        program = deMethod())
+        
+        # Step 3: Adding annotations if required
+        progress$set(message = "Checking for annotations...", value = 5)
+        if (useSmallRNAseq()) {
+          objMOList <- annotateSmallRNA(objMOList,
+                                        anno = smallRNAAnnotation())
+        } else {
+          # Continue
+        }
+        if (useProteomics()) {
+          objMOList <- setGene2Protein(objMOList,
+                                       conversion = proteinNameConversion())
+        }
+
+        # Step 4: Principal component analysis
+        # RNAseq
+        progress$set(message = "Performing principal component analysis...",
+                     detail = paste0("on ", 
+                              paste(setdiff(omicsData, ATAC), collapse = ", ")),
+                     value = 6)
+        pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
+                              groupBy = objMOList@RNAseqSamples$groupBy,
+                              batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
+        # Proteomics
+        if (useProteomics()) {
+          pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
+                    groupBy = objMOList@proteomicsSamples$groupBy,
+                    batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
+        } else {
+          pltProteomicsPCA <- NULL
+        }
+        # Small RNAseq
+        if (useSmallRNAseq()) {
+          pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
+                      batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
+        } else {
+          pltSmallRNAPCA <- NULL
+        }
+
+        # Step 5: Differential motif enrichment analysis
+        progress$set(message = "Performing differential motif enrichment
+                                analysis...", value = 9)
+        
 
 
 
 
+
+
+
+
+
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      output$MOListTest <- renderPrint({
+        objMOList
+      })
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
   })
 
 
-  
 
 
-  
+
+
 
 
 
@@ -1863,6 +2169,47 @@ server <- function(input, output, session) {
   output$deMethodTest <- renderText({
     deMethod()
   })
+
+  # Showing all existing inputs
+  output$allInputs <- renderText({
+    paste(names(input), collapse = ", ")
+  })
+
+  # Show all required inputs
+  reqInputs <- reactive({
+    requiredInputs <- INPUT_LIST[omicsDataTypes()] %>% unlist()
+    if (useSmallRNAseq()) {
+      requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
+    }
+    if (useProteomics()) {
+      requiredInputs <- c(requiredInputs, "proteinNameConversion")
+    }
+    return(requiredInputs)
+  })
+  output$requiredInputs <- renderText({
+    paste(reqInputs(), collapse = ", ")
+  })
+
+  # Show batch variables
+  output$rnaBatchVarTest <- renderText({
+    rnaBatchVar()
+  })
+  output$smallRnaBatchVarTest <- renderText({
+    smallRnaBatchVar()
+  })
+  output$proteomicsBatchVarTest <- renderText({
+    proteomicsBatchVar()
+  })
+
+  # Test if DE analysis should be run
+  output$runDETest <- renderText({
+    run <- !reactiveOverwrite$previous ||
+        (reactiveOverwrite$previous && reactiveOverwrite$overwrite)
+    return(as.character(run))
+  })
+
+
+
 
 
 }
