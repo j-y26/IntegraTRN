@@ -12,8 +12,8 @@ MOList(
   smallRNAGroupBy = NULL,
   proteomics = NULL,
   proteomicsGroupBy = NULL,
-  pathATACpeak1 = NULL,
-  pathATACpeak2 = NULL
+  ATACpeak1 = NULL,
+  ATACpeak2 = NULL
 )
 }
 \arguments{
@@ -39,13 +39,17 @@ names as gene names and column names as sample names}
 data, used to perform differential expression
 analysis}
 
-\item{pathATACpeak1}{A character string containing the path to the BED file
+\item{ATACpeak1}{A character string containing the path to the BED file
 containing the unified ATAC peaks for condition 1. The
-BED file should NOT contain a header line}
+BED file should NOT contain a header line. Alternatively,
+provide a data frame containing the ATAC peaks for condition
+with format consistent with the BED definition}
 
-\item{pathATACpeak2}{A character string containing the path to the BED file
+\item{ATACpeak2}{A character string containing the path to the BED file
 containing the unified ATAC peaks for condition 2. The
-BED file should NOT contain a header line}
+BED file should NOT contain a header line. Alternatively,
+provide a data frame containing the ATAC peaks for condition
+with format consistent with the BED definition}
 }
 \value{
 An object of class MOList

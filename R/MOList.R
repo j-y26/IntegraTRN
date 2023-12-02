@@ -457,12 +457,16 @@ validateMOList <- function(objMOList) {
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data, used to perform differential expression
 #'                          analysis
-#' @param pathATACpeak1 A character string containing the path to the BED file
-#'                      containing the unified ATAC peaks for condition 1. The
-#'                      BED file should NOT contain a header line
-#' @param pathATACpeak2 A character string containing the path to the BED file
-#'                      containing the unified ATAC peaks for condition 2. The
-#'                      BED file should NOT contain a header line
+#' @param ATACpeak1 A character string containing the path to the BED file
+#'                  containing the unified ATAC peaks for condition 1. The
+#'                  BED file should NOT contain a header line. Alternatively,
+#'                  provide a data frame containing the ATAC peaks for condition
+#'                  with format consistent with the BED definition
+#' @param ATACpeak2 A character string containing the path to the BED file
+#'                  containing the unified ATAC peaks for condition 2. The
+#'                  BED file should NOT contain a header line. Alternatively,
+#'                  provide a data frame containing the ATAC peaks for condition
+#'                  with format consistent with the BED definition
 #' @note The users should ensure that each BED file used as input
 #'                 contains the chromosome regions that are found to have
 #'                 increased accessibility in each condition. The BED regions
@@ -530,8 +534,8 @@ MOList <- function(objMOList = NULL,
                    smallRNAGroupBy = NULL,
                    proteomics = NULL,
                    proteomicsGroupBy = NULL,
-                   pathATACpeak1 = NULL,
-                   pathATACpeak2 = NULL) {
+                   ATACpeak1 = NULL,
+                   ATACpeak2 = NULL) {
   # One of objMOList and RNAseq must be given, which dictates whether the
   # constructor creates a new object or appends/exchanges omics data
   if (is.null(objMOList) && is.null(RNAseq)) {
@@ -540,14 +544,24 @@ MOList <- function(objMOList = NULL,
     # Do nothing
   }
 
-  # Read the ATAC peaks data if provided
-  if (!is.null(pathATACpeak1) && !is.null(pathATACpeak2)) {
-    peakCond1 <- utils::read.table(pathATACpeak1, header = FALSE, sep = "\t")
+  # Read the ATAC peaks data if provided and are valid paths
+  if (is.data.frame(ATACpeak1) && is.data.frame(ATACpeak2)) {
+    peakCond1 <- ATACpeak1
     colnames(peakCond1)[1:3] <- CHROMINFO
-    peakCond2 <- utils::read.table(pathATACpeak2, header = FALSE, sep = "\t")
+    peakCond2 <- ATACpeak2
     colnames(peakCond2)[1:3] <- CHROMINFO
-  } else if (xor(is.null(pathATACpeak1), is.null(pathATACpeak2))) {
-    stop("Please provide both differentially accessible ATAC peaks files.")
+  } else if (!is.null(ATACpeak1) && !is.null(ATACpeak2) &&
+             is.character(ATACpeak1) && is.character(ATACpeak2)) {
+    if (file.exists(ATACpeak1) && file.exists(ATACpeak2)) {
+      peakCond1 <- utils::read.table(ATACpeak1, header = FALSE, sep = "\t")
+      colnames(peakCond1)[1:3] <- CHROMINFO
+      peakCond2 <- utils::read.table(ATACpeak2, header = FALSE, sep = "\t")
+      colnames(peakCond2)[1:3] <- CHROMINFO
+    } else {
+      stop("Please provide valid paths to the ATAC peaks files.")
+    }
+  } else if (xor(is.null(ATACpeak1), is.null(ATACpeak2))) {
+    stop("Please provide both valid ATAC peaks files.")
   } else {
     peakCond1 <- NULL
     peakCond2 <- NULL
