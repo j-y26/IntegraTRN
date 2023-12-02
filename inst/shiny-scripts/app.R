@@ -32,6 +32,22 @@ INPUT_LIST <- list(
   TF_target = "TFTarget"
 )
 
+# Helper function to check for missing inputs
+checkMissingInputs <- function(input, requiredInputs) {
+  missing <- FALSE
+  if (!all(requiredInputs %in% names(input))) {
+    missing <- TRUE
+  } else {
+    for (i in requiredInputs) {
+      if (is.null(input[[i]])) {
+        missing <- TRUE
+        break
+      }
+    }
+  }
+  return(missing)
+}
+
 
 # Define the UI for the application
 ui <- fluidPage(
@@ -521,12 +537,13 @@ ui <- fluidPage(
           ),
           # Alert if not all required data are provided
           bsAlert(anchorId = "missingInputAlert"),
-          # Modal that shows up if the analysis has been run previously
-          bsModal(id = "rerunDEModal",
-            title = "Re-run the analysis? This will overwrite the previous
-                    results.",
-            trigger = NULL
-          ),
+          # Alerts for error and warning messages during the analysis
+          bsAlert(anchorId = "MOListErrorAlert"),
+          bsAlert(anchorId = "diffOmicsErrorAlert"),
+          bsAlert(anchorId = "annotateSmallRNAErrorAlert"),
+          bsAlert(anchorId = "annotateProteinErrorAlert"),
+          bsAlert(anchorId = "countPCAErrorAlert"),
+          
 
           # Updating results with different cutoffs without rerunning the
           # analysis
@@ -1864,7 +1881,7 @@ server <- function(input, output, session) {
         requiredInputs <- c(requiredInputs, "proteinNameConversion")
       }
       # Check all required inputs exist
-      if (!all(requiredInputs %in% names(input))) {
+      if (checkMissingInputs(input, requiredInputs)) {
         # Render a warning message
         createAlert(session,
           anchorId = "missingInputAlert",
@@ -1878,43 +1895,124 @@ server <- function(input, output, session) {
         )
       } else {
         # Proceed to construct the MOList object
-        objMOList <- MOList(
-          RNAseq = rnaseqCountMatrix(),
-          RNAGroupBy = rnaseqSampleMetadata()[[input$rnaseqSampleGrouping]],
-          smallRNAseq = smallRnaseqCountMatrix(),
-          smallRNAGroupBy =
-            smallRnaseqSampleMetadata()[[input$smallRnaSampleGrouping]],
-          proteomics = proteomicsCountMatrix(),
-          proteomicsGroupBy =
-            proteomicsSampleMetadata()[[input$proteomicsSampleGrouping]],
-          ATACpeak1 = atacPeak1(),
-          ATACpeak2 = atacPeak2()
-        )
-
+        # Internal error checking of the functions are used, but they will cause
+        # the app to crash. Must be wrapped in tryCatch block to handle
+        # exceptions
+        objMOList <- NULL   # must initialize outside of tryCatch
+        continueExecution <- TRUE
+        if (continueExecution){
+          tryCatch({
+            # Construct the MOList object
+            objMOList <- MOList(
+              RNAseq = rnaseqCountMatrix(),
+              RNAGroupBy = rnaseqSampleMetadata()[[input$rnaseqSampleGrouping]],
+              smallRNAseq = smallRnaseqCountMatrix(),
+              smallRNAGroupBy =
+                smallRnaseqSampleMetadata()[[input$smallRnaSampleGrouping]],
+              proteomics = proteomicsCountMatrix(),
+              proteomicsGroupBy =
+                proteomicsSampleMetadata()[[input$proteomicsSampleGrouping]],
+              ATACpeak1 = atacPeak1(),
+              ATACpeak2 = atacPeak2()
+            )
+          }, error = function(e) {
+            continueExecution <<- FALSE
+            createAlert(session,
+              anchorId = "MOListErrorAlert",
+              alertId = "MOListErrorAlertID",
+              title = "Error in handling omic input data:",
+              content = paste0(
+                "<strong> Please make sure the input data are in the correct ", 
+                "format. </strong><br>",
+                "<strong> Ecountered the following error: </strong><br>",
+                conditionMessage(e)
+              ),
+              style = "danger"
+            )
+          })
+        }
+          
         # Step 2: Perform differential analysis
         omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
         progress$set(message = "Performing differential analysis...",
                      detail = paste0("on ", paste(omicsData, collapse = ", ")),
                      value = 4)
-        objMOList <- diffOmics(objMOList,
-                        rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
-                        smallRnaBatch = 
-                          smallRnaseqSampleMetadata()[[smallRnaBatchVar()]],
-                        proteinBatch = 
-                          proteomicsSampleMetadata()[[proteomicsBatchVar()]],
-                        program = deMethod())
-        
+        if (continueExecution){
+          tryCatch({
+            objMOList <- diffOmics(objMOList,
+              rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
+              smallRnaBatch =
+                smallRnaseqSampleMetadata()[[smallRnaBatchVar()]],
+              proteinBatch =
+                proteomicsSampleMetadata()[[proteomicsBatchVar()]],
+              program = deMethod()
+            )
+          }, error = function(e) {
+            continueExecution <<- FALSE
+            createAlert(session,
+              anchorId = "diffOmicsErrorAlert",
+              alertId = "diffOmicsErrorAlertID",
+              title = "Error in performing differential analysis:",
+              content = paste0(
+                "<strong> Please make sure the input data are valid for the ",
+                "selected differential analysis method. </strong><br>", 
+                "<strong> Ecountered the following error: </strong><br>",
+                conditionMessage(e)
+              ),
+              style = "danger"
+            )
+          })
+        }
+
         # Step 3: Adding annotations if required
         progress$set(message = "Checking for annotations...", value = 5)
-        if (useSmallRNAseq()) {
-          objMOList <- annotateSmallRNA(objMOList,
-                                        anno = smallRNAAnnotation())
-        } else {
-          # Continue
+        if (continueExecution){
+          tryCatch({
+            if (useSmallRNAseq()) {
+              objMOList <- annotateSmallRNA(objMOList,
+                                            anno = smallRNAAnnotation())
+            } else {
+              # Continue
+            }
+          }, error = function(e) {
+            continueExecution <<- FALSE
+            createAlert(session,
+              anchorId = "annotateSmallRNAErrorAlert",
+              alertId = "annotateSmallRNAErrorAlertID",
+              title = "Error in annotating small RNAseq data:",
+              content = paste0(
+                "<strong> Please make sure the annotation is provided ",
+                "in the correct format </strong><br>", 
+                "<strong> Ecountered the following error: </strong><br>",
+                conditionMessage(e)
+              ),
+              style = "danger"
+            )
+          })
         }
-        if (useProteomics()) {
-          objMOList <- setGene2Protein(objMOList,
-                                       conversion = proteinNameConversion())
+        if (continueExecution){
+          tryCatch({
+            if (useProteomics()) {
+              objMOList <- annotateProtein(objMOList,
+                                            anno = proteinNameConversion())
+            } else {
+              # Continue
+            }
+          }, error = function(e) {
+            continueExecution <<- FALSE
+            createAlert(session,
+              anchorId = "annotateProteinErrorAlert",
+              alertId = "annotateProteinErrorAlertID",
+              title = "Error in annotating proteomics data:",
+              content = paste0(
+                "<strong> Please make sure the annotation is provided ",
+                "in the correct format </strong><br>", 
+                "<strong> Ecountered the following error: </strong><br>",
+                conditionMessage(e)
+              ),
+              style = "danger"
+            )
+          })
         }
 
         # Step 4: Principal component analysis
@@ -1923,25 +2021,44 @@ server <- function(input, output, session) {
                      detail = paste0("on ", 
                               paste(setdiff(omicsData, ATAC), collapse = ", ")),
                      value = 6)
-        pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
-                              groupBy = objMOList@RNAseqSamples$groupBy,
-                              batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
-        # Proteomics
-        if (useProteomics()) {
-          pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
-                    groupBy = objMOList@proteomicsSamples$groupBy,
-                    batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
-        } else {
-          pltProteomicsPCA <- NULL
+        pltRNAPCA <- NULL   # Again, must initialize outside of tryCatch
+        pltProteomicsPCA <- NULL
+        pltSmallRNAPCA <- NULL
+        if (continueExecution){
+          tryCatch({
+            pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
+                                  groupBy = objMOList@RNAseqSamples$groupBy,
+                                  batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
+            # Proteomics
+            if (useProteomics()) {
+            pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
+                      groupBy = objMOList@proteomicsSamples$groupBy,
+                      batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
+            } else {
+              # Continue
+            }
+            # Small RNAseq
+            if (useSmallRNAseq()) {
+              pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
+                        batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
+            } else {
+              # Continue
+            }
+          }, error = function(e) {
+            continueExecution <<- FALSE
+            createAlert(session,
+              anchorId = "countPCAErrorAlert",
+              alertId = "countPCAErrorAlertID",
+              title = "Error in performing principal component analysis:",
+              content = paste0(
+                "<strong> Ecountered the following error: </strong><br>",
+                conditionMessage(e)
+              ),
+              style = "danger"
+            )
+          })
         }
-        # Small RNAseq
-        if (useSmallRNAseq()) {
-          pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
-                      batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
-        } else {
-          pltSmallRNAPCA <- NULL
-        }
-
+        
         # Step 5: Differential motif enrichment analysis
         progress$set(message = "Performing differential motif enrichment
                                 analysis...", value = 9)
