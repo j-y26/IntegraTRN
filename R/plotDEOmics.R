@@ -104,14 +104,15 @@ plotBaseVolcano <- function(deg,
 #'
 #' @param objMOList An MOList object containing the differential expression
 #'                  results for mRNA.
-#' @param omic The omic type, one of "RNAseq" or "proteomics"
-#' @param log2FC The cutoff for log2 fold change. Default is 1.
+#' @param omic The omic type, one of "RNAseq", "smallRNAseq", or "proteomics"
+#' @param log2FC The cutoff for log2 fold change. Default is 0.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
 #' @param upColor The color for up-regulated genes. Default is "firebrick3".
 #' @param downColor The color for down-regulated genes. Default is "dodgerblue3"
 #' @param title The title for the plot. Default is NULL.
 #' @param highlight A vector of gene names to highlight in the plot. Default
 #'                  is NULL.
+#' @param pointSize The size of the points in the plot. Default is 1.
 #'
 #' @return A ggplot object
 #'
@@ -135,7 +136,8 @@ plotBaseVolcano <- function(deg,
 #' plotVolcanoRNA(expMOList)
 #'
 #' # Example 2: Generate the volcano plot with custom parameters
-#' plotVolcanoRNA(expMOList,
+#' plotVolcano(expMOList,
+#'   omic = "RNAseq",
 #'   log2FC = 0,
 #'   adjP = 0.01,results
 #'   upColor = "purple",
@@ -144,19 +146,22 @@ plotBaseVolcano <- function(deg,
 #' )
 #'
 plotVolcano <- function(objMOList,
-                        omic = c("RNAseq", "proteomics"),
-                        log2FC = 1,
+                        omic = c("RNAseq", "smallRNAseq", "proteomics"),
+                        log2FC = 0,
                         adjP = 0.05,
                         upColor = "firebrick3",
                         downColor = "dodgerblue3",
                         title = NULL,
-                        highlight = NULL) {
+                        highlight = NULL,
+                        pointSize = 1) {
   # Retrieve the differential expression results
-  omic <- match.arg(omic)
+  omic <- match.arg(omic, c(RNA, SMALLRNA, PROTEIN))
   deResult <- switch(omic,
     "RNAseq" = objMOList$DERNAseq,
+    "smallRNAseq" = objMOList$DEsmallRNAseq,
     "proteomics" = objMOList$DEproteomics,
-    stop("Invalid omic type. Please specify one of 'RNAseq' or 'proteomics'.")
+    stop("Invalid omic type. Please specify one of 'RMAseq', 'smallRNAseq',
+    or 'proteomics'.")
   )
 
   # Check if the differential expression results are available
@@ -179,7 +184,7 @@ plotVolcano <- function(objMOList,
 
   # Color the up- and down-regulated genes
   vPlot <- vPlot +
-    ggplot2::geom_point(ggplot2::aes(color = expr), size = 1) +
+    ggplot2::geom_point(ggplot2::aes(color = expr), size = pointSize) +
     ggplot2::guides(color = ggplot2::guide_legend(
       override.aes =
         list(size = 2.5)
@@ -189,7 +194,6 @@ plotVolcano <- function(objMOList,
       "Down-regulated" = downColor,
       "Not DE" = "grey50"
     ))
-  highlight <- sample(deResult$gene, 10)
   
   # Highlight the genes of interest by labeling their gene names
   if (!is.null(highlight)) {
@@ -270,13 +274,16 @@ annoSncList <- function(deg, annoList) {
 #'
 #' @param objMOList An MOList object containing the differential expression
 #'                  results for small RNAs.
-#' @param log2FC The cutoff for log2 fold change. Default is 1.
+#' @param log2FC The cutoff for log2 fold change. Default is 0.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
 #' @param colScheme A RColorBrewer color scheme for color-coding each type of
 #'                  small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
 #'                  for details.
 #' @param title A character vector specifying the title for the plot. Default
 #'              is NULL.
+#' @param highlight A vector of gene names to highlight in the plot.
+#'                  Default is NULL.
+#' @param pointSize The size of the points in the plot. Default is 1.
 #'
 #' @return A ggplot object
 #'
@@ -311,10 +318,12 @@ annoSncList <- function(deg, annoList) {
 #' )
 #'
 plotVolcanoSmallRNA <- function(objMOList,
-                                log2FC = 1,
+                                log2FC = 0,
                                 adjP = 0.05,
                                 colScheme = "BuPu",
-                                title = NULL) {
+                                title = NULL,
+                                highlight = NULL,
+                                pointSize = 1) {
   if (is.null(objMOList$DEsmallRNAseq)) {
     stop("No differential expression results for small RNA. Please run
   diffOmics() first. See ?diffOmics for details.")
@@ -345,19 +354,18 @@ plotVolcanoSmallRNA <- function(objMOList,
 
   # Re-label non-DE small RNAs
   degSmallRNAseq$type[degSmallRNAseq$expr == "Not DE"] <- "Not DE"
+  degSmallRNAseq$gene <- rownames(degSmallRNAseq)
 
   # Generate the base volcano plot
   vPlot <- plotBaseVolcano(degSmallRNAseq, log2FC, adjP, title)
-
 
   # Generate a set of colors for each type of small RNA
   sncColors <- RColorBrewer::brewer.pal(length(sncTypes), colScheme)
   sncColorList <- stats::setNames(sncColors, sncTypes)
 
-
   # Color each type of small RNA
   vPlot <- vPlot +
-    ggplot2::geom_point(ggplot2::aes(color = type), size = 4 / 5) +
+    ggplot2::geom_point(ggplot2::aes(color = type), size = pointSize) +
     ggplot2::guides(color = ggplot2::guide_legend(
       override.aes =
         list(size = 2.5)
@@ -366,6 +374,17 @@ plotVolcanoSmallRNA <- function(objMOList,
       sncColorList,
       "Not DE" = "grey50"
     ))
+
+  # Highlight the genes of interest by labeling their gene names
+  if (!is.null(highlight)) {
+    vPlot <- vPlot +
+      ggplot2::geom_label(data = degSmallRNAseq %>% filter(gene %in% highlight),
+                      aes(label = gene),
+                      size = 3)
+  } else {
+    # Continue
+  }
+
   return(vPlot)
 }
 

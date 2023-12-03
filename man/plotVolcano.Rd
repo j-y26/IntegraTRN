@@ -7,22 +7,23 @@
 \usage{
 plotVolcano(
   objMOList,
-  omic = c("RNAseq", "proteomics"),
-  log2FC = 1,
+  omic = c("RNAseq", "smallRNAseq", "proteomics"),
+  log2FC = 0,
   adjP = 0.05,
   upColor = "firebrick3",
   downColor = "dodgerblue3",
   title = NULL,
-  highlight = NULL
+  highlight = NULL,
+  pointSize = 1
 )
 }
 \arguments{
 \item{objMOList}{An MOList object containing the differential expression
 results for mRNA.}
 
-\item{omic}{The omic type, one of "RNAseq" or "proteomics"}
+\item{omic}{The omic type, one of "RNAseq", "smallRNAseq", or "proteomics"}
 
-\item{log2FC}{The cutoff for log2 fold change. Default is 1.}
+\item{log2FC}{The cutoff for log2 fold change. Default is 0.}
 
 \item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
 
@@ -34,6 +35,8 @@ results for mRNA.}
 
 \item{highlight}{A vector of gene names to highlight in the plot. Default
 is NULL.}
+
+\item{pointSize}{The size of the points in the plot. Default is 1.}
 }
 \value{
 A ggplot object
@@ -55,7 +58,8 @@ data(expMOList)
 plotVolcanoRNA(expMOList)
 
 # Example 2: Generate the volcano plot with custom parameters
-plotVolcanoRNA(expMOList,
+plotVolcano(expMOList,
+  omic = "RNAseq",
   log2FC = 0,
   adjP = 0.01,results
   upColor = "purple",

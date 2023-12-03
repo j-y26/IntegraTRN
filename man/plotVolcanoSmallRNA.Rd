@@ -6,17 +6,19 @@
 \usage{
 plotVolcanoSmallRNA(
   objMOList,
-  log2FC = 1,
+  log2FC = 0,
   adjP = 0.05,
   colScheme = "BuPu",
-  title = NULL
+  title = NULL,
+  highlight = NULL,
+  pointSize = 1
 )
 }
 \arguments{
 \item{objMOList}{An MOList object containing the differential expression
 results for small RNAs.}
 
-\item{log2FC}{The cutoff for log2 fold change. Default is 1.}
+\item{log2FC}{The cutoff for log2 fold change. Default is 0.}
 
 \item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
 
@@ -26,6 +28,11 @@ for details.}
 
 \item{title}{A character vector specifying the title for the plot. Default
 is NULL.}
+
+\item{highlight}{A vector of gene names to highlight in the plot.
+Default is NULL.}
+
+\item{pointSize}{The size of the points in the plot. Default is 1.}
 }
 \value{
 A ggplot object
