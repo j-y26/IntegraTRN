@@ -194,7 +194,7 @@ plotVolcano <- function(objMOList,
       "Down-regulated" = downColor,
       "Not DE" = "grey50"
     ))
-  
+
   # Highlight the genes of interest by labeling their gene names
   if (!is.null(highlight)) {
     vPlot <- vPlot +
@@ -476,6 +476,11 @@ countPCA <- function(matrix,
   pcaData <- DESeq2::plotPCA(vts, intgroup = "group", returnData = TRUE)
   percentVar <- round(100 * attr(pcaData, "percentVar"))
 
+  # Factor binary grouping variable if used
+  if (!is.numeric(pcaData$group) || length(unique(pcaData$group)) > 2) {
+    pcaData$group <- factor(pcaData$group)
+  }
+
   # Further customization of the PCA plot using ggplot2
   pcaPlot <- ggplot2::ggplot(
     pcaData,
@@ -496,7 +501,7 @@ countPCA <- function(matrix,
       legend.title = ggplot2::element_blank()
     )
   # Color sample points based on the grouping variable
-  if (length(unique(groupBy)) > 2) {
+  if (is.numeric(groupBy)) {
     pcaPlot <- pcaPlot + ggplot2::scale_color_gradient(
       low = col1,
       high = col2
@@ -558,21 +563,21 @@ countPCA <- function(matrix,
 #' data("expMOList")
 #' data("smallRNAseq_heart") # small RNAseq count matrix
 #' data("smallRNAseq_heart_samples") # small RNAseq sample information
-#' 
+#'
 #' # Adding the smallRNAseq data to the example MOList object
-#' expMOList <- MOList(expMOList, 
+#' expMOList <- MOList(expMOList,
 #'                     smallRNAseq = smallRNAseq_heart,
 #'                     smallRNAGroupBy = smallRNAseq_heart_samples$Age)
-#' 
+#'
 #' # Annotate the small RNAs using the package-provided human annotation
 #' expMOList <- annotateSmallRNA(expMOList, "human")
-#' 
+#'
 #' # Generate a list of PCA plots for each type of small RNA
 #' pcaPlotList <- plotSmallRNAPCAs(expMOList)
-#' 
+#'
 #' # Plot the PCA plot for miRNA
 #' pcaPlotList$miRNA
-#' 
+#'
 #' # Plot the PCA plot for piRNA
 #' pcaPlotList$piRNA
 #' }
