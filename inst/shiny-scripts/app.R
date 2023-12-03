@@ -46,11 +46,16 @@ BIOC_ANNOTATION <- list(
   )
 )
 
-# Options for handling input data for data tables
+# Options for handling data tables
+# Input data
 DT_OPTIONS_INPUT <- list(
       dom = "Brtip",
       scrollX = TRUE,
       scrollCollapse = TRUE
+    )
+DT_OPTIONS_DEOUTPUT <- list(
+      pageLength = 10,
+      lengthMenu = c(5, 10, 20, 50)
     )
 
 #' Helper function to check for missing inputs
@@ -776,11 +781,6 @@ ui <- fluidPage(
           ),
         ),
 
-
-
-
-
-
         # === Panel 2: RNAseq differential expression ==========================
         # Display the results of RNAseq differential expression analysis
 
@@ -791,6 +791,9 @@ ui <- fluidPage(
           br(),
 
           # Plots
+          tags$h5("Principle Component Analysis (PCA) of RNAseq Samples"),
+          plotOutput(outputId = "rnaseqPCAPlot"),
+          br(),
           tags$h5("Volcano Plot of RNAseq Data"),
           column(
             width = 12,
@@ -798,16 +801,13 @@ ui <- fluidPage(
             plotOutput(outputId = "rnaseqVolcanoPlot", width = "500px")
           ),
           br(),
-          tags$h5("Principle Component Analysis (PCA) of RNAseq Samples"),
-          plotOutput(outputId = "rnaseqPCAPlot"),
-          br(),
 
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
           DTOutput(outputId = "rnaseqDETable"),
           tags$p(tags$b("Note: "),
                  "Selected rows will be highlighted in the volcano plot."),
-          textOutput(outputId = "rnaGeneSelection"),
+          textOutput(outputId = "rnaseqGeneSelected"),
           br(),
           br(),
           tags$b("Download the analysis results:"),
@@ -824,12 +824,82 @@ ui <- fluidPage(
         # === Panel 3: Small RNAseq differential expression ====================
         tabPanel(
           "Small RNAseq Differential Expression",
-        ),
+          tags$h4("Differential Expression Analysis of Small RNAseq Data"),
+          br(),
 
+          # Plots
+          tags$h5("Principle Component Analysis (PCA) of Small RNAseq Samples"),
+          plotOutput(outputId = "smallRnaPCAPlot", width = "1000px"),
+          br(),
+          tags$h5("Volcano Plot of Small RNAseq Data"),
+          column(
+            width = 6,
+            align = "center",
+            plotOutput(outputId = "smallRnaVolcanoPlotAnno", width = "500px"),
+            tags$p("Color by small RNA type"),
+          ),
+          column(
+            width = 6,
+            align = "center",
+            plotOutput(outputId = "smallRnaVolcanoPlotUpDown", width = "500px"),
+            tags$p("Color by up/down regulation"),
+          ),
+          br(),
+
+          # Table of DE results
+          tags$h5("Table of Differential Expression Results"),
+          DTOutput(outputId = "smallRnaDETable"),
+          tags$p(tags$b("Note: "),
+                 "Selected rows will be highlighted in the volcano plot."),
+          textOutput(outputId = "smallRnaGeneSelected"),
+          br(),
+          br(),
+          tags$b("Download the analysis results:"),
+          downloadButton(
+            outputId = "downloadSmallRnaDEResults",
+            label = "Download Small RNAseq DE results (.csv)"
+          ),
+          downloadButton(
+            outputId = "downloadSmallRnaNormCounts",
+            label = "Download Small RNAseq normalized counts (.csv)"
+          ),
+        ),
 
         # === Panel 4: Proteomics differential expression ======================
         tabPanel(
           "Proteomics Differential Expression",
+          tags$h4("Differential Expression Analysis of Proteomics Data"), 
+          br(),
+
+          # Plots
+          tags$h5("Principle Component Analysis (PCA) of Proteomics Samples"),
+          plotOutput(outputId = "proteomicsPCAPlot"),
+          br(),
+          tags$h5("Volcano Plot of Proteomics Data"),
+          column(
+            width = 12,
+            align = "center",
+            plotOutput(outputId = "proteomicsVolcanoPlot", width = "500px")
+          ),
+          br(),
+
+          # Table of DE results
+          tags$h5("Table of Differential Expression Results"),
+          DTOutput(outputId = "proteomicsDETable"),
+          tags$p(tags$b("Note: "),
+                 "Selected rows will be highlighted in the volcano plot."),
+          textOutput(outputId = "proteomicsGeneSelected"),
+          br(),
+          br(),
+          tags$b("Download the analysis results:"),
+          downloadButton(
+            outputId = "downloadProteomicsDEResults",
+            label = "Download Proteomics DE results (.csv)"
+          ),
+          downloadButton(
+            outputId = "downloadProteomicsNormCounts",
+            label = "Download Proteomics normalized counts (.csv)"
+          ),
         ),
 
         # === Panel 5: ATACseq differential expression =========================
@@ -2214,34 +2284,9 @@ server <- function(input, output, session) {
     return(input$countDEMethod)
   })
 
-  # Reactives for selected genes by the user via data table
-  rnaGeneSel <- reactive({
-    sel <- input$rnaseqDETable_rows_selected
-    if (length(sel) > 0) {
-      rnaTable <- getFullDEResults(reactiveMOList$objMOList, RNA)
-      return(rownames(rnaTable)[sel])
-    } else {
-      return(NULL)
-    }
+  rnaseqGeneIndex <- reactive({
+    input$rnaseqDETable_rows_selected
   })
-  # smallRnaGeneSel <- reactive({
-  #   sel <- input$smallRnaDETable_rows_selected
-  #   if (length(sel) > 0) {
-  #     smallRnaTable <- getFullDEResults(reactiveMOList$objMOList, SMALLRNA)
-  #     return(rownames(smallRnaTable)[sel])
-  #   } else {
-  #     return(NULL)
-  #   }
-  # })
-  # proteomicsGeneSel <- reactive({
-  #   sel <- input$proteomicsDETable_rows_selected
-  #   if (length(sel) > 0) {
-  #     proteomicsTable <- getFullDEResults(reactiveMOList$objMOList, PROTEIN)
-  #     return(rownames(proteomicsTable)[sel])
-  #   } else {
-  #     return(NULL)
-  #   }
-  # })
 
   # The analysis must follow a specific order of the pipeline
   # First need to initialize a reactive value to store the MOList object
@@ -2566,80 +2611,140 @@ server <- function(input, output, session) {
           output$rnaseqDETable <- renderDT(
             rnaDF,
             filter = "top",
-            options = list(
-              dom = "Brtip",
-              pageLength = 10,
-              lengthMenu = c(5, 10, 20, 50)
-            )
+            options = DT_OPTIONS_DEOUTPUT
           )
-
           # RNAseq volcano plot
-          # Retrieve highlighted genes
-          sel <- rnaGeneSel()
-          output$rnaGeneSelection <- renderText({
-            if (!is.null(sel)) {
-              return(paste0("Highlighted genes: ", paste(sel, collapse = ", ")))
-            }
-          })
-
           # Plot it
           output$rnaseqVolcanoPlot <- renderPlot({
             plotVolcano(objMOList, omic = RNA,
-                        adjP = rnaPadj(), log2FC = rnaLogFC(), highlight = sel)
+                        adjP = rnaPadj(), log2FC = rnaLogFC(), 
+                        highlight = rownames(rnaDF)[rnaseqGeneIndex()])
           })
           # RNAseq PCA plot
           output$rnaseqPCAPlot <- renderPlot({
             pltRNAPCA
           })
-          # Small RNAseq volcano plot
-          output$smallRnaVolcanoPlot <- renderPlot({
-            plotVolcanoSmallRNA(objMOList, adjP = smallRnaPadj(),
-                                log2FC = smallRnaLogFC())
+          # Selected Genes
+          output$rnaseqGeneSelected <- renderText({
+            if (length(rnaseqGeneIndex()) > 0) {
+              paste0("Gene selected: ", 
+                paste(rownames(rnaDF)[rnaseqGeneIndex()], collapse = ", "))
+            } else {
+              # Do nothing
+            }
           })
-          # Small RNAseq PCA plots
-          output$smallRnaPCAPlotmiRNA <- renderPlot({
-            pltSmallRNAPCA$miRNA
-          })
-          output$smallRnaPCAPlotpiRNA <- renderPlot({
-            pltSmallRNAPCA$piRNA
-          })
-          output$smallRnaPCAPlotcircRNA <- renderPlot({
-            pltSmallRNAPCA$circRNA
-          })
-          output$smallRnaPCAPlotsnoRNA <- renderPlot({
-            pltSmallRNAPCA$snoRNA
-          })
-          output$smallRnaPCAPlotsnRNA <- renderPlot({
-            pltSmallRNAPCA$snRNA
-          })
-          output$smallRnaPCAPlottRNA <- renderPlot({
-            pltSmallRNAPCA$tRNA
-          })
-          # Proteomics volcano plot
-          output$proteomicsVolcanoPlot <- renderPlot({
-            plotVolcano(objMOList, omic = PROTEIN,
-                        adjP = proteomicsPadj(), log2FC = proteomicsLogFC())
-          })
-          # Proteomics PCA plot
-          output$proteomicsPCAPlot <- renderPlot({
-            pltProteomicsPCA
-          })
-          # ATACseq annotation plot
-          output$atacAnnotationPlot <- renderPlot({
-            plotATACAnno(objMOList)
-          })
-          # ATACseq coverage plot
-          output$atacCoveragePlot <- renderPlot({
-            plotATACCoverage(objMOList)
-          })
-          # ATACseq motif enrichment heatmap
 
-          output$atacMotifHeatmap <- renderPlot({
-            plotATACMotifHeatmap(objMOList,
-                                 pValueAdj = atacPadj(),
-                                 pValue = atacUnadjPval(),
-                                 log2FEnrich = atacLogFC())
-          })
+          # Small RNAseq 
+          if (useSmallRNAseq()) {
+            # Small RNAseq DE table
+            smallRnaDF <- getFullDEResults(objMOList, omic = SMALLRNA)
+            # Show only 3 digits with scientific notation
+            smallRnaDF[, -1] <- format(smallRnaDF[, -1], digits = 4,
+                                       scientific = TRUE)
+            output$smallRnaDETable <- renderDT(
+              smallRnaDF,
+              filter = "top",
+              options = DT_OPTIONS_DEOUTPUT
+            )
+            # Small RNAseq volcano plot
+            output$smallRnaVolcanoPlotAnno <- renderPlot({
+              plotVolcanoSmallRNA(objMOList, adjP = smallRnaPadj(),
+                                  log2FC = smallRnaLogFC(),
+                                  highlight = rownames(smallRnaDF)[
+                                    input$smallRnaDETable_rows_selected])
+            })
+            output$smallRnaVolcanoPlotUpDown <- renderPlot({
+              plotVolcano(objMOList, omic = SMALLRNA,
+                          adjP = smallRnaPadj(), log2FC = smallRnaLogFC(),
+                          highlight = rownames(smallRnaDF)[
+                            input$smallRnaDETable_rows_selected])
+            })
+            # Small RNAseq PCA plots
+            output$smallRnaPCAPlot <- renderPlot({
+              pltSmallRNAPCA$miRNA + pltSmallRNAPCA$piRNA +
+                pltSmallRNAPCA$circRNA + pltSmallRNAPCA$snoRNA +
+                pltSmallRNAPCA$snRNA + pltSmallRNAPCA$tRNA
+            })
+            # Selected genes
+            output$smallRnaGeneSelected <- renderText({
+              if (length(input$smallRnaDETable_rows_selected) > 0) {
+                paste0("Gene selected: ", 
+                  paste(rownames(smallRnaDF)[
+                    input$smallRnaDETable_rows_selected], collapse = ", "))
+              } else {
+                # Do nothing
+              }
+            })
+          } else {
+            # Continue
+          }
+
+          # Proteomics
+          if (useProteomics()) {
+            # Proteomics DE table
+            proteomicsDF <- getFullDEResults(objMOList, omic = PROTEIN)
+            # Show only 3 digits with scientific notation
+            proteomicsDF[, -1] <- format(proteomicsDF[, -1], digits = 4,
+                                         scientific = TRUE)
+            output$proteomicsDETable <- renderDT(
+              proteomicsDF,
+              filter = "top",
+              options = DT_OPTIONS_DEOUTPUT
+            )
+            # Proteomics volcano plot
+            output$proteomicsVolcanoPlot <- renderPlot({
+              plotVolcano(objMOList, omic = PROTEIN,
+                          adjP = proteomicsPadj(), log2FC = proteomicsLogFC(),
+                          highlight = rownames(proteomicsDF)[
+                            input$proteomicsDETable_rows_selected])
+            })
+            # Proteomics PCA plot
+            output$proteomicsPCAPlot <- renderPlot({
+              pltProteomicsPCA
+            })
+            # Selected genes
+            output$proteomicsGeneSelected <- renderText({
+              if (length(input$proteomicsDETable_rows_selected) > 0) {
+                paste0("Gene selected: ", 
+                  paste(rownames(proteomicsDF)[
+                    input$proteomicsDETable_rows_selected], collapse = ", "))
+              } else {
+                # Do nothing
+              }
+            })
+          } else {
+            # Continue
+          }
+
+          # ATACseq
+          if (useATACseq()) {
+            # ATACseq motif enrichment table
+            atacDF <- getFullDEResults(objMOList, omic = ATAC)
+            output$atacMotifTable <- renderDT(
+              atacDF,
+              filter = "top",
+              options = c(DT_OPTIONS_DEOUTPUT, scrollX = TRUE)
+            )
+            # ATACseq annotation plot
+            output$atacAnnotationPlot <- renderPlot({
+              plotATACAnno(objMOList)
+            })
+            # ATACseq coverage plot
+            output$atacCoveragePlot <- renderPlot({
+              plotATACCoverage(objMOList)
+            })
+            # ATACseq motif enrichment heatmap
+
+            output$atacMotifHeatmap <- renderPlot({
+              plotATACMotifHeatmap(objMOList,
+                                  pValueAdj = atacPadj(),
+                                  pValue = atacUnadjPval(),
+                                  log2FEnrich = atacLogFC())
+            })
+          } else {
+            # Continue
+          }
+
           # Generate the output
           reactiveMOList$objMOList <- objMOList
 
@@ -2670,33 +2775,69 @@ server <- function(input, output, session) {
           if (useSmallRNAseq()) {
             showTab(inputId = "mainOutputTabsetPanel", 
                     target = "Small RNAseq Differential Expression")
+            output$downloadSmallRnaDEResults <- downloadHandler(
+              filename = function() {
+                paste("Small_RNAseq_DE_results_", Sys.Date(), ".csv", sep = "")
+              },
+              content = function(file) {
+                write.csv(getFullDEResults(objMOList, omic = SMALLRNA), file,
+                          row.names = TRUE)
+              }
+            )
+            output$downloadSmallRnaNormCounts <- downloadHandler(
+              filename = function() {
+                paste("Small_RNAseq_normalized_counts_", Sys.Date(), ".csv",
+                      sep = "")
+              },
+              content = function(file) {
+                write.csv(exportNormalizedCounts(objMOList$DEsmallRNAseq),
+                          file, row.names = TRUE)
+              }
+            )
           } else {
             # Continue
           }
           if (useProteomics()) {
             showTab(inputId = "mainOutputTabsetPanel", 
                     target = "Proteomics Differential Expression")
+            output$downloadProteomicsDEResults <- downloadHandler(
+              filename = function() {
+                paste("Proteomics_DE_results_", Sys.Date(), ".csv", sep = "")
+              },
+              content = function(file) {
+                write.csv(getFullDEResults(objMOList, omic = PROTEIN), file,
+                          row.names = TRUE)
+              }
+            )
+            output$downloadProteomicsNormCounts <- downloadHandler(
+              filename = function() {
+                paste("Proteomics_normalized_counts_", Sys.Date(), ".csv",
+                      sep = "")
+              },
+              content = function(file) {
+                write.csv(exportNormalizedCounts(objMOList$DEproteomics),
+                          file, row.names = TRUE)
+              }
+            )
           } else {
             # Continue
           }
           if (useATACseq()) {
             showTab(inputId = "mainOutputTabsetPanel", 
                     target = "ATACseq Differential Motif Enrichment")
+            output$downloadAtacMotifResults <- downloadHandler(
+              filename = function() {
+                paste("ATACseq_annotated _peaks_", Sys.Date(), ".csv",
+                      sep = "")
+              },
+              content = function(file) {
+                write.csv(getFullDEResults(objMOList, omic = ATAC), file,
+                          row.names = TRUE)
+              }
+            )
           } else {
             # Continue
           }
-          
-
-
-
-
-
-
-
-
-
-
-
         }, error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
@@ -2717,8 +2858,7 @@ server <- function(input, output, session) {
     } 
   })
 
-  # Render outputs to the main panel for each data type
-  # RNAseq
+
 
 
 

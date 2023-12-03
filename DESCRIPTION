@@ -38,6 +38,7 @@ Imports:
     ChIPseeker,
     DESeq2 (>= 1.39.7),
     dplyr (>= 1.0.7),
+    DT,
     edgeR (>= 3.36.0),
     GENIE3 (>= 1.13.3),
     GenomicRanges (>= 1.52.0),
@@ -52,7 +53,6 @@ Imports:
     Rdpack,
     Repitools,
     shiny,
-    shinyalert,
     shinyBS,
     SummarizedExperiment
 RdMacros: Rdpack
