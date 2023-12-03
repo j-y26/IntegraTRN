@@ -112,9 +112,10 @@
 #'
 #' A proteomics experiment conducted on fetal ventricular heart tissues from
 #' 6 individuals, using LC-MS/MS. Only concensus proteins found in all samples
-#' in the same conditions are included.
+#' in the same conditions are included. Some simulated values are included to
+#' increase protein coverage to demonstrate package functionality.
 #'
-#' @format A data frame with 489 rows (proteins) and 6 columns (samples)
+#' @format A data frame with 1448 rows (proteins) and 6 columns (samples)
 #' \describe{
 #'  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein
 #'  abundance values for each sample}
@@ -238,7 +239,7 @@
 #' of the full mapping and does not cover all proteins in the example data for
 #' illustration purposes.
 #' 
-#' @format A data frame with 462 rows (proteins) and 2 columns (fields)
+#' @format A data frame with 1421 rows (proteins) and 2 columns (fields)
 #' \describe{
 #' \item{protein}{Protein names}
 #' \item{gene}{Gene names}

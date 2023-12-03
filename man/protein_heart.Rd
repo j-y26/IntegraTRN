@@ -5,7 +5,7 @@
 \alias{protein_heart}
 \title{Protein abundance in fetal heart tissues}
 \format{
-A data frame with 489 rows (proteins) and 6 columns (samples)
+A data frame with 1448 rows (proteins) and 6 columns (samples)
 \describe{
  \item{sample_1, sample_2, sample_3, sample_4, sample_5, sample_6}{Protein
  abundance values for each sample}
@@ -21,7 +21,8 @@ protein_heart
 \description{
 A proteomics experiment conducted on fetal ventricular heart tissues from
 6 individuals, using LC-MS/MS. Only concensus proteins found in all samples
-in the same conditions are included.
+in the same conditions are included. Some simulated values are included to
+increase protein coverage to demonstrate package functionality.
 }
 \examples{
 \dontrun{

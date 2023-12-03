@@ -5,7 +5,7 @@
 \alias{proteinGeneIDConvert}
 \title{Protein to gene mapping}
 \format{
-A data frame with 462 rows (proteins) and 2 columns (fields)
+A data frame with 1421 rows (proteins) and 2 columns (fields)
 \describe{
 \item{protein}{Protein names}
 \item{gene}{Gene names}
