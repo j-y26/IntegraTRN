@@ -186,12 +186,7 @@ setMethod(
       sum(object@DEResult$Condition == "+"), "\n\n"
     )
     cat("A snapshot of the peaks:\n")
-    if (length(object@annoDB) == 0) {
-      print(utils::head(object@DEResult, 5))
-    } else {
-      csAnnoToDF(object@annotatedPeaks) %>%
-        utils::head(5)
-    }
+    as.data.frame(object) %>% head(5) %>% print()
     return(invisible(NULL))
   }
 )
