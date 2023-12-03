@@ -179,6 +179,22 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   DEResult <- DESeq2::results(dds) %>% as.data.frame()
   normalizedCounts <- DESeq2::counts(dds, normalized = TRUE) %>% as.matrix()
 
+  # DESeq2 has the problem of returning NA in adjusted p-values for genes with
+  # zero counts in one of the conditions. However, edgeR can handle this. Here,
+  # dispersion estimation by DESeq2 is inaccurate, so these genes are removed
+  # from the results. Users will be warned for the low tolerance of DESeq2.
+  rmGeneIndex <- which(is.na(DEResult$padj))
+  if (length(rmGeneIndex) > 0) {
+    DEResult <- DEResult[-rmGeneIndex, ]
+    normalizedCounts <- normalizedCounts[-rmGeneIndex, ]
+    warning(paste("DESeq2 has low tolerance for genes with very low count.",
+      "Dispersion estimations could be inaccurate for these genes.",
+      "These genes are removed from the results.",
+      "Removed", length(rmGeneIndex), "genes."))
+  } else {
+    # Do nothing
+  }
+
   # Create the DETag object
   deTag <- DETag(
     DEResult = DEResult,

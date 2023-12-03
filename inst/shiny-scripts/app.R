@@ -829,7 +829,7 @@ ui <- fluidPage(
 
           # Plots
           tags$h5("Principle Component Analysis (PCA) of Small RNAseq Samples"),
-          plotOutput(outputId = "smallRnaPCAPlot", width = "1000px"),
+          plotOutput(outputId = "smallRnaPCAPlot", height = "650px"),
           br(),
           tags$h5("Volcano Plot of Small RNAseq Data"),
           column(
@@ -2300,6 +2300,7 @@ server <- function(input, output, session) {
     closeAlert(session, "missingInputAlertID")
     closeAlert(session, "MOListErrorAlertID")
     closeAlert(session, "diffOmicsErrorAlertID")
+    closeAlert(session, "diffOmicsWarningAlertID")
     closeAlert(session, "annotateSmallRNAErrorAlertID")
     closeAlert(session, "annotateProteinErrorAlertID")
     closeAlert(session, "countPCAErrorAlertID")

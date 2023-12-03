@@ -476,18 +476,13 @@ countPCA <- function(matrix,
   pcaData <- DESeq2::plotPCA(vts, intgroup = "group", returnData = TRUE)
   percentVar <- round(100 * attr(pcaData, "percentVar"))
 
-  # Factor binary grouping variable if used
-  if (!is.numeric(pcaData$group) || length(unique(pcaData$group)) > 2) {
-    pcaData$group <- factor(pcaData$group)
-  }
-
   # Further customization of the PCA plot using ggplot2
   pcaPlot <- ggplot2::ggplot(
     pcaData,
     ggplot2::aes(x = -PC1, y = PC2, color = group)
   ) +
     ggplot2::geom_point(size = 3) +
-    ggplot2::coord_fixed() +
+    ggplot2::coord_fixed(ratio = 0.85) +
     ggplot2::theme_bw() +
     ggplot2::xlab(paste0("PC1: ", percentVar[1], "% variance")) +
     ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
