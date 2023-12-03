@@ -16,7 +16,7 @@ library(shinyBS)
 # Note these definitions are only available within the app
 MIRNA <- "miRNA_target"
 TF <- "TF_target"
-HSAPIENS <- "Human (hg38)"
+HSAPIENS <- "Human (hg38)"  # species + assembly to support multiple assemblies
 MMUSCULUS <- "Mouse (mm10)"
 
 # input data names
@@ -32,7 +32,29 @@ INPUT_LIST <- list(
   TF_target = "TFTarget"
 )
 
-# Helper function to check for missing inputs
+# Bioconductor annotation packages for different genome assemblies
+BIOC_ANNOTATION <- list(
+  "Human (hg38)" = list(
+    organism = "org.Hs.eg.db",
+    txdb = "TxDb.Hsapiens.UCSC.hg38.knownGene",
+    bsgenome = "BSgenome.Hsapiens.UCSC.hg38"
+  ),
+  "Mouse (mm10)" = list(
+    organism = "org.Mm.eg.db",
+    txdb = "TxDb.Mmusculus.UCSC.mm10.knownGene",
+    bsgenome = "BSgenome.Mmusculus.UCSC.mm10"
+  )
+)
+
+#' Helper function to check for missing inputs
+#' 
+#' @keywords internal
+#' 
+#' @param input The input object from the shiny app for server code
+#' @param requiredInputs A character vector of required input names
+#' 
+#' @return A boolean value indicating whether there are missing inputs
+#' 
 checkMissingInputs <- function(input, requiredInputs) {
   missing <- FALSE
   if (!all(requiredInputs %in% names(input))) {
@@ -47,6 +69,92 @@ checkMissingInputs <- function(input, requiredInputs) {
   }
   return(missing)
 }
+
+#' Helper function to retrieve annotation databases based on genome assembly
+#' 
+#' Depending on the genome assembly the user selected, this function will
+#' retrieve the list of required annotation databases for the analysis. It will
+#' check if the required annotation packages are installed, and install them if
+#' not AT RUNTIME. Many of the annotation packages are large, so they are not
+#' checked at package installation, but rather at runtime and are conditionally
+#' installed upon user request. This function is only called immediately before
+#' performing motif enrichment analysis to prevent unnecessary memory usage.
+#' 
+#' @keywords internal
+#' 
+#' @param genAssembly A character string indicating the genome assembly
+#' 
+#' @return A list of annotation databases
+getAnnotationDatabases <- function(genAssembly, session, input) {
+  # Retrieve the list of annotation databases
+  annotationDatabases <- BIOC_ANNOTATION[[genAssembly]]
+  # Check if the annotation packages are installed
+  stillMissing <- c()
+  if (!requireNamespace(annotationDatabases$organism, quietly = TRUE)) {
+    stillMissing <- c(stillMissing, annotationDatabases$organism)
+  }
+  if (!requireNamespace(annotationDatabases$txdb, quietly = TRUE)) {
+    stillMissing <- c(stillMissing, annotationDatabases$txdb)
+  }
+  if (!requireNamespace(annotationDatabases$bsgenome, quietly = TRUE)) {
+    stillMissing <- c(stillMissing, annotationDatabases$bsgenome)
+  }
+  # Display a modal to warn the user that the annotation packages are missing
+  if (length(stillMissing) > 0) {
+    showModal(
+      modalDialog(
+        title = paste0("Missing Annotation Packages for ", genAssembly),
+        paste0(
+          "The following annotation packages are missing: ",
+          paste(stillMissing, collapse = ", "),
+          ". Install them now?"
+        ),
+        footer = tagList(
+          modalButton("Cancel"),
+          actionButton("installAnno", "Install", class = "btn-primary")
+        )
+      )
+    )
+    # If the user clicks the install button, install the packages
+    observeEvent(input$installAnno, {
+      removeModal()
+      showModal(modalDialog(
+        title = "Installing missing annotation packages",
+        paste0("Please wait while the packages are being installed... This ",
+               "may take a while... ",
+               "Please re-run differential analysis after the packages are ",
+               "installed."),
+      ))
+      BiocManager::install(stillMissing, update = FALSE, ask = FALSE)
+    })
+    return(NULL)
+  } else {
+    # If the packages are already installed, retrieve the annotation databases
+    # ChIPseeker requires loading org packages from the namespace
+    library(annotationDatabases$organism, character.only = TRUE) 
+    # Retrieve the annotation databases with their names as variables without
+    # loading the packages: solution retrieved from zkurtz at 
+    # https://stackoverflow.com/questions/48452555/
+    # get-a-function-from-a-string-of-the-form-packagefunction?rq=3
+    txdb <- getFromNamespace(annotationDatabases$txdb,
+                              annotationDatabases$txdb)
+    bsgenome <- getFromNamespace(annotationDatabases$bsgenome,
+                                  annotationDatabases$bsgenome)
+    return(list(organism = annotationDatabases$organism,
+                txdb = txdb,
+                bsgenome = bsgenome))
+  }
+}
+
+
+
+
+
+
+# Although some dynamic UI code seems to be repetitive, it is necessary to
+# define them separately to ensure that the UI elements are generated
+# dynamically based on user inputs, and UI elements can only be generated
+# within the UI/server code, so cannot refactor the code into a helper function
 
 
 # Define the UI for the application
@@ -543,6 +651,8 @@ ui <- fluidPage(
           bsAlert(anchorId = "annotateSmallRNAErrorAlert"),
           bsAlert(anchorId = "annotateProteinErrorAlert"),
           bsAlert(anchorId = "countPCAErrorAlert"),
+          bsAlert(anchorId = "getAnnotationDatabasesErrorAlert"),
+          bsAlert(anchorId = "diffMotifErrorAlert"),
           
 
           # Updating results with different cutoffs without rerunning the
@@ -681,6 +791,10 @@ ui <- fluidPage(
           # Run DE analysis?
           tags$p("Run DE analysis?"),
           textOutput(outputId = "runDETest"),
+          
+          # Printing databases
+          tags$p("Annotation databases:"),
+          verbatimTextOutput(outputId = "databasesTest"),
 
 
 
@@ -1038,6 +1152,7 @@ server <- function(input, output, session) {
   # Retrieve the attribute (column) names of the sample metadata
   smallRnaseqSampleAttributes <- reactive({
     if (useSmallRNAseq()) {
+      req(input$smallRnaseqSampleMetadata)
       colnames(smallRnaseqSampleMetadata())
     } else {
       return(NULL)
@@ -1151,6 +1266,7 @@ server <- function(input, output, session) {
   # Retrieve the attribute (column) names of the sample metadata
   proteomicsSampleAttributes <- reactive({
     if (useProteomics()) {
+      req(input$proteomicsSampleMetadata)
       colnames(proteomicsSampleMetadata())
     } else {
       return(NULL)
@@ -1833,6 +1949,19 @@ server <- function(input, output, session) {
 
   # Perform differential analysis on the button click
   observeEvent(input$runDifferentialAnalysis, {
+    # First, close any alert messages if they are oped in prior runs
+    closeAlert(session, "missingInputAlertID")
+    closeAlert(session, "MOListErrorAlertID")
+    closeAlert(session, "diffOmicsErrorAlertID")
+    closeAlert(session, "annotateSmallRNAErrorAlertID")
+    closeAlert(session, "annotateProteinErrorAlertID")
+    closeAlert(session, "countPCAErrorAlertID")
+    closeAlert(session, "getAnnotationDatabasesErrorAlertID")
+    closeAlert(session, "diffMotifErrorAlertID")
+
+    # Initialize a variable to break the execution if any error occurs
+    continueExecution <- TRUE
+
     # Depending on whether the analysis has been performed, create a modal
     # to warn users that re-running the analysis will overwrite the previous
     # results
@@ -1882,6 +2011,7 @@ server <- function(input, output, session) {
       }
       # Check all required inputs exist
       if (checkMissingInputs(input, requiredInputs)) {
+        continueExecution <<- FALSE
         # Render a warning message
         createAlert(session,
           anchorId = "missingInputAlert",
@@ -1894,185 +2024,264 @@ server <- function(input, output, session) {
           style = "danger"
         )
       } else {
-        # Proceed to construct the MOList object
-        # Internal error checking of the functions are used, but they will cause
-        # the app to crash. Must be wrapped in tryCatch block to handle
-        # exceptions
-        objMOList <- NULL   # must initialize outside of tryCatch
-        continueExecution <- TRUE
-        if (continueExecution){
-          tryCatch({
-            # Construct the MOList object
-            objMOList <- MOList(
-              RNAseq = rnaseqCountMatrix(),
-              RNAGroupBy = rnaseqSampleMetadata()[[input$rnaseqSampleGrouping]],
-              smallRNAseq = smallRnaseqCountMatrix(),
-              smallRNAGroupBy =
-                smallRnaseqSampleMetadata()[[input$smallRnaSampleGrouping]],
-              proteomics = proteomicsCountMatrix(),
-              proteomicsGroupBy =
-                proteomicsSampleMetadata()[[input$proteomicsSampleGrouping]],
-              ATACpeak1 = atacPeak1(),
-              ATACpeak2 = atacPeak2()
-            )
-          }, error = function(e) {
-            continueExecution <<- FALSE
-            createAlert(session,
-              anchorId = "MOListErrorAlert",
-              alertId = "MOListErrorAlertID",
-              title = "Error in handling omic input data:",
-              content = paste0(
-                "<strong> Please make sure the input data are in the correct ", 
-                "format. </strong><br>",
-                "<strong> Ecountered the following error: </strong><br>",
-                conditionMessage(e)
-              ),
-              style = "danger"
-            )
-          })
-        }
-          
-        # Step 2: Perform differential analysis
-        omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
-        progress$set(message = "Performing differential analysis...",
-                     detail = paste0("on ", paste(omicsData, collapse = ", ")),
-                     value = 4)
-        if (continueExecution){
-          tryCatch({
-            objMOList <- diffOmics(objMOList,
-              rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
-              smallRnaBatch =
-                smallRnaseqSampleMetadata()[[smallRnaBatchVar()]],
-              proteinBatch =
-                proteomicsSampleMetadata()[[proteomicsBatchVar()]],
-              program = deMethod()
-            )
-          }, error = function(e) {
-            continueExecution <<- FALSE
-            createAlert(session,
-              anchorId = "diffOmicsErrorAlert",
-              alertId = "diffOmicsErrorAlertID",
-              title = "Error in performing differential analysis:",
-              content = paste0(
-                "<strong> Please make sure the input data are valid for the ",
-                "selected differential analysis method. </strong><br>", 
-                "<strong> Ecountered the following error: </strong><br>",
-                conditionMessage(e)
-              ),
-              style = "danger"
-            )
-          })
-        }
+        # Continue
+      }
 
-        # Step 3: Adding annotations if required
-        progress$set(message = "Checking for annotations...", value = 5)
-        if (continueExecution){
-          tryCatch({
-            if (useSmallRNAseq()) {
-              objMOList <- annotateSmallRNA(objMOList,
-                                            anno = smallRNAAnnotation())
-            } else {
-              # Continue
-            }
-          }, error = function(e) {
-            continueExecution <<- FALSE
-            createAlert(session,
-              anchorId = "annotateSmallRNAErrorAlert",
-              alertId = "annotateSmallRNAErrorAlertID",
-              title = "Error in annotating small RNAseq data:",
-              content = paste0(
-                "<strong> Please make sure the annotation is provided ",
-                "in the correct format </strong><br>", 
-                "<strong> Ecountered the following error: </strong><br>",
-                conditionMessage(e)
-              ),
-              style = "danger"
-            )
-          })
-        }
-        if (continueExecution){
-          tryCatch({
-            if (useProteomics()) {
-              objMOList <- annotateProtein(objMOList,
-                                            anno = proteinNameConversion())
-            } else {
-              # Continue
-            }
-          }, error = function(e) {
-            continueExecution <<- FALSE
-            createAlert(session,
-              anchorId = "annotateProteinErrorAlert",
-              alertId = "annotateProteinErrorAlertID",
-              title = "Error in annotating proteomics data:",
-              content = paste0(
-                "<strong> Please make sure the annotation is provided ",
-                "in the correct format </strong><br>", 
-                "<strong> Ecountered the following error: </strong><br>",
-                conditionMessage(e)
-              ),
-              style = "danger"
-            )
-          })
-        }
+      # Proceed to construct the MOList object
+      # Internal error checking of the functions are used, but they will cause
+      # the app to crash. Must be wrapped in tryCatch block to handle
+      # exceptions
+      objMOList <- NULL   # must initialize outside of tryCatch
 
-        # Step 4: Principal component analysis
-        # RNAseq
-        progress$set(message = "Performing principal component analysis...",
-                     detail = paste0("on ", 
-                              paste(setdiff(omicsData, ATAC), collapse = ", ")),
-                     value = 6)
-        pltRNAPCA <- NULL   # Again, must initialize outside of tryCatch
-        pltProteomicsPCA <- NULL
-        pltSmallRNAPCA <- NULL
-        if (continueExecution){
-          tryCatch({
-            pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
-                                  groupBy = objMOList@RNAseqSamples$groupBy,
-                                  batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
-            # Proteomics
-            if (useProteomics()) {
-            pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
-                      groupBy = objMOList@proteomicsSamples$groupBy,
-                      batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
-            } else {
-              # Continue
-            }
-            # Small RNAseq
-            if (useSmallRNAseq()) {
-              pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
-                        batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
-            } else {
-              # Continue
-            }
-          }, error = function(e) {
-            continueExecution <<- FALSE
-            createAlert(session,
-              anchorId = "countPCAErrorAlert",
-              alertId = "countPCAErrorAlertID",
-              title = "Error in performing principal component analysis:",
-              content = paste0(
-                "<strong> Ecountered the following error: </strong><br>",
-                conditionMessage(e)
-              ),
-              style = "danger"
-            )
-          })
-        }
+      if (continueExecution){
+        tryCatch({
+          # Construct the MOList object
+          objMOList <- MOList(
+            RNAseq = rnaseqCountMatrix(),
+            RNAGroupBy = rnaseqSampleMetadata()[[input$rnaseqSampleGrouping]],
+            smallRNAseq = smallRnaseqCountMatrix(),
+            smallRNAGroupBy =
+              smallRnaseqSampleMetadata()[[input$smallRnaSampleGrouping]],
+            proteomics = proteomicsCountMatrix(),
+            proteomicsGroupBy =
+              proteomicsSampleMetadata()[[input$proteomicsSampleGrouping]],
+            ATACpeak1 = atacPeak1(),
+            ATACpeak2 = atacPeak2()
+          )
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "MOListErrorAlert",
+            alertId = "MOListErrorAlertID",
+            title = "Error in handling omic input data:",
+            content = paste0(
+              "<strong> Please make sure the input data are in the correct ", 
+              "format. </strong><br>",
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      }
         
-        # Step 5: Differential motif enrichment analysis
-        progress$set(message = "Performing differential motif enrichment
-                                analysis...", value = 9)
-        
+      # Step 2: Perform differential analysis
+      omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
+      progress$set(message = "Performing differential analysis...",
+                    detail = paste0("on ", paste(omicsData, collapse = ", ")),
+                    value = 4)
+      if (continueExecution){
+        tryCatch({
+          objMOList <- diffOmics(objMOList,
+            rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
+            smallRnaBatch =
+              smallRnaseqSampleMetadata()[[smallRnaBatchVar()]],
+            proteinBatch =
+              proteomicsSampleMetadata()[[proteomicsBatchVar()]],
+            program = deMethod()
+          )
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "diffOmicsErrorAlert",
+            alertId = "diffOmicsErrorAlertID",
+            title = "Error in performing differential analysis:",
+            content = paste0(
+              "<strong> Please make sure the input data are valid for the ",
+              "selected differential analysis method. </strong><br>", 
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      }
 
+      # Step 3: Adding annotations if required
+      progress$set(message = "Checking for annotations...", value = 5)
+      if (continueExecution){
+        tryCatch({
+          if (useSmallRNAseq()) {
+            objMOList <- annotateSmallRNA(objMOList,
+                                          anno = smallRNAAnnotation())
+          } else {
+            # Continue
+          }
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "annotateSmallRNAErrorAlert",
+            alertId = "annotateSmallRNAErrorAlertID",
+            title = "Error in annotating small RNAseq data:",
+            content = paste0(
+              "<strong> Please make sure the annotation is provided ",
+              "in the correct format </strong><br>", 
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      }
+      if (continueExecution){
+        tryCatch({
+          if (useProteomics()) {
+            objMOList <- setGene2Protein(objMOList,
+                                         proteinNameConversion())
+          } else {
+            # Continue
+          }
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "annotateProteinErrorAlert",
+            alertId = "annotateProteinErrorAlertID",
+            title = "Error in annotating proteomics data:",
+            content = paste0(
+              "<strong> Please make sure the annotation is provided ",
+              "in the correct format </strong><br>", 
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      }
 
+      # Step 4: Principal component analysis
+      # RNAseq
+      progress$set(message = "Performing principal component analysis...",
+                    detail = paste0("on ", 
+                            paste(setdiff(omicsData, ATAC), collapse = ", ")),
+                    value = 6)
+      pltRNAPCA <- NULL   # Again, must initialize outside of tryCatch
+      pltProteomicsPCA <- NULL
+      pltSmallRNAPCA <- NULL
+      if (continueExecution){
+        tryCatch({
+          pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
+                                groupBy = objMOList@RNAseqSamples$groupBy,
+                                batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
+          # Proteomics
+          if (useProteomics()) {
+          pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
+                    groupBy = objMOList@proteomicsSamples$groupBy,
+                    batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
+          } else {
+            # Continue
+          }
+          # Small RNAseq
+          if (useSmallRNAseq()) {
+            pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
+                      batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
+          } else {
+            # Continue
+          }
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "countPCAErrorAlert",
+            alertId = "countPCAErrorAlertID",
+            title = "Error in performing principal component analysis:",
+            content = paste0(
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      }
+      
+      # Step 5: Differential motif enrichment analysis
+      progress$set(message = "Performing differential motif enrichment
+                              analysis...",
+                   detail = "Assigning features to peaks... Searching for
+                             motifs... This may take a while...",
+                   value = 8)
+      # Retrieve the annotation databases
+      annoDB <- NULL
+      if (useATACseq()) {
+        annoDB <- getAnnotationDatabases(genAssembly(), session, input)
+        print(annoDB)
+        if (is.null(annoDB)) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "getAnnotationDatabasesErrorAlert",
+            alertId = "getAnnotationDatabasesErrorAlertID",
+            title = "Error in retrieving annotation databases:",
+            content = paste0(
+              "<strong> No annotation databases found. </strong><br>"
+            ),
+            style = "danger"
+          )
+        } else {
+          # Continue
+        }
+      } else {
+        # Continue
+      }
+      print(objMOList)
+      # Perform the Analysis
+      if (continueExecution && useATACseq() && !is.null(annoDB)) {
+        tryCatch({
+          objMOList <- annotateATACPeaksMotif(
+            objMOList,
+            TxDb = annoDB$txdb,
+            annoDb = annoDB$organism,
+            bsgenome = annoDB$bsgenome,
+            pwmL = jasparVertebratePWM
+          )
+        }, error = function(e) {
+          continueExecution <<- FALSE
+          createAlert(session,
+            anchorId = "diffMotifErrorAlert",
+            alertId = "diffMotifErrorAlertID",
+            title = "Error in performing differential motif enrichment
+                    analysis:",
+            content = paste0(
+              "<strong> Ecountered the following error: </strong><br>",
+              conditionMessage(e)
+            ),
+            style = "danger"
+          )
+        })
+      } else {
+        # Continue
+      }
 
-
-
-
-
+      # Step 6: Generate the output
+      progress$set(message = "Generating final outputs...", 
+                   detail = paste0("for ", 
+                                   paste(omicsDataTypes(), collapse = ", ")),
+                   value = 9)
+      if (continueExecution){
 
 
       }
+
+      progress$set(message = "Done!", value = 10)
+        
+
+
+    
+      
+      
+      
+      
+      
+
+        
+        
+
+
+
+
+
+
+
+
+
+      
 
 
 
