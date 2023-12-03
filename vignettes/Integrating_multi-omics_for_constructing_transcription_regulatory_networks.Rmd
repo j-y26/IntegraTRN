@@ -213,7 +213,7 @@ change (log2FC) to define differentially expressed genes. Here, we define
 cutoffs.
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 1. Volcano plot of RNAseq data"}
-plotVolcanoRNA(myMOList, log2FC = 0.1)
+plotVolcano(myMOList, omic = "RNAseq", log2FC = 0.1)
 ```
 
 The plot also directly indicates the number of up- and down-regulated genes.
@@ -254,7 +254,7 @@ Then we again plot the volcano plot, with some genes labeled.
 We can make use of the **`ggrepel`** package to label the genes on the plot.
 
 ```{r message = FALSE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
-rnaVPlot <- plotVolcanoRNA(myMOList, log2FC = 0.1)
+rnaVPlot <- plotVolcano(myMOList, omic = "RNAseq", log2FC = 0.1)
 rnaVPlot <- rnaVPlot + ggrepel::geom_label_repel(
   data = rnaVPlot$data[rownames(rnaVPlot$data) %in% genesToLabel, ],
   mapping = ggplot2::aes(

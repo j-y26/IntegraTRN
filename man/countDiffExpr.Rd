@@ -23,7 +23,7 @@ analysis, DESeq2 or EdgeR}
 \value{
 An MOList object containing the differential expression analysis
         results. Results are appended to the original MOList object as
-        list elements named "DERNAseq", "DEsmallRNAseq", and "DEProteomics"
+        list elements named "DERNAseq", "DEsmallRNAseq", and "DEproteomics"
         for RNAseq, small RNAseq, and protein data, respectively.
 \itemize{
 \item \code{RNAseq}: A numeric matrix containing the RNAseq data

@@ -63,7 +63,7 @@ annoExpr <- function(deg, log2FC, adjP) {
 #'
 #' \insertRef{dplyr}{IntegraTRN}
 #'
-plotVolcano <- function(deg,
+plotBaseVolcano <- function(deg,
                         log2FC = 1,
                         adjP = 0.05,
                         title = NULL) {
@@ -104,6 +104,7 @@ plotVolcano <- function(deg,
 #'
 #' @param objMOList An MOList object containing the differential expression
 #'                  results for mRNA.
+#' @param omic The omic type, one of "RNAseq" or "proteomics"
 #' @param log2FC The cutoff for log2 fold change. Default is 1.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
 #' @param upColor The color for up-regulated genes. Default is "firebrick3".
@@ -134,33 +135,43 @@ plotVolcano <- function(deg,
 #' # Example 2: Generate the volcano plot with custom parameters
 #' plotVolcanoRNA(expMOList,
 #'   log2FC = 0,
-#'   adjP = 0.01,
+#'   adjP = 0.01,results
 #'   upColor = "purple",
 #'   downColor = "green",
 #'   title = "Volcano plot for DE mRNA"
 #' )
 #'
-plotVolcanoRNA <- function(objMOList,
-                           log2FC = 1,
-                           adjP = 0.05,
-                           upColor = "firebrick3",
-                           downColor = "dodgerblue3",
-                           title = NULL) {
-  if (is.null(objMOList$DERNAseq)) {
-    stop("No differential expression results for mRNA. Please run diffOmics()
-  first. See ?diffOmics for details.")
+plotVolcano <- function(objMOList,
+                        omic = c("RNAseq", "proteomics"),
+                        log2FC = 1,
+                        adjP = 0.05,
+                        upColor = "firebrick3",
+                        downColor = "dodgerblue3",
+                        title = NULL) {
+  # Retrieve the differential expression results
+  omic <- match.arg(omic)
+  deResult <- switch(omic,
+    "RNAseq" = objMOList$DERNAseq,
+    "proteomics" = objMOList$DEproteomics,
+    stop("Invalid omic type. Please specify one of 'RNAseq' or 'proteomics'.")
+  )
+
+  # Check if the differential expression results are available
+  if (is.null(deResult)) {
+    stop("No differential expression results for ", omic, ". Please run
+  diffOmics() first. See ?diffOmics for details.")
   } else {
     # Continue
   }
 
   # Retrieve the differential expression results for mRNA
-  degRNAseq <- objMOList$DERNAseq %>% exportDE()
+  deResult <- deResult %>% exportDE()
 
   # Annotate expression
-  degRNAseq <- annoExpr(degRNAseq, log2FC, adjP)
+  deResult <- annoExpr(deResult, log2FC, adjP)
 
   # Generate the base volcano plot
-  vPlot <- plotVolcano(degRNAseq, log2FC, adjP, title)
+  vPlot <- plotBaseVolcano(deResult, log2FC, adjP, title)
 
   # Color the up- and down-regulated genes
   vPlot <- vPlot +
@@ -176,16 +187,16 @@ plotVolcanoRNA <- function(objMOList,
     ))
 
   # Annotate the numbers of up- and down-regulated genes
-  upNum <- sum(degRNAseq$logFC >= log2FC & degRNAseq$padj < adjP)
-  downNum <- sum(degRNAseq$logFC <= -log2FC & degRNAseq$padj < adjP)
+  upNum <- sum(deResult$logFC >= log2FC & deResult$padj < adjP)
+  downNum <- sum(deResult$logFC <= -log2FC & deResult$padj < adjP)
   vPlot <- vPlot + ggplot2::geom_text(
-    ggplot2::aes(x = max(degRNAseq$logFC), y = -max(log(degRNAseq$padj, 10))),
+    ggplot2::aes(x = max(deResult$logFC), y = -max(log(deResult$padj, 10))),
     label = upNum,
     color = upColor,
     hjust = 1,
     vjust = 1
   ) + ggplot2::geom_text(
-    ggplot2::aes(x = min(degRNAseq$logFC), y = -max(log(degRNAseq$padj, 10))),
+    ggplot2::aes(x = min(deResult$logFC), y = -max(log(deResult$padj, 10))),
     label = downNum,
     color = downColor,
     hjust = 0,
@@ -321,7 +332,7 @@ plotVolcanoSmallRNA <- function(objMOList,
   degSmallRNAseq$type[degSmallRNAseq$expr == "Not DE"] <- "Not DE"
 
   # Generate the base volcano plot
-  vPlot <- plotVolcano(degSmallRNAseq, log2FC, adjP, title)
+  vPlot <- plotBaseVolcano(degSmallRNAseq, log2FC, adjP, title)
 
 
   # Generate a set of colors for each type of small RNA

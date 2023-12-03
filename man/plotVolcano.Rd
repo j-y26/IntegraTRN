@@ -2,31 +2,66 @@
 % Please edit documentation in R/plotDEOmics.R
 \name{plotVolcano}
 \alias{plotVolcano}
-\title{Generate a base volcano plot}
+\alias{plotVolcanoRNA}
+\title{Volcano plot for visualizing differentially expressed mRNA}
 \usage{
-plotVolcano(deg, log2FC = 1, adjP = 0.05, title = NULL)
+plotVolcano(
+  objMOList,
+  omic = c("RNAseq", "proteomics"),
+  log2FC = 1,
+  adjP = 0.05,
+  upColor = "firebrick3",
+  downColor = "dodgerblue3",
+  title = NULL
+)
 }
 \arguments{
-\item{deg}{A data frame containing the differential expression analysis
-results, must follow the described format in DETag-class}
+\item{objMOList}{An MOList object containing the differential expression
+results for mRNA.}
 
-\item{log2FC}{The cutoff for log2 fold change.}
+\item{omic}{The omic type, one of "RNAseq" or "proteomics"}
 
-\item{adjP}{The cutoff for adjusted p-value.}
+\item{log2FC}{The cutoff for log2 fold change. Default is 1.}
 
-\item{title}{The title for the plot.}
+\item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
+
+\item{upColor}{The color for up-regulated genes. Default is "firebrick3".}
+
+\item{downColor}{The color for down-regulated genes. Default is "dodgerblue3"}
+
+\item{title}{The title for the plot. Default is NULL.}
 }
 \value{
 A ggplot object
 }
 \description{
-This function generates a base volcano plot for visualizing
-            differentially expressed omics data based on log2 fold change
-            and adjusted p-value.
+This function generates a volcano plot for visualizing
+             differentially expressed mRNA based on log2 fold change and
+             adjusted p-value. The user can specify the cutoffs for log2 fold
+             change and adjusted p-value. The user can also specify a list of
+             genes to highlight in the plot. The colors for up- and down-
+             regulated genes can be specified by the user, but a default
+             color scheme is provided.
+}
+\examples{
+# Use the package-provided example data
+data(expMOList)
+
+# Example 1: Generate the volcano plot by default parameters
+plotVolcanoRNA(expMOList)
+
+# Example 2: Generate the volcano plot with custom parameters
+plotVolcanoRNA(expMOList,
+  log2FC = 0,
+  adjP = 0.01,results
+  upColor = "purple",
+  downColor = "green",
+  title = "Volcano plot for DE mRNA"
+)
+
 }
 \references{
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
 }
-\keyword{internal}
