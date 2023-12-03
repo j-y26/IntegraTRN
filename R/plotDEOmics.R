@@ -110,6 +110,8 @@ plotBaseVolcano <- function(deg,
 #' @param upColor The color for up-regulated genes. Default is "firebrick3".
 #' @param downColor The color for down-regulated genes. Default is "dodgerblue3"
 #' @param title The title for the plot. Default is NULL.
+#' @param highlight A vector of gene names to highlight in the plot. Default
+#'                  is NULL.
 #'
 #' @return A ggplot object
 #'
@@ -147,7 +149,8 @@ plotVolcano <- function(objMOList,
                         adjP = 0.05,
                         upColor = "firebrick3",
                         downColor = "dodgerblue3",
-                        title = NULL) {
+                        title = NULL,
+                        highlight = NULL) {
   # Retrieve the differential expression results
   omic <- match.arg(omic)
   deResult <- switch(omic,
@@ -169,13 +172,14 @@ plotVolcano <- function(objMOList,
 
   # Annotate expression
   deResult <- annoExpr(deResult, log2FC, adjP)
+  deResult$gene <- rownames(deResult)
 
   # Generate the base volcano plot
   vPlot <- plotBaseVolcano(deResult, log2FC, adjP, title)
 
   # Color the up- and down-regulated genes
   vPlot <- vPlot +
-    ggplot2::geom_point(ggplot2::aes(color = expr), size = 4 / 5) +
+    ggplot2::geom_point(ggplot2::aes(color = expr), size = 1) +
     ggplot2::guides(color = ggplot2::guide_legend(
       override.aes =
         list(size = 2.5)
@@ -185,6 +189,17 @@ plotVolcano <- function(objMOList,
       "Down-regulated" = downColor,
       "Not DE" = "grey50"
     ))
+  highlight <- sample(deResult$gene, 10)
+  
+  # Highlight the genes of interest by labeling their gene names
+  if (!is.null(highlight)) {
+    vPlot <- vPlot +
+      ggplot2::geom_label(data = deResult %>% filter(gene %in% highlight),
+                      aes(label = gene),
+                      size = 3)
+  } else {
+    # Continue
+  }
 
   # Annotate the numbers of up- and down-regulated genes
   upNum <- sum(deResult$logFC >= log2FC & deResult$padj < adjP)

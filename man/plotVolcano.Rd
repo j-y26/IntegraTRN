@@ -12,7 +12,8 @@ plotVolcano(
   adjP = 0.05,
   upColor = "firebrick3",
   downColor = "dodgerblue3",
-  title = NULL
+  title = NULL,
+  highlight = NULL
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ results for mRNA.}
 \item{downColor}{The color for down-regulated genes. Default is "dodgerblue3"}
 
 \item{title}{The title for the plot. Default is NULL.}
+
+\item{highlight}{A vector of gene names to highlight in the plot. Default
+is NULL.}
 }
 \value{
 A ggplot object
