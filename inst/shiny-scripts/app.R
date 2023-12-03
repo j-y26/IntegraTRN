@@ -905,7 +905,49 @@ ui <- fluidPage(
         # === Panel 5: ATACseq differential expression =========================
         tabPanel(
           "ATACseq Differential Motif Enrichment",
+          tags$h4("Motif Enrichment Analysis of ATACseq Data"),
+          br(),
+
+          tags$h5("Peak Annotation by Category"),
+          column(
+            width = 12,
+            align = "cente",
+            plotOutput(outputId = "atacAnnotationPlot", width = "600px"),
+          ),
+          br(),
+          tags$h5("Annotation Coverage of ATACseq Peaks"),
+          plotOutput(outputId = "atacCoveragePlot", height = "650px"),
+          br(),
+          tags$h5("Differentially Enriched Motifs"),
+          column(
+            width = 4,
+            align = "left",
+            tags$p("   See an error? What should I do?", id = "atacMotifError"),
+          ),
+          plotOutput(outputId = "atacMotifHeatmap", height = "650px"),
+          br(),
+          tags$h5("Annotated Peaks"),
+          DTOutput(outputId = "atacMotifTable"),
+          br(),
+          br(),
+          tags$b("Download the analysis results:"),
+          downloadButton(
+            outputId = "downloadAtacMotifResults",
+            label = "Download ATACseq motif enrichment results (.csv)"
+          ),
+          bsPopover(
+          id = "atacMotifError",
+          title = "Error in generating motif enrichment results",
+          content = paste0("When you see an error in generating the motif ",
+                  "enrichment results while the process runs smoothly, it ",
+                  "is likely that there is no differentially enriched motif ",
+                  "based on the current cutoffs. Try adjusting the cutoffs ",
+                  "to see the results (for example, use unadjusted p-value)."),
+          placement = "bottom",
+          trigger = "hover",
+          options = list(container = "body")
         ),
+      ),
 
 
 
@@ -2300,12 +2342,12 @@ server <- function(input, output, session) {
     closeAlert(session, "missingInputAlertID")
     closeAlert(session, "MOListErrorAlertID")
     closeAlert(session, "diffOmicsErrorAlertID")
-    closeAlert(session, "diffOmicsWarningAlertID")
     closeAlert(session, "annotateSmallRNAErrorAlertID")
     closeAlert(session, "annotateProteinErrorAlertID")
     closeAlert(session, "countPCAErrorAlertID")
     closeAlert(session, "getAnnotationDatabasesErrorAlertID")
     closeAlert(session, "diffMotifErrorAlertID")
+    closeAlert(session, "generateOutputErrorAlertID")
 
     # Initialize a variable to break the execution if any error occurs
     continueExecution <- TRUE
@@ -2595,7 +2637,7 @@ server <- function(input, output, session) {
         # Continue
       }
 
-      # Step 6: Generate the output
+      # Step 6: Generate the outputs
       progress$set(message = "Generating final outputs...",
                    detail = paste0("for ",
                                    paste(omicsDataTypes(), collapse = ", ")),
@@ -2635,7 +2677,7 @@ server <- function(input, output, session) {
             }
           })
 
-          # Small RNAseq 
+          # Small RNAseq
           if (useSmallRNAseq()) {
             # Small RNAseq DE table
             smallRnaDF <- getFullDEResults(objMOList, omic = SMALLRNA)
@@ -2735,7 +2777,6 @@ server <- function(input, output, session) {
               plotATACCoverage(objMOList)
             })
             # ATACseq motif enrichment heatmap
-
             output$atacMotifHeatmap <- renderPlot({
               plotATACMotifHeatmap(objMOList,
                                   pValueAdj = atacPadj(),
