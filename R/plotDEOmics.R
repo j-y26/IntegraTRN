@@ -64,9 +64,9 @@ annoExpr <- function(deg, log2FC, adjP) {
 #' \insertRef{dplyr}{IntegraTRN}
 #'
 plotBaseVolcano <- function(deg,
-                        log2FC = 1,
-                        adjP = 0.05,
-                        title = NULL) {
+                            log2FC = 1,
+                            adjP = 0.05,
+                            title = NULL) {
   # Generate the plot
   vPlot <- ggplot2::ggplot(deg, ggplot2::aes(x = logFC, y = -log(padj, 10))) +
     ggplot2::theme_classic() +
@@ -139,7 +139,7 @@ plotBaseVolcano <- function(deg,
 #' plotVolcano(expMOList,
 #'   omic = "RNAseq",
 #'   log2FC = 0,
-#'   adjP = 0.01,results
+#'   adjP = 0.01,
 #'   upColor = "purple",
 #'   downColor = "green",
 #'   title = "Volcano plot for DE mRNA"
@@ -198,9 +198,11 @@ plotVolcano <- function(objMOList,
   # Highlight the genes of interest by labeling their gene names
   if (!is.null(highlight)) {
     vPlot <- vPlot +
-      ggplot2::geom_label(data = deResult %>% filter(gene %in% highlight),
-                      aes(label = gene),
-                      size = 3)
+      ggplot2::geom_label(
+        data = deResult %>% filter(gene %in% highlight),
+        aes(label = gene),
+        size = 3
+      )
   } else {
     # Continue
   }
@@ -378,9 +380,11 @@ plotVolcanoSmallRNA <- function(objMOList,
   # Highlight the genes of interest by labeling their gene names
   if (!is.null(highlight)) {
     vPlot <- vPlot +
-      ggplot2::geom_label(data = degSmallRNAseq %>% filter(gene %in% highlight),
-                      aes(label = gene),
-                      size = 3)
+      ggplot2::geom_label(
+        data = degSmallRNAseq %>% filter(gene %in% highlight),
+        aes(label = gene),
+        size = 3
+      )
   } else {
     # Continue
   }
@@ -561,8 +565,9 @@ countPCA <- function(matrix,
 #'
 #' # Adding the smallRNAseq data to the example MOList object
 #' expMOList <- MOList(expMOList,
-#'                     smallRNAseq = smallRNAseq_heart,
-#'                     smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+#'   smallRNAseq = smallRNAseq_heart,
+#'   smallRNAGroupBy = smallRNAseq_heart_samples$Age
+#' )
 #'
 #' # Annotate the small RNAs using the package-provided human annotation
 #' expMOList <- annotateSmallRNA(expMOList, "human")

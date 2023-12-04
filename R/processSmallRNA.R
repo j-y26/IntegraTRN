@@ -281,9 +281,9 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
     snRNAanno <- extractTranscriptFromAnno(userAnno, "snRNA")
     snoRNAanno <- extractTranscriptFromAnno(userAnno, "snoRNA")
     annoSncRNA <- list(
-      miRNAanno = miRNAanno, piRNAanno = piRNAanno,
-      tRNAanno = tRNAanno, circRNAanno = circRNAanno,
-      snRNAanno = snRNAanno, snoRNAanno = snoRNAanno
+      miRNA = miRNAanno, piRNA = piRNAanno,
+      tRNA = tRNAanno, circRNA = circRNAanno,
+      snRNA = snRNAanno, snoRNA = snoRNAanno
     )
     objMOList$annoSncRNA <- annoSncRNA
     anno <- USERANNO

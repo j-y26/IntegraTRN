@@ -233,21 +233,21 @@
 "jasparVertebratePWM"
 
 #' Protein to gene mapping
-#' 
+#'
 #' A data frame containing the mapping between protein names and gene names
 #' used in the example proteomics and RNAseq datasets. This is only a subset
 #' of the full mapping and does not cover all proteins in the example data for
 #' illustration purposes.
-#' 
+#'
 #' @format A data frame with 1421 rows (proteins) and 2 columns (fields)
 #' \describe{
 #' \item{protein}{Protein names}
 #' \item{gene}{Gene names}
 #' }
-#' 
-#' @references 
+#'
+#' @references
 #' \insertRef{durinck2009mapping}{IntegraTRN}
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' proteinGeneIDConvert

@@ -186,7 +186,9 @@ setMethod(
       sum(object@DEResult$Condition == "+"), "\n\n"
     )
     cat("A snapshot of the peaks:\n")
-    as.data.frame(object) %>% head(5) %>% print()
+    as.data.frame(object) %>%
+      head(5) %>%
+      print()
     return(invisible(NULL))
   }
 )

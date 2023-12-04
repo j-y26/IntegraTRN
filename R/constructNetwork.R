@@ -222,9 +222,9 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
     proteomicsAdjPval, proteomicsLogFC,
     atacMotifAdjPval
   )
-  if (!all(is.numeric(inputs))) {
+  if (!all(is.null(inputs) | is.numeric(inputs))) {
     stop("The cutoffs must be numeric.")
-  } else if (!all(inputs >= 0)) {
+  } else if (!all(is.null(inputs) | inputs >= 0)) {
     stop("The cutoffs must be a positive number.")
   } else {
     # Continue
@@ -277,18 +277,26 @@ print.OMICutoffs <- function(x, ...) {
   } else {
     cat("RNAseq selecting top", x$rnaTopGenes, "DE genes", "\n")
   }
-  cat("smallRNAseq adjusted p-value cutoff: <", x$smallRNAAdjPval, "\n")
-  cat("smallRNAseq log fold change cutoff: >", x$smallRNALogFC, "\n")
-  if (x$smallRNATopGenes <= 1) {
-    cat(
-      "smallRNAseq selecting top", x$smallRNATopGenes * 100, "% of DE genes",
-      "\n"
-    )
+  if (!is.null(x$smallRNAAdjPval)) {
+    cat("smallRNAseq adjusted p-value cutoff: <", x$smallRNAAdjPval, "\n")
+    cat("smallRNAseq log fold change cutoff: >", x$smallRNALogFC, "\n")
+    if (x$smallRNATopGenes <= 1) {
+      cat(
+        "smallRNAseq selecting top", x$smallRNATopGenes * 100, "% of DE genes",
+        "\n"
+      )
+    } else {
+      cat("smallRNAseq selecting top", x$smallRNATopGenes, "DE genes", "\n")
+    }
   } else {
-    cat("smallRNAseq selecting top", x$smallRNATopGenes, "DE genes", "\n")
+    cat("No smallRNAseq value set.", "\n")
   }
-  cat("Proteomics adjusted p-value cutoff: <", x$proteomicsAdjPval, "\n")
-  cat("Proteomics log fold change cutoff: >", x$proteomicsLogFC, "\n")
+  if (!is.null(x$proteomicsAdjPval)) {
+    cat("Proteomics adjusted p-value cutoff: <", x$proteomicsAdjPval, "\n")
+    cat("Proteomics log fold change cutoff: >", x$proteomicsLogFC, "\n")
+  } else {
+    cat("No proteomics value set.", "\n")
+  }
   if (is.null(x$atacMotifPval)) {
     cat("ATACseq motif adjusted p-value cutoff: <", x$atacMotifAdjPval, "\n")
   } else {
@@ -502,6 +510,7 @@ filterTargetGenes <- function(rnaTopTag, protTopTag, mapping) {
 
   # Redefine the target genes
   rnaTopTag <- filterGenes(rnaTopTag, validTargets)
+  return(rnaTopTag)
 }
 
 
@@ -559,17 +568,27 @@ combineSncInteractions <- function(predInteract,
     # Then restore the list of interactions
     sncInteract <- mapply(c, predNonmiRNA, miRNAmRNA, SIMPLIFY = FALSE)
   }
-  # Executed only if some interactions are available
+  # Executed only if some interactions are available and has small RNA expr
   # Filter for inverse correlation on miRNA - mRNA interactions
-  sncInteract <- filtermiRNAinverseCorr(
-    exprAdjList = sncInteract,
-    deResultRNA = deResultRNA,
-    sncAnno = sncAnno,
-    deResultSmallRNA = deResultSmallRNA,
-    smallRNATypes = smallRNATypes
-  )
+  if (!is.null(deResultSmallRNA)) {
+    sncInteract <- filtermiRNAinverseCorr(
+      exprAdjList = sncInteract,
+      deResultRNA = deResultRNA,
+      sncAnno = sncAnno,
+      deResultSmallRNA = deResultSmallRNA,
+      smallRNATypes = smallRNATypes
+    )
+  } else {
+    # Filter interactions simply by targets
+  }
   # Annotate the small RNA types
-  sncInteract$regulatorType <- findGeneType(sncInteract$regulator, sncAnno)
+  if (!is.null(deResultSmallRNA)) {
+    sncInteract$regulatorType <- findGeneType(sncInteract$regulator, sncAnno)
+  } else if (predicted && !external) {
+    sncInteract$regulatorType <- rep("miRNA", length(sncInteract$regulator))
+  } else {
+    # do nothing
+  }
   return(sncInteract)
 }
 
@@ -679,29 +698,38 @@ constructTRN <- function(objMOList,
     direction = targetDirection
   )
   if (proteomics || is.null(objMOList$gene2protein)) {
-    warning("No differential proteomics data or gene to protein mapping.")
-    warning("Skipping filtering target genes by proteomics data.")
+    warning(paste0(
+      "No differential proteomics data or gene to protein ",
+      "mapping. Skipping filtering target genes by proteomics data."
+    ))
   } else {
     # Filter the target genes by proteomics data
-    protTopTag <- TOPTag(objMOList$DEProteomics,
+    protTopTag <- TOPTag(objMOList$DEproteomics,
       logFCCutoff = omiCutoffs$proteomicsLogFC,
       pCutoff = omiCutoffs$proteomicsAdjPval,
       topGenes = 1,
       direction = targetDirection
     )
     # Filter the target genes by proteomics data
-    rnaTopTag <- filterTargetGenes(rnaTopTag, protTopTag)
+    rnaTopTag <- filterTargetGenes(rnaTopTag,
+                                   protTopTag,
+                                   objMOList$gene2protein)
     omics <- union(omics, PROTEIN)
   }
 
   # ====== PART 2: small RNA - mRNA interactions ===============================
-  if (smallRNAtypes == "all") {
+  if (all(smallRNAtypes == "all")) {
     # Use all the small RNA types
     smallRNAtypes <- SMALLRNA_CATEGORIES
-  } else {
+  } else if (all(smallRNAtypes %in% SMALLRNA_CATEGORIES)) {
     # Do nothing
+  } else {
+    stop("Invalid small RNA type specification.")
   }
-  if (objMOList$annoSncRNA == HUMAN) {
+  # check only if smallRNAseq is used
+  if (!is.null(objMOList$annoSncRNA) &&
+        length(objMOList$annoSncRNA) == 1 &&
+        objMOList$annoSncRNA == HUMAN) {
     sncAnno <- SNCANNOLIST_HSAPIENS
   } else {
     sncAnno <- objMOList$annoSncRNA
@@ -710,8 +738,10 @@ constructTRN <- function(objMOList,
   # Perform predicted inference of small RNA - mRNA interactions, if specified
   if (predicted == TRUE) {
     if (smallRNAseq) {
-      warning("No differential smallRNAseq data provided. Skipping predicted
-      inference of small RNA - mRNA interactions.")
+      warning(paste0(
+        "No differential smallRNAseq data provided. Skipping ",
+        "predicted inference of small RNA - mRNA interactions."
+      ))
       smallRNAmRNAPred <- NULL
     } else {
       smallRNAmRNAPred <- predictSncmRNAInteractions(
@@ -724,6 +754,7 @@ constructTRN <- function(objMOList,
         treeMethod = treeMethod,
         seed = seed
       )
+      smallRNAmRNAPred <- lapply(smallRNAmRNAPred, function(x) as.character(x))
       omics <- union(omics, SMALLRNA)
     }
   } else {
@@ -738,13 +769,19 @@ constructTRN <- function(objMOList,
     omics <- union(omics, SMALLRNA)
   }
 
+  if (smallRNAseq) {
+    deSmallRNA <- NULL
+  } else {
+    deSmallRNA <- exportDE(objMOList$DEsmallRNAseq)
+  }
+
   # Finalize small RNA - mRNA interactions
   smallRNAmRNA <- combineSncInteractions(
     predInteract = smallRNAmRNAPred,
     extInteract = miRNAmRNAExt,
     sncAnno = sncAnno,
     deResultRNA = objMOList$DERNAseq %>% exportDE(),
-    deResultSmallRNA = objMOList$DEsmallRNAseq %>% exportDE(),
+    deResultSmallRNA = deSmallRNA,
     smallRNATypes = smallRNAtypes
   )
 
@@ -761,9 +798,10 @@ constructTRN <- function(objMOList,
       # Skip filtering silently since no ATACseq data
       tfmRNA <- extTFmRNA
     } else if (!inherits(objMOList$DEATAC, "PEAKTag")) {
-      warning("ATACseq data has no annotated motifs. See ?annotateATACPeaksMotif
-      for details.")
-      warning("Skipping filtering TFs by ATACseq data.")
+      warning(paste0(
+        "ATACseq data has no annotated motifs. See ?annotateATACPeaksMotif ",
+        "for details. Skipping filtering TFs by ATACseq data."
+      ))
       tfmRNA <- extTFmRNA
     } else {
       # Filter TFs by ATACseq data
@@ -787,6 +825,9 @@ constructTRN <- function(objMOList,
   # Access any potential duplicated interactions (potentially user-imported)
   duplicatedInt <- duplicated(trnInteractions[, NETWORK_FIELD[1:2]])
   trnInteractions <- trnInteractions[!duplicatedInt, ]
+  # Filter by target
+  trnInteractions <- trnInteractions %>%
+    dplyr::filter(target %in% rownames(rnaTopTag %>% exportDE()))
   # Construct the network
   trnNetwork <- TRNet(
     TRNmetadata = trnInteractions,

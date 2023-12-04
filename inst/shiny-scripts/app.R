@@ -6,8 +6,8 @@
 
 # Load libraries
 library(shiny)
-library(shinyBS)  # for interactive elements
-library(DT)  # for interactive tables
+library(shinyBS) # for interactive elements
+library(DT) # for interactive tables
 
 # Define some global variables
 # Note that RNA, SMALLRNA, ATAC, and PROTEIN is already defined within the
@@ -16,20 +16,26 @@ library(DT)  # for interactive tables
 # Note these definitions are only available within the app
 MIRNA <- "miRNA_target"
 TF <- "TF_target"
-HSAPIENS <- "Human (hg38)"  # species + assembly to support multiple assemblies
+HSAPIENS <- "Human (hg38)" # species + assembly to support multiple assemblies
 MMUSCULUS <- "Mouse (mm10)"
 
 # input data names
 INPUT_LIST <- list(
-  RNAseq = c("rnaseqCountMatrix", "rnaseqSampleMetadata",
-             "rnaseqSampleGrouping"),
-  smallRNAseq = c("smallRnaseqCountMatrix", "smallRnaseqSampleMetadata",
-                  "smallRnaSampleGrouping"),
-  proteomics = c("proteomicsCountMatrix", "proteomicsSampleMetadata",
-                 "proteomicsSampleGrouping"),
+  RNAseq = c(
+    "rnaseqCountMatrix", "rnaseqSampleMetadata",
+    "rnaseqSampleGrouping"
+  ),
+  smallRNAseq = c(
+    "smallRnaseqCountMatrix", "smallRnaseqSampleMetadata",
+    "smallRnaSampleGrouping"
+  ),
+  proteomics = c(
+    "proteomicsCountMatrix", "proteomicsSampleMetadata",
+    "proteomicsSampleGrouping"
+  ),
   ATACseq = c("atacPeak1", "atacPeak2"),
   miRNA_target = "miRNATarget",
-  TF_target = "TFTarget"
+  TF_target = "tfTarget"
 )
 
 # Bioconductor annotation packages for different genome assemblies
@@ -49,14 +55,14 @@ BIOC_ANNOTATION <- list(
 # Options for handling data tables
 # Input data
 DT_OPTIONS_INPUT <- list(
-      dom = "Brtip",
-      scrollX = TRUE,
-      scrollCollapse = TRUE
-    )
+  dom = "Brtip",
+  scrollX = TRUE,
+  scrollCollapse = TRUE
+)
 DT_OPTIONS_DEOUTPUT <- list(
-      pageLength = 10,
-      lengthMenu = c(5, 10, 20, 50)
-    )
+  pageLength = 10,
+  lengthMenu = c(5, 10, 20, 50)
+)
 
 #' Helper function to check for missing inputs
 #'
@@ -98,18 +104,19 @@ getFullDEResults <- function(objMOList,
                              omic = c(RNA, SMALLRNA, ATAC, PROTEIN)) {
   omic <- match.arg(omic, c(RNA, SMALLRNA, ATAC, PROTEIN))
   deResult <- switch(omic,
-                     "RNAseq" = objMOList$DERNAseq,
-                     "smallRNAseq" = objMOList$DEsmallRNAseq,
-                     "ATACseq" = objMOList$DEATAC,
-                     "proteomics" = objMOList$DEproteomics)
+    "RNAseq" = objMOList$DERNAseq,
+    "smallRNAseq" = objMOList$DEsmallRNAseq,
+    "ATACseq" = objMOList$DEATAC,
+    "proteomics" = objMOList$DEproteomics
+  )
   if (omic %in% COUNT_OMICS) {
     # Exploit the TOPTag class to retrieve results with order and pi-values
     deResult <- TOPTag(deResult,
-                       logFCCutoff = 0,
-                       pCutoff = 1,
-                       topGenes = 1,
-                       direction = "both") %>% exportDE()
-
+      logFCCutoff = 0,
+      pCutoff = 1,
+      topGenes = 1,
+      direction = "both"
+    ) %>% exportDE()
   } else {
     # Use the PEAKTag as.data.frame generic
     deResult <- deResult %>% as.data.frame()
@@ -167,10 +174,12 @@ getAnnotationDatabases <- function(genAssembly, session, input) {
       removeModal()
       showModal(modalDialog(
         title = "Installing missing annotation packages",
-        paste0("Please wait while the packages are being installed... This ",
-               "may take a while... ",
-               "Please re-run differential analysis after the packages are ",
-               "installed."),
+        paste0(
+          "Please wait while the packages are being installed... This ",
+          "may take a while... ",
+          "Please re-run differential analysis after the packages are ",
+          "installed."
+        ),
       ))
       BiocManager::install(stillMissing, update = FALSE, ask = FALSE)
     })
@@ -183,13 +192,19 @@ getAnnotationDatabases <- function(genAssembly, session, input) {
     # loading the packages: solution retrieved from zkurtz at
     # https://stackoverflow.com/questions/48452555/
     # get-a-function-from-a-string-of-the-form-packagefunction?rq=3
-    txdb <- getFromNamespace(annotationDatabases$txdb,
-                              annotationDatabases$txdb)
-    bsgenome <- getFromNamespace(annotationDatabases$bsgenome,
-                                  annotationDatabases$bsgenome)
-    return(list(organism = annotationDatabases$organism,
-                txdb = txdb,
-                bsgenome = bsgenome))
+    txdb <- getFromNamespace(
+      annotationDatabases$txdb,
+      annotationDatabases$txdb
+    )
+    bsgenome <- getFromNamespace(
+      annotationDatabases$bsgenome,
+      annotationDatabases$bsgenome
+    )
+    return(list(
+      organism = annotationDatabases$organism,
+      txdb = txdb,
+      bsgenome = bsgenome
+    ))
   }
 }
 
@@ -279,8 +294,8 @@ ui <- fluidPage(
 
         # === Panel for section 1: select omics data ===========================
         tabPanel(
-          "Section 1",
-          tags$h4("Section 1: Select Omics Data"),
+          "Step 1",
+          tags$h4("Step 1: Select Omics Data"),
           br(),
 
           # Description of the section
@@ -512,8 +527,8 @@ ui <- fluidPage(
 
         # === Panel for section 2: raw data input ==============================
         tabPanel(
-          "Section 2",
-          tags$h4("Section 2: Raw Data Input"),
+          "Step 2",
+          tags$h4("Step 2: Raw Data Input"),
           br(),
 
           # Description of the section
@@ -576,8 +591,8 @@ ui <- fluidPage(
 
         # === Panel for section 3: annotations and external data ===============
         tabPanel(
-          "Section 3",
-          tags$h4("Section 3: Annotations and Externally Curated Regulatory
+          "Step 3",
+          tags$h4("Step 3: Annotations and Externally Curated Regulatory
                 Interactions"),
           br(),
 
@@ -627,8 +642,8 @@ ui <- fluidPage(
 
         # === Panel for section 4: differential analysis =======================
         tabPanel(
-          "Section 4",
-          tags$h4("Section 4: Exploring Differential Analysis"),
+          "Step 4",
+          tags$h4("Step 4: Exploring Differential Analysis"),
           br(),
 
           # Description of the section
@@ -637,7 +652,6 @@ ui <- fluidPage(
           condition-specific transcriptomic alterations. Please provide
           settings to the program to define the behavior of the analysis."),
           br(),
-
           tags$h5("Please define the settings for the differential analysis:"),
           br(),
           tags$b("RNAseq differential expression:"),
@@ -649,7 +663,7 @@ ui <- fluidPage(
           sliderInput(
             inputId = "rnaLogFC",
             label = "Log2 fold change threshold:",
-            min = 0, max = 10, value = 0, step = 0.1
+            min = 0, max = 5, value = 0, step = 0.05
           ),
 
           # Small RNAseq
@@ -712,10 +726,101 @@ ui <- fluidPage(
                 analysis. The results will be updated automatically."),
         ),
 
+        # === Panel for section 5: network inference ===========================
+        tabPanel(
+          "Step 5",
+          tags$h4("Step 5: Network Inference"),
+          br(),
 
+          # Description of the section
+          tags$p(tags$b("Description:"), "In this section, the app performs
+          network inference to identify the core TRNs that explains the
+          condition-specific transcriptomic alterations. The network
+          is generated based on the previous differential analysis results.
+          Perform the following step to generate a TF - small RNA - target
+          gene network."),
+          br(),
+          tags$h5("Please define the settings for the network inference:"),
 
+          # Omic-specific settings
+          tags$b("Directionality of target gene:"),
+          selectInput(
+            inputId = "targetDirection",
+            label = "Please select the directionality of the target gene:",
+            choices = c("up", "down", "both"),
+            selected = "both"
+          ),
+          br(),
+          tags$b("Filtering for top expression changes:"),
+          tags$p("Select the fraction of genes based on their ranking in
+                the differential expression results. The top genes will be
+                used for network inference. A value of 0.1 means that the
+                top 10% of genes will be used for network inference.",
+            id = "topGenes"
+          ),
+          sliderInput(
+            inputId = "topRNAseqFraction",
+            label = tags$b("RNAseq:"),
+            min = 0, max = 1, value = 0.5, step = 0.01
+          ),
+          uiOutput(outputId = "topSmallRNAFraction"),
+          uiOutput(outputId = "topProteomicsFraction"),
+          uiOutput(outputId = "selectSmallRNATypes"),
+          bsPopover(
+            id = "topGenes",
+            title = "Filtering for top expression changes",
+            content = paste0(
+              "The computation time is directly related to the ",
+              "number of putative nodes (element) in the ",
+              "network. To limit the size of the network and ",
+              "extrapolate the most critical interactions, ",
+              "a fraction of the top genes can be selected."
+            )
+          ),
+          br(),
 
+          # Network inference settings
+          tags$b("Network inference setting:"),
+          checkboxInput(
+            inputId = "usePrediction",
+            label = "Perform predicted inference (recommended)",
+            value = TRUE
+          ),
+          uiOutput("selectInferenceMethod"),
+          br(),
+          tags$p("The algorithm works by intersecting multiple omics data
+                types to identify the core TRNs, thereby increasing the
+                confidence of the inferred interactions with reduced
+                network size. The prediction algorithm also works to reduce
+                false positives by examining expression correlations between
+                the regulator and the target gene. However, if minimal data
+                are provided, the full putative network can be exceptionally
+                large. A huge network could crash the browser. It is recommended
+                to perform predicted inference and select a subset of the top
+                genes to begin with network inference."),
+          br(),
+          br(),
+
+          # Button to start the analysis
+          tags$h5("Perform network inference:"),
+          tags$p(tags$b("Note:"), "To update the network with new settings,
+                 please rerun the network inference."),
+          bsButton(
+            inputId = "runNetworkInference",
+            label = "Run Network Inference",
+            style = "primary",
+            disabled = TRUE
+          ),
+          bsTooltip(
+            id = "runNetworkInference",
+            title = "Run differential analysis first to enable this button",
+            placement = "bottom"
+          ),
+          # Alerts for error and warning messages during the analysis
+          bsAlert(anchorId = "noSmallRNASelectedAlert"),
+          bsAlert(anchorId = "networkInferenceErrorAlert"),
         ),
+      ),
     ),
 
     # Main panel for displaying outputs
@@ -728,12 +833,11 @@ ui <- fluidPage(
 
         # === Panel 1: Input datasets ==========================================
         # Display the input data for users to double check their inputs
-
         tabPanel(
           "Data Input",
           tags$h4("Interactively Explore the Input Data"),
           br(),
-          tags$p("The following sections display the raw input data provided. 
+          tags$p("The following sections display the raw input data provided.
                  It is recommended to explore the data to ensure that the
                  correct data are provided. Raw data are displayed in tables
                  which you can sort and filter."),
@@ -805,8 +909,10 @@ ui <- fluidPage(
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
           DTOutput(outputId = "rnaseqDETable"),
-          tags$p(tags$b("Note: "),
-                 "Selected rows will be highlighted in the volcano plot."),
+          tags$p(
+            tags$b("Note: "),
+            "Selected rows will be highlighted in the volcano plot."
+          ),
           textOutput(outputId = "rnaseqGeneSelected"),
           br(),
           br(),
@@ -849,8 +955,10 @@ ui <- fluidPage(
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
           DTOutput(outputId = "smallRnaDETable"),
-          tags$p(tags$b("Note: "),
-                 "Selected rows will be highlighted in the volcano plot."),
+          tags$p(
+            tags$b("Note: "),
+            "Selected rows will be highlighted in the volcano plot."
+          ),
           textOutput(outputId = "smallRnaGeneSelected"),
           br(),
           br(),
@@ -868,7 +976,7 @@ ui <- fluidPage(
         # === Panel 4: Proteomics differential expression ======================
         tabPanel(
           "Proteomics Differential Expression",
-          tags$h4("Differential Expression Analysis of Proteomics Data"), 
+          tags$h4("Differential Expression Analysis of Proteomics Data"),
           br(),
 
           # Plots
@@ -886,8 +994,10 @@ ui <- fluidPage(
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
           DTOutput(outputId = "proteomicsDETable"),
-          tags$p(tags$b("Note: "),
-                 "Selected rows will be highlighted in the volcano plot."),
+          tags$p(
+            tags$b("Note: "),
+            "Selected rows will be highlighted in the volcano plot."
+          ),
           textOutput(outputId = "proteomicsGeneSelected"),
           br(),
           br(),
@@ -907,11 +1017,10 @@ ui <- fluidPage(
           "ATACseq Differential Motif Enrichment",
           tags$h4("Motif Enrichment Analysis of ATACseq Data"),
           br(),
-
           tags$h5("Peak Annotation by Category"),
           column(
             width = 12,
-            align = "cente",
+            align = "center",
             plotOutput(outputId = "atacAnnotationPlot", width = "600px"),
           ),
           br(),
@@ -936,18 +1045,49 @@ ui <- fluidPage(
             label = "Download ATACseq motif enrichment results (.csv)"
           ),
           bsPopover(
-          id = "atacMotifError",
-          title = "Error in generating motif enrichment results",
-          content = paste0("When you see an error in generating the motif ",
-                  "enrichment results while the process runs smoothly, it ",
-                  "is likely that there is no differentially enriched motif ",
-                  "based on the current cutoffs. Try adjusting the cutoffs ",
-                  "to see the results (for example, use unadjusted p-value)."),
-          placement = "bottom",
-          trigger = "hover",
-          options = list(container = "body")
+            id = "atacMotifError",
+            title = "Error in generating motif enrichment results",
+            content = paste0(
+              "When you see an error in generating the motif ",
+              "enrichment results while the process runs smoothly, it ",
+              "is likely that there is no differentially enriched motif ",
+              "based on the current cutoffs. Try adjusting the cutoffs ",
+              "to see the results (e.g., use unadjusted p-value)."
+            ),
+            placement = "bottom",
+            trigger = "hover",
+            options = list(container = "body")
+          ),
         ),
-      ),
+
+        # === Panel 6: Network inference =======================================
+        tabPanel(
+          "Integrated Network Inference",
+          tags$h4("Integrated Network Inference"),
+          br(),
+
+          # Plots
+          tags$h5("Integrated TF - Small RNA - Target Gene Regulatory Network"),
+          networkD3::forceNetworkOutput(outputId = "networkPlot",
+                                        height = "700px"),
+          br(),
+
+          # Table of network results
+          tags$h5("Inferred Regulatory Interactions"),
+          DTOutput(outputId = "networkTableDT"),
+          br(),
+
+          # Download the network results
+          tags$b("Download the network:"),
+          downloadButton(
+            outputId = "downloadNetworkEdges",
+            label = "Download interaction network (.csv)"
+          ),
+          downloadButton(
+            outputId = "downloadNetworkNodes",
+            label = "Download node information (.csv)"
+          ),
+        ),
 
 
 
@@ -1059,15 +1199,12 @@ ui <- fluidPage(
           textOutput(outputId = "proteomicsBatchVarTest"),
 
           # Run DE analysis?
-          tags$p("Run DE analysis?"),
+          tags$p("Missing Inputs"),
           textOutput(outputId = "runDETest"),
 
           # Printing databases
           tags$p("Annotation databases:"),
           verbatimTextOutput(outputId = "databasesTest"),
-
-
-
         ),
         selected = "Data Input",
         id = "mainOutputTabsetPanel"
@@ -1094,7 +1231,7 @@ ui <- fluidPage(
 # Note that the same section partitioning is used in the server code as in the
 # UI code, which begins with input loading followed by output generation
 server <- function(input, output, session) {
-  # === Section 1: select omics data ===========================================
+  # === Step 1: select omics data ===========================================
   # RNAseq (required)
   # Small RNAseq (optional)
   # Proteomics (optional)
@@ -1127,14 +1264,26 @@ server <- function(input, output, session) {
   })
 
   # Disable main output tabs until the analysis is performed
-  hideTab(inputId = "mainOutputTabsetPanel", 
-          target = "RNAseq Differential Expression")
-  hideTab(inputId = "mainOutputTabsetPanel",
-          target = "Small RNAseq Differential Expression")
-  hideTab(inputId = "mainOutputTabsetPanel",
-          target = "Proteomics Differential Expression")
-  hideTab(inputId = "mainOutputTabsetPanel",
-          target = "ATACseq Differential Motif Enrichment")
+  hideTab(
+    inputId = "mainOutputTabsetPanel",
+    target = "RNAseq Differential Expression"
+  )
+  hideTab(
+    inputId = "mainOutputTabsetPanel",
+    target = "Small RNAseq Differential Expression"
+  )
+  hideTab(
+    inputId = "mainOutputTabsetPanel",
+    target = "Proteomics Differential Expression"
+  )
+  hideTab(
+    inputId = "mainOutputTabsetPanel",
+    target = "ATACseq Differential Motif Enrichment"
+  )
+  hideTab(
+    inputId = "mainOutputTabsetPanel",
+    target = "Integrated Network Inference"
+  )
 
   # Processing data for downloads
   # RNAseq, small RNAseq, and proteomics data are serialized as R objects
@@ -1284,7 +1433,7 @@ server <- function(input, output, session) {
 
 
 
-  # === Section 2: raw data input ==============================================
+  # === Step 2: raw data input ==============================================
 
   # RNAseq data (required)
   # RNAseq count matrix
@@ -1653,7 +1802,7 @@ server <- function(input, output, session) {
   output$onsiteDownloadATACPeak2 <- downloadATACPeak2
 
 
-  # === Section 3: annotations and external data ===============================
+  # === Step 3: annotations and external data ===============================
 
   # Part 1: annotations
 
@@ -2024,7 +2173,7 @@ server <- function(input, output, session) {
       )
     }
   })
-  
+
   # Proteomics
   output$proteomicsRawCountDT <- renderDT(
     proteomicsCountMatrix(),
@@ -2095,7 +2244,7 @@ server <- function(input, output, session) {
     }
   })
 
-  # === Section 4: differential analysis =======================================
+  # === Step 4: differential analysis =======================================
 
   # According to the data types selected, ask the user to define the cutoffs
   # for differential analysis
@@ -2125,7 +2274,7 @@ server <- function(input, output, session) {
         sliderInput(
           inputId = "smallRnaLogFC",
           label = "Log2 fold change threshold:",
-          min = 0, max = 10, value = 0, step = 0.1
+          min = 0, max = 5, value = 0, step = 0.05
         ),
       )
     }
@@ -2163,7 +2312,7 @@ server <- function(input, output, session) {
         sliderInput(
           inputId = "proteomicsLogFC",
           label = "Log2 fold change threshold:",
-          min = 0, max = 10, value = 0, step = 0.1
+          min = 0, max = 5, value = 0, step = 0.05
         ),
       )
     }
@@ -2221,22 +2370,24 @@ server <- function(input, output, session) {
         (click here to see details)"),
         # add a pop-up to explain the use of unadjusted p-value
         bsPopover(
-        id = "useATACunadjPvalNote",
-        title = "Choosing P-value in differential motif enrichment analysis",
-        content = paste0(
-      "Differential motif enrichment analysis tests for transcription factor ",
-      "or cis-regulatory motifs that are found to be differentially enriched ",
-      "between two conditions. It requires that a motif must be enriched in ",
-      "at least one condition, and at the same time there must be a ",
-      "significant difference in enrichment between the two conditions. ",
-      "Therefore, this analysis can be very stringent. It is up to the ",
-      "users to decide whether to lessen the stringency by using unadjusted ",
-      "p-value instead of adjusted p-value."), trigger = "click"),
+          id = "useATACunadjPvalNote",
+          title = "Choosing P-value in differential motif enrichment analysis",
+          content = paste0(
+            "Differential motif enrichment analysis tests for transcription factor ",
+            "or cis-regulatory motifs that are found to be differentially enriched ",
+            "between two conditions. It requires that a motif must be enriched in ",
+            "at least one condition, and at the same time there must be a ",
+            "significant difference in enrichment between the two conditions. ",
+            "Therefore, this analysis can be very stringent. It is up to the ",
+            "users to decide whether to lessen the stringency by using unadjusted ",
+            "p-value instead of adjusted p-value."
+          ), trigger = "click"
+        ),
         # and finally the fold enrichment cutoff
         sliderInput(
           inputId = "atacLogFC",
           label = "Log2 fold enrichment threshold:",
-          min = 0, max = 10, value = 0, step = 0.1
+          min = 0, max = 5, value = 0, step = 0.05
         ),
       )
     }
@@ -2259,7 +2410,7 @@ server <- function(input, output, session) {
       req(input$atacUnadjPval)
       return(input$atacUnadjPval)
     } else {
-      return(NULL)  # return NULL if the checkbox is not checked
+      return(NULL) # return NULL if the checkbox is not checked
     }
   })
   atacLogFC <- reactive({
@@ -2309,7 +2460,7 @@ server <- function(input, output, session) {
   # Server for batch variable retrieval
   rnaBatchVar <- reactive({
     return(input$rnaBatchVar)
-  })                              # If user choose "None", returns NULL
+  }) # If user choose "None", returns NULL
   smallRnaBatchVar <- reactive({
     return(input$smallRnaBatchVar)
   })
@@ -2333,8 +2484,6 @@ server <- function(input, output, session) {
   # The analysis must follow a specific order of the pipeline
   # First need to initialize a reactive value to store the MOList object
   reactiveMOList <- reactiveValues(objMOList = NULL)
-  # Logic for checking whether the analysis has been performed
-  reactiveOverwrite <- reactiveValues(overwrite = FALSE, previous = FALSE)
 
   # Perform differential analysis on the button click
   observeEvent(input$runDifferentialAnalysis, {
@@ -2356,75 +2505,60 @@ server <- function(input, output, session) {
     # to warn users that re-running the analysis will overwrite the previous
     # results
     if (!is.null(reactiveMOList$objMOList)) {
-      # DE analysis has been performed, open a modal
-      reactiveOverwrite$previous <- TRUE
       showModal(
         modalDialog(
-          title = "Re-run differential analysis?",
+          title = "Re-run differential analysis",
           "A previous differential analysis has been found. Re-running the ",
-          "analysis will overwrite the previous results. Are you sure you ",
-          "want to continue?",
-          footer = tagList(
-            modalButton("Cancel"),
-            actionButton("confirmOverwrite", "Continue", class = "btn-primary")
-          )
+          "analysis will overwrite the previous results."
         )
       )
-      # If the user confirms, set the reactive value to TRUE
-      observeEvent(input$confirmOverwrite, {
-        reactiveOverwrite$overwrite <- TRUE
-        removeModal()
-      })
     } else {
       # Do nothing
     }
 
-    # Run the analysis only if this is a new analysis or the user confirms
-    # overwriting the previous results
-    if (!reactiveOverwrite$previous ||
-        (reactiveOverwrite$previous && reactiveOverwrite$overwrite)) {
-      # Perform the analysis
-      # Create a Progress object
-      progress <- shiny::Progress$new(max = 10)
-      # Make sure it closes when exiting the function
-      on.exit(progress$close())
+    # Perform the analysis
+    # Create a Progress object
+    progress <- shiny::Progress$new(max = 10)
+    # Make sure it closes when exiting the function
+    on.exit(progress$close())
 
-      # Step 1: Construct the MOList object
-      progress$set(message = "Constructing the MOList object...", value = 1)
-      # If any input is missing, stop the analysis
-      requiredInputs <- INPUT_LIST[omicsDataTypes()] %>% unlist()
-      if (useSmallRNAseq()) {
-        requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
-      }
-      if (useProteomics()) {
-        requiredInputs <- c(requiredInputs, "proteinNameConversion")
-      }
-      # Check all required inputs exist
-      if (checkMissingInputs(input, requiredInputs)) {
-        continueExecution <<- FALSE
-        # Render a warning message
-        createAlert(session,
-          anchorId = "missingInputAlert",
-          alertId = "missingInputAlertID",
-          title = "Missing Input",
-          content = paste0(
-            "Please make sure all required inputs are provided in the ",
-            "previous sections."
-          ),
-          style = "danger"
-        )
-      } else {
-        # Continue
-      }
+    # Step 1: Construct the MOList object
+    progress$set(message = "Constructing the MOList object...", value = 1)
+    # If any input is missing, stop the analysis
+    requiredInputs <- INPUT_LIST[omicsDataTypes()] %>% unlist()
+    if (useSmallRNAseq()) {
+      requiredInputs <- c(requiredInputs, "smallRNAAnnotation")
+    }
+    if (useProteomics()) {
+      requiredInputs <- c(requiredInputs, "proteinNameConversion")
+    }
+    # Check all required inputs exist
+    if (checkMissingInputs(input, requiredInputs)) {
+      continueExecution <- FALSE
+      # Render a warning message
+      createAlert(session,
+        anchorId = "missingInputAlert",
+        alertId = "missingInputAlertID",
+        title = "Missing Input",
+        content = paste0(
+          "Please make sure all required inputs are provided in the ",
+          "previous sections."
+        ),
+        style = "danger"
+      )
+    } else {
+      # Continue
+    }
 
-      # Proceed to construct the MOList object
-      # Internal error checking of the functions are used, but they will cause
-      # the app to crash. Must be wrapped in tryCatch block to handle
-      # exceptions
-      objMOList <- NULL   # must initialize outside of tryCatch
+    # Proceed to construct the MOList object
+    # Internal error checking of the functions are used, but they will cause
+    # the app to crash. Must be wrapped in tryCatch block to handle
+    # exceptions
+    objMOList <- NULL # must initialize outside of tryCatch
 
-      if (continueExecution){
-        tryCatch({
+    if (continueExecution) {
+      tryCatch(
+        {
           # Construct the MOList object
           objMOList <- MOList(
             RNAseq = rnaseqCountMatrix(),
@@ -2438,7 +2572,8 @@ server <- function(input, output, session) {
             ATACpeak1 = atacPeak1(),
             ATACpeak2 = atacPeak2()
           )
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "MOListErrorAlert",
@@ -2452,16 +2587,20 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      }
+        }
+      )
+    }
 
-      # Step 2: Perform differential analysis
-      omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
-      progress$set(message = "Performing differential analysis...",
-                    detail = paste0("on ", paste(omicsData, collapse = ", ")),
-                    value = 4)
-      if (continueExecution){
-        tryCatch({
+    # Step 2: Perform differential analysis
+    omicsData <- setdiff(omicsDataTypes(), c(MIRNA, TF))
+    progress$set(
+      message = "Performing differential analysis...",
+      detail = paste0("on ", paste(omicsData, collapse = ", ")),
+      value = 4
+    )
+    if (continueExecution) {
+      tryCatch(
+        {
           objMOList <- diffOmics(objMOList,
             rnaseqBatch = rnaseqSampleMetadata()[[rnaBatchVar()]],
             smallRnaBatch =
@@ -2470,7 +2609,8 @@ server <- function(input, output, session) {
               proteomicsSampleMetadata()[[proteomicsBatchVar()]],
             program = deMethod()
           )
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "diffOmicsErrorAlert",
@@ -2484,20 +2624,24 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      }
+        }
+      )
+    }
 
-      # Step 3: Adding annotations if required
-      progress$set(message = "Checking for annotations...", value = 5)
-      if (continueExecution){
-        tryCatch({
+    # Step 3: Adding annotations if required
+    progress$set(message = "Checking for annotations...", value = 5)
+    if (continueExecution) {
+      tryCatch(
+        {
           if (useSmallRNAseq()) {
             objMOList <- annotateSmallRNA(objMOList,
-                                          anno = smallRNAAnnotation())
+              anno = smallRNAAnnotation()
+            )
           } else {
             # Continue
           }
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "annotateSmallRNAErrorAlert",
@@ -2511,17 +2655,22 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      }
-      if (continueExecution){
-        tryCatch({
+        }
+      )
+    }
+    if (continueExecution) {
+      tryCatch(
+        {
           if (useProteomics()) {
-            objMOList <- setGene2Protein(objMOList,
-                                         proteinNameConversion())
+            objMOList <- setGene2Protein(
+              objMOList,
+              proteinNameConversion()
+            )
           } else {
             # Continue
           }
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "annotateProteinErrorAlert",
@@ -2535,39 +2684,51 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      }
+        }
+      )
+    }
 
-      # Step 4: Principal component analysis
-      # RNAseq
-      progress$set(message = "Performing principal component analysis...",
-                    detail = paste0("on ",
-                            paste(setdiff(omicsData, ATAC), collapse = ", ")),
-                    value = 6)
-      pltRNAPCA <- NULL   # Again, must initialize outside of tryCatch
-      pltProteomicsPCA <- NULL
-      pltSmallRNAPCA <- NULL
-      if (continueExecution){
-        tryCatch({
-          pltRNAPCA <- countPCA(matrix = getRawData(objMOList, RNA),
-                                groupBy = objMOList@RNAseqSamples$groupBy,
-                                batch = rnaseqSampleMetadata()[[rnaBatchVar()]])
+    # Step 4: Principal component analysis
+    # RNAseq
+    progress$set(
+      message = "Performing principal component analysis...",
+      detail = paste0(
+        "on ",
+        paste(setdiff(omicsData, ATAC), collapse = ", ")
+      ),
+      value = 6
+    )
+    pltRNAPCA <- NULL # Again, must initialize outside of tryCatch
+    pltProteomicsPCA <- NULL
+    pltSmallRNAPCA <- NULL
+    if (continueExecution) {
+      tryCatch(
+        {
+          pltRNAPCA <- countPCA(
+            matrix = getRawData(objMOList, RNA),
+            groupBy = objMOList@RNAseqSamples$groupBy,
+            batch = rnaseqSampleMetadata()[[rnaBatchVar()]]
+          )
           # Proteomics
           if (useProteomics()) {
-          pltProteomicsPCA <- countPCA(matrix = getRawData(objMOList, PROTEIN),
-                    groupBy = objMOList@proteomicsSamples$groupBy,
-                    batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]])
+            pltProteomicsPCA <- countPCA(
+              matrix = getRawData(objMOList, PROTEIN),
+              groupBy = objMOList@proteomicsSamples$groupBy,
+              batch = proteomicsSampleMetadata()[[proteomicsBatchVar()]]
+            )
           } else {
             # Continue
           }
           # Small RNAseq
           if (useSmallRNAseq()) {
             pltSmallRNAPCA <- plotSmallRNAPCAs(objMOList,
-                      batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]])
+              batch = smallRnaseqSampleMetadata()[[smallRnaBatchVar()]]
+            )
           } else {
             # Continue
           }
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "countPCAErrorAlert",
@@ -2579,39 +2740,43 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      }
-
-      # Step 5: Differential motif enrichment analysis
-      progress$set(message = "Performing differential motif enrichment
-                              analysis...",
-                   detail = "Assigning features to peaks... Searching for
-                             motifs... This may take a while...",
-                   value = 8)
-      # Retrieve the annotation databases
-      annoDB <- NULL
-      if (useATACseq()) {
-        annoDB <- getAnnotationDatabases(genAssembly(), session, input)
-        if (is.null(annoDB)) {
-          continueExecution <<- FALSE
-          createAlert(session,
-            anchorId = "getAnnotationDatabasesErrorAlert",
-            alertId = "getAnnotationDatabasesErrorAlertID",
-            title = "Error in retrieving annotation databases:",
-            content = paste0(
-              "<strong> No annotation databases found. </strong><br>"
-            ),
-            style = "danger"
-          )
-        } else {
-          # Continue
         }
+      )
+    }
+
+    # Step 5: Differential motif enrichment analysis
+    progress$set(
+      message = "Performing differential motif enrichment
+                            analysis...",
+      detail = "Assigning features to peaks... Searching for
+                            motifs... This may take a while...",
+      value = 8
+    )
+    # Retrieve the annotation databases
+    annoDB <- NULL
+    if (useATACseq()) {
+      annoDB <- getAnnotationDatabases(genAssembly(), session, input)
+      if (is.null(annoDB)) {
+        continueExecution <<- FALSE
+        createAlert(session,
+          anchorId = "getAnnotationDatabasesErrorAlert",
+          alertId = "getAnnotationDatabasesErrorAlertID",
+          title = "Error in retrieving annotation databases:",
+          content = paste0(
+            "<strong> No annotation databases found. </strong><br>"
+          ),
+          style = "danger"
+        )
       } else {
         # Continue
       }
-      # Perform the Analysis
-      if (continueExecution && useATACseq() && !is.null(annoDB)) {
-        tryCatch({
+    } else {
+      # Continue
+    }
+    # Perform the Analysis
+    if (continueExecution && useATACseq() && !is.null(annoDB)) {
+      tryCatch(
+        {
           objMOList <- annotateATACPeaksMotif(
             objMOList,
             TxDb = annoDB$txdb,
@@ -2619,31 +2784,38 @@ server <- function(input, output, session) {
             bsgenome = annoDB$bsgenome,
             pwmL = jasparVertebratePWM
           )
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "diffMotifErrorAlert",
             alertId = "diffMotifErrorAlertID",
             title = "Error in performing differential motif enrichment
-                    analysis:",
+                  analysis:",
             content = paste0(
               "<strong> Ecountered the following error: </strong><br>",
               conditionMessage(e)
             ),
             style = "danger"
           )
-        })
-      } else {
-        # Continue
-      }
+        }
+      )
+    } else {
+      # Continue
+    }
 
-      # Step 6: Generate the outputs
-      progress$set(message = "Generating final outputs...",
-                   detail = paste0("for ",
-                                   paste(omicsDataTypes(), collapse = ", ")),
-                   value = 9)
-      if (continueExecution){
-        tryCatch({
+    # Step 6: Generate the outputs
+    progress$set(
+      message = "Generating final outputs...",
+      detail = paste0(
+        "for ",
+        paste(omicsDataTypes(), collapse = ", ")
+      ),
+      value = 9
+    )
+    if (continueExecution) {
+      tryCatch(
+        {
           # Render plots & tables to the main panel
           # RNAseq DE table
           # Options used for table obtained from DT package documentation:
@@ -2659,9 +2831,11 @@ server <- function(input, output, session) {
           # RNAseq volcano plot
           # Plot it
           output$rnaseqVolcanoPlot <- renderPlot({
-            plotVolcano(objMOList, omic = RNA,
-                        adjP = rnaPadj(), log2FC = rnaLogFC(), 
-                        highlight = rownames(rnaDF)[rnaseqGeneIndex()])
+            plotVolcano(objMOList,
+              omic = RNA,
+              adjP = rnaPadj(), log2FC = rnaLogFC(),
+              highlight = rownames(rnaDF)[rnaseqGeneIndex()]
+            )
           })
           # RNAseq PCA plot
           output$rnaseqPCAPlot <- renderPlot({
@@ -2670,8 +2844,10 @@ server <- function(input, output, session) {
           # Selected Genes
           output$rnaseqGeneSelected <- renderText({
             if (length(rnaseqGeneIndex()) > 0) {
-              paste0("Gene selected: ", 
-                paste(rownames(rnaDF)[rnaseqGeneIndex()], collapse = ", "))
+              paste0(
+                "Gene selected: ",
+                paste(rownames(rnaDF)[rnaseqGeneIndex()], collapse = ", ")
+              )
             } else {
               # Do nothing
             }
@@ -2682,8 +2858,10 @@ server <- function(input, output, session) {
             # Small RNAseq DE table
             smallRnaDF <- getFullDEResults(objMOList, omic = SMALLRNA)
             # Show only 3 digits with scientific notation
-            smallRnaDF[, -1] <- format(smallRnaDF[, -1], digits = 4,
-                                       scientific = TRUE)
+            smallRnaDF[, -1] <- format(smallRnaDF[, -1],
+              digits = 4,
+              scientific = TRUE
+            )
             output$smallRnaDETable <- renderDT(
               smallRnaDF,
               filter = "top",
@@ -2691,16 +2869,22 @@ server <- function(input, output, session) {
             )
             # Small RNAseq volcano plot
             output$smallRnaVolcanoPlotAnno <- renderPlot({
-              plotVolcanoSmallRNA(objMOList, adjP = smallRnaPadj(),
-                                  log2FC = smallRnaLogFC(),
-                                  highlight = rownames(smallRnaDF)[
-                                    input$smallRnaDETable_rows_selected])
+              plotVolcanoSmallRNA(objMOList,
+                adjP = smallRnaPadj(),
+                log2FC = smallRnaLogFC(),
+                highlight = rownames(smallRnaDF)[
+                  input$smallRnaDETable_rows_selected
+                ]
+              )
             })
             output$smallRnaVolcanoPlotUpDown <- renderPlot({
-              plotVolcano(objMOList, omic = SMALLRNA,
-                          adjP = smallRnaPadj(), log2FC = smallRnaLogFC(),
-                          highlight = rownames(smallRnaDF)[
-                            input$smallRnaDETable_rows_selected])
+              plotVolcano(objMOList,
+                omic = SMALLRNA,
+                adjP = smallRnaPadj(), log2FC = smallRnaLogFC(),
+                highlight = rownames(smallRnaDF)[
+                  input$smallRnaDETable_rows_selected
+                ]
+              )
             })
             # Small RNAseq PCA plots
             output$smallRnaPCAPlot <- renderPlot({
@@ -2711,9 +2895,12 @@ server <- function(input, output, session) {
             # Selected genes
             output$smallRnaGeneSelected <- renderText({
               if (length(input$smallRnaDETable_rows_selected) > 0) {
-                paste0("Gene selected: ", 
+                paste0(
+                  "Gene selected: ",
                   paste(rownames(smallRnaDF)[
-                    input$smallRnaDETable_rows_selected], collapse = ", "))
+                    input$smallRnaDETable_rows_selected
+                  ], collapse = ", ")
+                )
               } else {
                 # Do nothing
               }
@@ -2727,8 +2914,10 @@ server <- function(input, output, session) {
             # Proteomics DE table
             proteomicsDF <- getFullDEResults(objMOList, omic = PROTEIN)
             # Show only 3 digits with scientific notation
-            proteomicsDF[, -1] <- format(proteomicsDF[, -1], digits = 4,
-                                         scientific = TRUE)
+            proteomicsDF[, -1] <- format(proteomicsDF[, -1],
+              digits = 4,
+              scientific = TRUE
+            )
             output$proteomicsDETable <- renderDT(
               proteomicsDF,
               filter = "top",
@@ -2736,10 +2925,13 @@ server <- function(input, output, session) {
             )
             # Proteomics volcano plot
             output$proteomicsVolcanoPlot <- renderPlot({
-              plotVolcano(objMOList, omic = PROTEIN,
-                          adjP = proteomicsPadj(), log2FC = proteomicsLogFC(),
-                          highlight = rownames(proteomicsDF)[
-                            input$proteomicsDETable_rows_selected])
+              plotVolcano(objMOList,
+                omic = PROTEIN,
+                adjP = proteomicsPadj(), log2FC = proteomicsLogFC(),
+                highlight = rownames(proteomicsDF)[
+                  input$proteomicsDETable_rows_selected
+                ]
+              )
             })
             # Proteomics PCA plot
             output$proteomicsPCAPlot <- renderPlot({
@@ -2748,9 +2940,12 @@ server <- function(input, output, session) {
             # Selected genes
             output$proteomicsGeneSelected <- renderText({
               if (length(input$proteomicsDETable_rows_selected) > 0) {
-                paste0("Gene selected: ", 
+                paste0(
+                  "Gene selected: ",
                   paste(rownames(proteomicsDF)[
-                    input$proteomicsDETable_rows_selected], collapse = ", "))
+                    input$proteomicsDETable_rows_selected
+                  ], collapse = ", ")
+                )
               } else {
                 # Do nothing
               }
@@ -2779,9 +2974,10 @@ server <- function(input, output, session) {
             # ATACseq motif enrichment heatmap
             output$atacMotifHeatmap <- renderPlot({
               plotATACMotifHeatmap(objMOList,
-                                  pValueAdj = atacPadj(),
-                                  pValue = atacUnadjPval(),
-                                  log2FEnrich = atacLogFC())
+                pValueAdj = atacPadj(),
+                pValue = atacUnadjPval(),
+                log2FEnrich = atacLogFC()
+              )
             })
           } else {
             # Continue
@@ -2789,19 +2985,28 @@ server <- function(input, output, session) {
 
           # Generate the output
           reactiveMOList$objMOList <- objMOList
+          # allow subsequent step to perform
+          updateButton(session, "runNetworkInference",
+            label = "Run Network Inference",
+            style = "primary",
+            disabled = FALSE
+          )
 
           # The tabPanels for each of the data types are generated dynamically
           # Also render download buttons for each of the data types
-          showTab(inputId = "mainOutputTabsetPanel", 
-                  target = "RNAseq Differential Expression",
-                  select = TRUE)
+          showTab(
+            inputId = "mainOutputTabsetPanel",
+            target = "RNAseq Differential Expression",
+            select = TRUE
+          )
           output$downloadRnaseqDEResults <- downloadHandler(
             filename = function() {
               paste("RNAseq_DE_results_", Sys.Date(), ".csv", sep = "")
             },
             content = function(file) {
               write.csv(getFullDEResults(objMOList, omic = RNA), file,
-                        row.names = TRUE)
+                row.names = TRUE
+              )
             }
           )
           output$downloadRnaseqNormCounts <- downloadHandler(
@@ -2810,77 +3015,95 @@ server <- function(input, output, session) {
             },
             content = function(file) {
               write.csv(exportNormalizedCounts(objMOList$DERNAseq), file,
-                        row.names = TRUE)
+                row.names = TRUE
+              )
             }
           )
 
           if (useSmallRNAseq()) {
-            showTab(inputId = "mainOutputTabsetPanel", 
-                    target = "Small RNAseq Differential Expression")
+            showTab(
+              inputId = "mainOutputTabsetPanel",
+              target = "Small RNAseq Differential Expression"
+            )
             output$downloadSmallRnaDEResults <- downloadHandler(
               filename = function() {
                 paste("Small_RNAseq_DE_results_", Sys.Date(), ".csv", sep = "")
               },
               content = function(file) {
                 write.csv(getFullDEResults(objMOList, omic = SMALLRNA), file,
-                          row.names = TRUE)
+                  row.names = TRUE
+                )
               }
             )
             output$downloadSmallRnaNormCounts <- downloadHandler(
               filename = function() {
                 paste("Small_RNAseq_normalized_counts_", Sys.Date(), ".csv",
-                      sep = "")
+                  sep = ""
+                )
               },
               content = function(file) {
                 write.csv(exportNormalizedCounts(objMOList$DEsmallRNAseq),
-                          file, row.names = TRUE)
+                  file,
+                  row.names = TRUE
+                )
               }
             )
           } else {
             # Continue
           }
           if (useProteomics()) {
-            showTab(inputId = "mainOutputTabsetPanel", 
-                    target = "Proteomics Differential Expression")
+            showTab(
+              inputId = "mainOutputTabsetPanel",
+              target = "Proteomics Differential Expression"
+            )
             output$downloadProteomicsDEResults <- downloadHandler(
               filename = function() {
                 paste("Proteomics_DE_results_", Sys.Date(), ".csv", sep = "")
               },
               content = function(file) {
                 write.csv(getFullDEResults(objMOList, omic = PROTEIN), file,
-                          row.names = TRUE)
+                  row.names = TRUE
+                )
               }
             )
             output$downloadProteomicsNormCounts <- downloadHandler(
               filename = function() {
                 paste("Proteomics_normalized_counts_", Sys.Date(), ".csv",
-                      sep = "")
+                  sep = ""
+                )
               },
               content = function(file) {
                 write.csv(exportNormalizedCounts(objMOList$DEproteomics),
-                          file, row.names = TRUE)
+                  file,
+                  row.names = TRUE
+                )
               }
             )
           } else {
             # Continue
           }
           if (useATACseq()) {
-            showTab(inputId = "mainOutputTabsetPanel", 
-                    target = "ATACseq Differential Motif Enrichment")
+            showTab(
+              inputId = "mainOutputTabsetPanel",
+              target = "ATACseq Differential Motif Enrichment"
+            )
             output$downloadAtacMotifResults <- downloadHandler(
               filename = function() {
                 paste("ATACseq_annotated _peaks_", Sys.Date(), ".csv",
-                      sep = "")
+                  sep = ""
+                )
               },
               content = function(file) {
                 write.csv(getFullDEResults(objMOList, omic = ATAC), file,
-                          row.names = TRUE)
+                  row.names = TRUE
+                )
               }
             )
           } else {
             # Continue
           }
-        }, error = function(e) {
+        },
+        error = function(e) {
           continueExecution <<- FALSE
           createAlert(session,
             anchorId = "generateOutputErrorAlert",
@@ -2892,13 +3115,376 @@ server <- function(input, output, session) {
             ),
             style = "danger"
           )
-        })
-      } else {
-        # Continue
-      }
-      progress$set(message = "Done!", detail = NULL, value = 10)
-    } 
+        }
+      )
+    } else {
+      # Continue
+    }
+    progress$set(message = "Done!", detail = NULL, value = 10)
   })
+
+  # === Step 5: Network Inference ===========================================
+
+  # Dynamic network settings depending on data types selected
+  # Top selected genes/transcripts
+  output$topSmallRNAFraction <- renderUI({
+    if (useSmallRNAseq()) {
+      sliderInput(
+        inputId = "topSmallRnaFraction",
+        label = tags$b("Small RNAseq:"),
+        min = 0, max = 1, value = 0.5, step = 0.01
+      )
+    }
+  })
+  output$topProteomicsFraction <- renderUI({
+    if (useProteomics()) {
+      tagList(
+        tags$b("Proteomics:"),
+        tags$p("All differentially expressed proteins will be used for
+                network inference due to their lower coverage than RNAseq."),
+        checkboxInput(
+          inputId = "proteinDirectionOnly",
+          label = "Filter proteins by direction of change only
+                  (hover for details)",
+          value = FALSE
+        ),
+        bsPopover(
+          id = "proteinDirectionOnly",
+          title = "Filter proteins by direction of change only",
+          content = paste0(
+            "By default, the network will only include target genes that are ",
+            "filtered by intersecting the top differentially expressed genes ",
+            "and the top differentially expressed proteins. However, due to ",
+            "technical issues with protein quantification, it is possible ",
+            "that protein coverage is low or are selectively enriched for a ",
+            "subset of targets. Once checked, network filltering will only ",
+            "use the directionality of protein expression change to filter the ",
+            "top target genes, instead of requiring proteins to also be ",
+            "significantly differentially expressed."
+          ),
+          placement = "right"
+        ),
+      )
+    }
+  })
+  output$selectSmallRNATypes <- renderUI({
+    if (useSmallRNAseq()) {
+      tagList(
+        br(),
+        tags$b("Select the types of small RNAs to include in the network:"),
+        checkboxGroupInput(
+          inputId = "smallRNATypes",
+          label = NULL,
+          choices = c("miRNA", "piRNA", "circRNA", "snoRNA", "snRNA", "tRNA"),
+          selected = c("miRNA", "piRNA", "circRNA", "snoRNA", "snRNA", "tRNA"),
+          inline = TRUE
+        ),
+        tags$p("Note: non-miRNA small RNA interactions with target genes can
+                only be inferred from prediction.")
+      )
+    }
+  })
+  output$selectInferenceMethod <- renderUI({
+    if (input$usePrediction) {
+      tagList(
+        selectInput(
+          inputId = "networkInferenceMethod",
+          label = "Please select a method for network inference:",
+          choices = c("Random Forest", "Extra-Trees"),
+          selected = "Random Forest"
+        ),
+        numericInput(
+          inputId = "nTree",
+          label = "Number of trees:",
+          value = 1000,
+          min = 100, max = 10000, step = 1
+        ),
+        numericInput(
+          inputId = "nThreads",
+          label = "Number of threads:",
+          value = 1,
+          min = 1, max = 32, step = 1
+        ),
+      )
+    }
+  })
+
+  # Server for network inference
+  # Direction of change
+  targetDirection <- reactive({
+    req(input$targetDirection)
+    return(input$targetDirection)
+  })
+
+  # Retrieve the top fraction of genes/transcripts
+  topRNAFraction <- reactive({
+    req(input$topRNAseqFraction)
+    return(input$topRNAseqFraction)
+  })
+  topSmallRNAFraction <- reactive({
+    if (useSmallRNAseq()) {
+      req(input$topSmallRnaFraction)
+      return(input$topSmallRnaFraction)
+    } else {
+      return(NULL)
+    }
+  })
+  # If true, set logFC to 0 and padj to 1 for proteins
+  proteinDirectionOnly <- reactive({
+    if (useProteomics()) {
+      return(input$proteinDirectionOnly)
+    } else {
+      return(NULL)
+    }
+  })
+  # small RNA types
+  smallRNATypes <- reactive({
+    if (useSmallRNAseq()) {
+      req(input$smallRNATypes)
+      return(input$smallRNATypes)
+    } else {
+      return("all")
+    }
+  })
+
+  # Setting for predictive inference of network
+  usePrediction <- reactive({
+    req(input$usePrediction)
+    return(input$usePrediction)
+  })
+  treeMethod <- reactive({
+    if (usePrediction()) {
+      req(input$networkInferenceMethod)
+      method <- switch(input$networkInferenceMethod,
+        "Random Forest" = "RF",
+        "Extra-Trees" = "ET"
+      )
+      return(method)
+    } else {
+      return(NULL)
+    }
+  })
+  nTree <- reactive({
+    if (usePrediction()) {
+      req(input$nTree)
+      return(round(input$nTree)) # In case user input a decimal
+    } else {
+      return(NULL)
+    }
+  })
+  nThreads <- reactive({
+    if (usePrediction()) {
+      req(input$nThreads)
+      return(round(input$nThreads))
+    } else {
+      return(NULL)
+    }
+  })
+
+  # Perform network inference on the button click
+  # Network inference and result update will only be performed on button click
+  # to avoid unnecessary computation (could take hours if the network is
+  # exceptionally large)
+  observeEvent(input$runNetworkInference, {
+    # Close any existing alert messages
+    closeAlert(session, "noSmallRNASelectedAlertID")
+    closeAlert(session, "networkInferenceErrorAlertID")
+
+    # Setting up a progress bar
+    progress <- shiny::Progress$new(max = 10)
+    on.exit(progress$close())
+    progress$set(message = "Checking input requirements...", value = 1)
+
+    # Initialize a variable to break the execution if any error occurs
+    continueExecution <- TRUE
+
+    # Check whether the input satisfies the requirements to generate the network
+    # Conditions where the network cannot be generated:
+    # 1. Only one omics data type is selected (RNAseq)
+    rnaOnly <- length(omicsDataTypes()) == 1 && RNA %in% omicsDataTypes()
+    # 2. Only two omics data types are selected (RNAseq and proteomics)
+    rnaProtein <- length(omicsDataTypes()) == 2 &&
+      all(c(RNA, PROTEIN) %in% omicsDataTypes())
+    # 3. No external data and predictive inference is disabled
+    noExtData <- !usemiRNATarget() && !useTFTarget() && !usePrediction()
+
+    if (rnaOnly || rnaProtein || noExtData) {
+      continueExecution <<- FALSE
+      showModal(
+        modalDialog(
+          title = "Data input not supported for integrative network inference",
+          tags$p("The inferred network focuses on the TF - small RNA - target
+                  gene interactions. Without explicit Tf - gene or miRNA - gene
+                  interaction data, the program replies solely on predicted
+                  inference. If only RNAseq and/or proteomics data are provided,
+                  small RNA or TF are unable to be inferred as regulators."),
+          tags$p("It is highly recommended to provide externally curated
+                   non-tissue/condition-specific TF - gene and miRNA - gene
+                   interactions to improve the quality of the inferred
+                   network. It is possible to search for such interactions by
+                   providing a list of genes as targets."),
+          tags$p(
+            "One of the interaction database is miRNet, available ",
+            tags$a(href = "https://www.mirnet.ca/", "here"), "."
+          ),
+          footer = modalButton("OK")
+        )
+      )
+    } else if (length(smallRNATypes()) == 0) {
+      continueExecution <<- FALSE
+      createAlert(session,
+        anchorId = "noSmallRNASelectedAlert",
+        alertId = "noSmallRNASelectedAlertID",
+        title = "No small RNA types selected",
+        content = paste0(
+          "Please select at least one small RNA type to include in the ",
+          "network."
+        ),
+        style = "danger"
+      )
+    } else {
+      # Continue
+    }
+
+    # Perform the analysis only if the input is valid
+    objMOList <- reactiveMOList$objMOList
+    tryCatch(
+      {
+        if (continueExecution) {
+          # Step 1: load external interaction data
+          progress$set(
+            message = "Loading external interaction data...",
+            value = 2
+          )
+          if (usemiRNATarget()) {
+            miR2Genes <- as.list(miRNATarget())
+          } else {
+            miR2Genes <- NULL
+          }
+          if (useTFTarget()) {
+            tf2Genes <- as.list(TFTarget())
+          } else {
+            tf2Genes <- NULL
+          }
+          objMOList <- loadExtInteractions(objMOList,
+            miR2Genes = miR2Genes,
+            tf2Genes = tf2Genes
+          )
+
+          # Step 2 Optimal matching between RNAseq and small RNAseq samples
+          if (useSmallRNAseq()) {
+            progress$set(
+              message = "Matching RNAseq and small RNAseq samples...",
+              value = 3
+            )
+            objMOList <- matchSamplesRNAsmallRNA(objMOList,
+              sampleDFRNAseq = rnaseqSampleMetadata(),
+              sampleDFSmallRNAseq = smallRnaseqSampleMetadata()
+            )
+          } else {
+            # Continue
+          }
+
+          # Step 3: Setting cutoffs
+          progress$set(message = "Filtering network elements...", value = 4)
+          # Set proteomics cutoffs depending on whether the user wants to use
+          # only the direction of change
+          proteinP <- 1
+          proteinFC <- 0
+          if (is.null(proteinDirectionOnly()) || !proteinDirectionOnly()) {
+            proteinP <- proteomicsPadj()
+            proteinFC <- proteomicsLogFC()
+          } else {
+            # Continue
+          }
+          omiCutoffs <- setOmicCutoffs(
+            rnaAdjPval = rnaPadj(),
+            rnaLogFC = rnaLogFC(),
+            rnaTopGenes = topRNAFraction(),
+            smallRNAAdjPval = smallRnaPadj(),
+            smallRNALogFC = smallRnaLogFC(),
+            smallRNATopGenes = topSmallRNAFraction(),
+            proteomicsAdjPval = proteinP,
+            proteomicsLogFC = proteinFC,
+            atacMotifAdjPval = atacPadj(),
+            atacMotifPval = atacUnadjPval(),
+            atacMotifLogFC = atacLogFC()
+          )
+
+          # Step 4: Perform network inference
+          progress$set(
+            message = "Performing network inference...", value = 5,
+            detail = "This may take a while..."
+          )
+
+          trNet <- constructTRN(objMOList,
+            omiCutoffs = omiCutoffs,
+            smallRNAtypes = smallRNATypes(),
+            targetDirection = targetDirection(),
+            predicted = usePrediction(),
+            ntree = nTree(),
+            nthreads = nThreads(),
+            treeMethod = treeMethod()
+          )
+
+          # Step 5: Generate the output
+          progress$set(message = "Generating final outputs...", value = 9)
+          # Render the network
+          output$networkPlot <- networkD3::renderForceNetwork({
+            plotNetwork(trNet, interactive = TRUE)
+          })
+          # Render the table of all interactions
+          output$networkTableDT <- renderDT(
+            exportEdgeSet(trNet),
+            filter = "top",
+            options = DT_OPTIONS_DEOUTPUT
+          )
+          # Generate download links
+          output$downloadNetworkEdges <- downloadHandler(
+            filename = function() {
+              paste("network_edges_", Sys.Date(), ".csv", sep = "")
+            },
+            content = function(file) {
+              write.csv(exportEdgeSet(trNet), file, row.names = FALSE)
+            }
+          )
+          output$downloadNetworkNodes <- downloadHandler(
+            filename = function() {
+              paste("network_nodes_", Sys.Date(), ".csv", sep = "")
+            },
+            content = function(file) {
+              write.csv(parseVertexMetadata(trNet), file, row.names = FALSE)
+            }
+          )
+          # Display main output tab
+          showTab(
+            inputId = "mainOutputTabsetPanel",
+            target = "Integrated Network Inference",
+            select = TRUE
+          )
+        }
+        progress$set(message = "Done!", detail = NULL, value = 10)
+      },
+      error = function(e) {
+        continueExecution <<- FALSE
+        createAlert(session,
+          anchorId = "networkInferenceErrorAlert",
+          alertId = "networkInferenceErrorAlertID",
+          title = "Error in performing network inference:",
+          content = paste0(
+            "<strong> Ecountered the following error: </strong><br>",
+            conditionMessage(e)
+          ),
+          style = "danger"
+        )
+      }
+    )
+  })
+
+
+
+
+
 
 
 
@@ -3093,15 +3679,8 @@ server <- function(input, output, session) {
 
   # Test if DE analysis should be run
   output$runDETest <- renderText({
-    run <- !reactiveOverwrite$previous ||
-        (reactiveOverwrite$previous && reactiveOverwrite$overwrite)
-    return(as.character(run))
+    paste(setdiff(reqInputs(), names(input)), collapse = ", ")
   })
-
-
-
-
-
 }
 
 

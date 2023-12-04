@@ -187,10 +187,12 @@ diffExprDESeq2 <- function(filteredCounts, groupBy, batch = NULL) {
   if (length(rmGeneIndex) > 0) {
     DEResult <- DEResult[-rmGeneIndex, ]
     normalizedCounts <- normalizedCounts[-rmGeneIndex, ]
-    warning(paste("DESeq2 has low tolerance for genes with very low count.",
+    warning(paste(
+      "DESeq2 has low tolerance for genes with very low count.",
       "Dispersion estimations could be inaccurate for these genes.",
       "These genes are removed from the results.",
-      "Removed", length(rmGeneIndex), "genes."))
+      "Removed", length(rmGeneIndex), "genes."
+    ))
   } else {
     # Do nothing
   }

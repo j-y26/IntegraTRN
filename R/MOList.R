@@ -551,7 +551,7 @@ MOList <- function(objMOList = NULL,
     peakCond2 <- ATACpeak2
     colnames(peakCond2)[1:3] <- CHROMINFO
   } else if (!is.null(ATACpeak1) && !is.null(ATACpeak2) &&
-             is.character(ATACpeak1) && is.character(ATACpeak2)) {
+    is.character(ATACpeak1) && is.character(ATACpeak2)) {
     if (file.exists(ATACpeak1) && file.exists(ATACpeak2)) {
       peakCond1 <- utils::read.table(ATACpeak1, header = FALSE, sep = "\t")
       colnames(peakCond1)[1:3] <- CHROMINFO
