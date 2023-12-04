@@ -711,9 +711,11 @@ constructTRN <- function(objMOList,
       direction = targetDirection
     )
     # Filter the target genes by proteomics data
-    rnaTopTag <- filterTargetGenes(rnaTopTag,
-                                   protTopTag,
-                                   objMOList$gene2protein)
+    rnaTopTag <- filterTargetGenes(
+      rnaTopTag,
+      protTopTag,
+      objMOList$gene2protein
+    )
     omics <- union(omics, PROTEIN)
   }
 
@@ -728,8 +730,8 @@ constructTRN <- function(objMOList,
   }
   # check only if smallRNAseq is used
   if (!is.null(objMOList$annoSncRNA) &&
-        length(objMOList$annoSncRNA) == 1 &&
-        objMOList$annoSncRNA == HUMAN) {
+    length(objMOList$annoSncRNA) == 1 &&
+    objMOList$annoSncRNA == HUMAN) {
     sncAnno <- SNCANNOLIST_HSAPIENS
   } else {
     sncAnno <- objMOList$annoSncRNA
