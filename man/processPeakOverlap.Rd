@@ -26,7 +26,5 @@ This function processes user input peak files to check for
 }
 \references{
 \insertRef{lawrence2013software}{IntegraTRN}
-
-\insertRef{statham2010repitools}{IntegraTRN}
 }
 \keyword{internal}

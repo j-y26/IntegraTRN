@@ -8,7 +8,7 @@ plotVolcanoSmallRNA(
   objMOList,
   log2FC = 0,
   adjP = 0.05,
-  colScheme = "BuPu",
+  colScheme = c("#EDF8FB", "#BFD3E6", "#9EBCDA", "#8C96C6", "#8856A7", "#810F7C"),
   title = NULL,
   highlight = NULL,
   pointSize = 1
@@ -22,9 +22,9 @@ results for small RNAs.}
 
 \item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
 
-\item{colScheme}{A RColorBrewer color scheme for color-coding each type of
-small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
-for details.}
+\item{colScheme}{A character vector specifying the colors used to annotate
+each type of small RNA. The length of the vector must be
+equal to or greater than the number of types of small RNAs.}
 
 \item{title}{A character vector specifying the title for the plot. Default
 is NULL.}
@@ -66,6 +66,4 @@ plotVolcanoSmallRNA(expMOList,
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
-
-\insertRef{RColorBrewer}{IntegraTRN}
 }

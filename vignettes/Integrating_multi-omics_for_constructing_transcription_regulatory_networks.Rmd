@@ -218,26 +218,75 @@ plotVolcano(myMOList, omic = "RNAseq", log2FC = 0.1)
 
 The plot also directly indicates the number of up- and down-regulated genes.
 
-For any count-based differential expression analysis, the result is stored in a
-**`DETag`** object as an list element of the **`MOList`** object. The 
-**`myMOList`** object can simply be subsetted as a regular list.
+How do we efficiently explore the raw differential expression results? The
+**`IntegraTRN`** package has conveniently defined a set of data structures,
+primarily S4 classes and methods, that allows users to easily explore the
+results. The previously mentioned **`MOList`** object essentially works as a 
+list, which contains differential results stored in a **`DETag`** object for
+each omics data. This means that we can easily retrieve the differential
+expression results via simple subsetting.
 
 ```{r message = FALSE, tidy=TRUE}
 myRNADETag <- myMOList$DERNAseq
 ```
 
-A simple snap shot of the `DETag` object can be directly invoked.
+A simple snap shot of the **`DETag`** object can be directly invoked.
 
 ```{r message = FALSE, tidy=TRUE}
 myRNADETag
 ```
 
-Or if we want to retrieve the entire differential expression result, we can use
-the **`exportDE`** function.
+To further obtain the full results of the differential expression analysis,
+we can use the **`exportDE`** function. This function returns a data frame
+containing the outputs of **`DESeq2`** or **`edgeR`**, with choice of using a 
+consistent interface.
 
 ```{r message = FALSE, tidy=TRUE}
-exportDE(myRNADETag) %>% head(5) # For the first 5 genes
+exportDE(myRNADETag, original = TRUE) %>%
+  DT::datatable(options = list(pageLength = 5, scrollX = TRUE))
 ```
+
+By having **`original = TRUE`**, the data frame remains exactly the same as the
+**`DESeq2`** output.
+
+Some times, we may also want to rank the genes to perform gene set enrichment
+analysis (GSEA). [@reimand2019pathway] To this end, we can make use of the
+subclass of **`DETag`**, which is the **`TOPTag`** object. It automatically
+performs piValue transformation [@reimand2019pathway] and ranking based on a 
+user-specified criteria. For example, let's retrieve genes that have at least
+0.1 log2 fold change and select the top 200  ranked genes.
+
+```{r message = FALSE, tidy=TRUE}
+myRNATOPTag <- TOPTag(myRNADETag,
+  pCutoff = 0.05,
+  logFCCutoff = 0.1,
+  topGenes = 200,
+  direction = "both"
+)
+```
+
+To see a snap shot:
+
+```{r message = FALSE, tidy=TRUE}
+myRNATOPTag
+```
+
+Due to the inheritance and object-oriented nature of the S4 class system, we
+can handle the **`TOPTag`** object in the same way as the **`DETag`** object.
+
+```{r message = FALSE, tidy=TRUE}
+# Export the desired results with rank information
+myTopRNAResults <- exportDE(myRNATOPTag)
+# Make numeric values easier to read
+myTopRNAResults[, 1:4] <- format(myTopRNAResults[, 1:4],
+  digits = 4,
+  scientific = TRUE
+)
+# Let us explore it interactively
+DT::datatable(myTopRNAResults, options = list(pageLength = 5))
+```
+
+Here, a rank of 1 and -1 indicates the most up- and down-regulated gene.
 
 For publication purposes, we can also label some genes that we are interested in
 on the volcano plot. Let's first retrieve a few differentially expressed genes
@@ -309,12 +358,30 @@ each small RNA type and will alert the user if the annotation does not cover
 all existing transcripts.
 
 Similar to the RNAseq data, we can visualize the distribution of differentially
-expressed small RNAs using a volcano plot. At this point, each type of small
-RNAs is colored separately.
+expressed small RNAs using a volcano plot. 
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 3. Volcano plot of small RNAseq data"}
+plotVolcano(myMOList, omic = "smallRNAseq", log2FC = 0)
+```
+
+Here, we use the default P-value cutoff, which is `0.05`. In the mean time, the 
+separately colors the up and down regulated small RNAs, with the number of each
+annotated respectively.
+
+On the other hand, small RNAs are usually a lot more complex and diverse than
+mRNAs. Each type of small RNA has its own function and mechanism of action.
+Therefore, we can also specifically color each type of small RNAs on the
+volcano plot, using a more specialized function. Here, we employ the 
+**`RColorBrewer`** package to help with assigning a color palette. Here, we
+use the **`BuPu`** palette, which is also by default used by the function.
+
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 4. Volcano plot of small RNAseq data with each type of small RNA coloured"}
+# Use the RColorBrewer package to assign a color palette
+library("RColorBrewer")
+smallRNAColors <- brewer.pal(6, "BuPu")
+
 # Plot Volcano plot of small RNAseq data
-plotVolcanoSmallRNA(myMOList, log2FC = 0)
+plotVolcanoSmallRNA(myMOList, log2FC = 0, colScheme = smallRNAColors)
 ```
 
 Furthermore, although the function of microRNAs (miRNAs) is well studied, the
@@ -336,18 +403,17 @@ are generated.
 length(pcaPlotList)
 ```
 
-
 In this case, we have 6 PCA plots, one for each small RNA type. We can plot
 the PCA plot for miRNA using the following command:
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 4. PCA plot of miRNA"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 5. PCA plot of miRNA"}
 pcaPlotList$miRNA
 ```
 
 Or, we can generate a combined PCA plot for all small RNA types by making use
 of the **`ggpubr`** package.
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=9, fig.height=6, fig.cap="Figure 5. Combined PCA plot of all small RNA types"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=9, fig.height=6, fig.cap="Figure 6. Combined PCA plot of all small RNA types"}
 ggpubr::ggarrange(pcaPlotList$miRNA,
   pcaPlotList$circRNA,
   pcaPlotList$piRNA,
@@ -437,7 +503,7 @@ First, let us take a look at the annotation on the peaks for their genomic
 features. This pie chart shows the percentage of peaks that are annotated as
 each genomic feature.
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 6. Annotation of ATAC peaks"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 7. Annotation of ATAC peaks"}
 plotATACAnno(myMOList)
 ```
 
@@ -445,11 +511,23 @@ To further access the quality of the ATACseq experiment, we can plot the
 coverage of the ATACseq peaks on the genome. This plot shows the where the peaks
 are located in each chromosome.
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 7. ATACseq coverage"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 8. ATACseq coverage"}
 plotATACCoverage(myMOList)
 ```
 
 On the left of the plots shows all differentially enriched motifs.
+
+Beyond globally exploring the ATACseq data with the above plots, we can also
+inspect the annotation on each individual peak. Once again, the **`IntegraTRN`**
+package utilizes the S4 inheritance system to create a **`PEAKTag`** object
+once motif enrichment analysis is performed. This object implements the
+generic **`as.data.frame`** method, conveniently allowing us to export the
+results as a data frame to see where each individual peaks are located.
+
+```{r message = FALSE, tidy=TRUE}
+myMotifs <- as.data.frame(myMOList$DEATAC)
+DT::datatable(myMotifs, options = list(pageLength = 5, scrollX = TRUE))
+```
 
 Then we can explore the key part of the analysis, which is the differentially
 enriched motifs. Typically, the differential motif enrichment can be very
@@ -461,7 +539,7 @@ p-value, but when a unadjusted p-value is provided, it will use the unadjusted
 one and ignore the default. Since our ATACseq data is simulated, here we use
 a relaxed cutoff.
 
-```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=8, fig.height=4, fig.cap="Figure 8. Motif enrichment on ATACseq peaks"}
+```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=8, fig.height=4, fig.cap="Figure 9. Motif enrichment on ATACseq peaks"}
 plotATACMotifHeatmap(myMOList, pValue = 0.01)
 ```
 
@@ -598,7 +676,7 @@ We can easily plot the network using the **`plotNetwork`** function. We can deci
 whether we want an interactive network. For large networks, the interactive
 network provides a better way to explore the interactions [@networkd3].
 
-```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 9. The Transcriptional Regulatory Network"}
+```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 10. The Transcriptional Regulatory Network"}
 plotNetwork(myTRNet, interactive = TRUE)
 ```
 
@@ -630,7 +708,7 @@ myTRNet2 <- constructTRN(myMOList,
 
 Then we can plot the network as a static figure [@csardi2006igraph].
 
-```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 10. The Transcriptional Regulatory Network of Up-regulated Genes"}
+```{r message = FALSE, tidy=TRUE, warning=FALSE, fig.align='center', fig.width=6, fig.height=5, fig.cap="Figure 11. The Transcriptional Regulatory Network of Up-regulated Genes"}
 plotNetwork(myTRNet2, vertex.size = 10)
 ```
 

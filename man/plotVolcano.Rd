@@ -2,7 +2,6 @@
 % Please edit documentation in R/plotDEOmics.R
 \name{plotVolcano}
 \alias{plotVolcano}
-\alias{plotVolcanoRNA}
 \title{Volcano plot for visualizing differentially expressed mRNA}
 \usage{
 plotVolcano(
@@ -55,7 +54,7 @@ This function generates a volcano plot for visualizing
 data(expMOList)
 
 # Example 1: Generate the volcano plot by default parameters
-plotVolcanoRNA(expMOList)
+plotVolcano(expMOList)
 
 # Example 2: Generate the volcano plot with custom parameters
 plotVolcano(expMOList,

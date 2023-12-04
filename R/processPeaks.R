@@ -53,12 +53,9 @@ mergePeaks <- function(peaks) {
 #'         peak set that annotates where the peaks come from
 #'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame reduce findOverlaps
-#' @importFrom Repitools annoGR2DF
 #'
 #' @references
 #' \insertRef{lawrence2013software}{IntegraTRN}
-#'
-#' \insertRef{statham2010repitools}{IntegraTRN}
 #'
 processPeakOverlap <- function(objMOList) {
   # Check if the ATACseq peak files exist
@@ -73,8 +70,10 @@ processPeakOverlap <- function(objMOList) {
   peakGR2 <- mergePeaks(peaksCond2)
 
   # Convert the GRanges objects back to data frames
-  peakDF1 <- Repitools::annoGR2DF(peakGR1)
-  peakDF2 <- Repitools::annoGR2DF(peakGR2)
+  peakDF1 <- as.data.frame(peakGR1)[, 1:4]
+  colnames(peakDF1)[1:3] <- CHROMINFO
+  peakDF2 <- as.data.frame(peakGR2)[, 1:4]
+  colnames(peakDF2)[1:3] <- CHROMINFO
 
   # Make a master peak set
   peakDF1 <- peakDF1 %>%
@@ -86,6 +85,9 @@ processPeakOverlap <- function(objMOList) {
   masterPeaks <- dplyr::bind_rows(peakDF1, peakDF2)
 
   atacDETag <- DETag(masterPeaks, ATAC_GRANGE)
+
+  # remove unnecessary objects
+  rm(peakGR1, peakGR2, peakDF1, peakDF2, masterPeaks)
 
   # Update the MOList object
   objMOList$DEATAC <- atacDETag

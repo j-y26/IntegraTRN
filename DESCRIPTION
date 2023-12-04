@@ -20,6 +20,7 @@ biocViews:
 Suggests: 
     BSgenome,
     BSgenome.Hsapiens.UCSC.hg38,
+    BSgenome.Mmusculus.UCSC.mm10,
     doParallel,
     doRNG,
     ggpubr (>= 0.6.0),
@@ -27,10 +28,12 @@ Suggests:
     JASPAR2022,
     knitr,
     org.Hs.eg.db,
+    org.Mm.eg.db,
     rmarkdown,
     testthat (>= 3.0.0),
     TFBSTools,
-    TxDb.Hsapiens.UCSC.hg38.knownGene
+    TxDb.Hsapiens.UCSC.hg38.knownGene,
+    TxDb.Mmusculus.UCSC.mm10.knownGene
 Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
@@ -49,9 +52,7 @@ Imports:
     monaLisa (>= 1.6.0),
     networkD3,
     optmatch (>= 0.10.6),
-    RColorBrewer (>= 1.1-2),
     Rdpack,
-    Repitools,
     shiny,
     shinyBS,
     SummarizedExperiment

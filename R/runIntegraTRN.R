@@ -25,6 +25,8 @@
 #' @export
 #'
 #' @importFrom shiny runApp
+#' @import shinyBS
+#' @import DT
 #'
 #' @examples
 #' \dontrun{

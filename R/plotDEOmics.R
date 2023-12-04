@@ -92,7 +92,7 @@ plotBaseVolcano <- function(deg,
 
 #' Volcano plot for visualizing differentially expressed mRNA
 #'
-#' @aliases plotVolcanoRNA
+#' @aliases plotVolcano
 #'
 #' @description This function generates a volcano plot for visualizing
 #'              differentially expressed mRNA based on log2 fold change and
@@ -133,7 +133,7 @@ plotBaseVolcano <- function(deg,
 #' data(expMOList)
 #'
 #' # Example 1: Generate the volcano plot by default parameters
-#' plotVolcanoRNA(expMOList)
+#' plotVolcano(expMOList)
 #'
 #' # Example 2: Generate the volcano plot with custom parameters
 #' plotVolcano(expMOList,
@@ -278,9 +278,9 @@ annoSncList <- function(deg, annoList) {
 #'                  results for small RNAs.
 #' @param log2FC The cutoff for log2 fold change. Default is 0.
 #' @param adjP The cutoff for adjusted p-value. Default is 0.05.
-#' @param colScheme A RColorBrewer color scheme for color-coding each type of
-#'                  small RNAs. Default is "BuPu". See ?RColorBrewer::brewer.pal
-#'                  for details.
+#' @param colScheme A character vector specifying the colors used to annotate
+#'                  each type of small RNA. The length of the vector must be
+#'                  equal to or greater than the number of types of small RNAs.
 #' @param title A character vector specifying the title for the plot. Default
 #'              is NULL.
 #' @param highlight A vector of gene names to highlight in the plot.
@@ -293,7 +293,6 @@ annoSncList <- function(deg, annoList) {
 #' @importFrom ggplot2 ylab theme element_blank
 #' @importFrom ggplot2 ggplot geom_point ggtitle geom_text
 #' @importFrom dplyr mutate case_when
-#' @importFrom RColorBrewer brewer.pal
 #'
 #' @export
 #'
@@ -301,8 +300,6 @@ annoSncList <- function(deg, annoList) {
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
-#'
-#' \insertRef{RColorBrewer}{IntegraTRN}
 #'
 #' @examples
 #' # Use the package-provided example data
@@ -322,7 +319,11 @@ annoSncList <- function(deg, annoList) {
 plotVolcanoSmallRNA <- function(objMOList,
                                 log2FC = 0,
                                 adjP = 0.05,
-                                colScheme = "BuPu",
+                                colScheme = c(
+                                  "#EDF8FB", "#BFD3E6",
+                                  "#9EBCDA", "#8C96C6",
+                                  "#8856A7", "#810F7C"
+                                ),
                                 title = NULL,
                                 highlight = NULL,
                                 pointSize = 1) {
@@ -354,6 +355,19 @@ plotVolcanoSmallRNA <- function(objMOList,
   # Type of expressed small RNAs:
   sncTypes <- unique(degSmallRNAseq$type)
 
+  # Once the small RNA is annotated, the color scheme can be validated
+  if (length(sncTypes) == 0) {
+    stop("Error validating small RNA types. Please check the annotation.")
+  } else if (length(sncTypes) > length(colScheme)) {
+    stop(paste0(
+      "The number of colors in the color scheme does not fully ",
+      "cover all the types of small RNAs. Please provide at least ",
+      length(sncTypes), " colors."
+    ))
+  } else {
+    # Continue
+  }
+
   # Re-label non-DE small RNAs
   degSmallRNAseq$type[degSmallRNAseq$expr == "Not DE"] <- "Not DE"
   degSmallRNAseq$gene <- rownames(degSmallRNAseq)
@@ -362,7 +376,7 @@ plotVolcanoSmallRNA <- function(objMOList,
   vPlot <- plotBaseVolcano(degSmallRNAseq, log2FC, adjP, title)
 
   # Generate a set of colors for each type of small RNA
-  sncColors <- RColorBrewer::brewer.pal(length(sncTypes), colScheme)
+  sncColors <- colScheme[1:length(sncTypes)]
   sncColorList <- stats::setNames(sncColors, sncTypes)
 
   # Color each type of small RNA
