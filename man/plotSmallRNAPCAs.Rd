@@ -37,9 +37,10 @@ data("smallRNAseq_heart") # small RNAseq count matrix
 data("smallRNAseq_heart_samples") # small RNAseq sample information
 
 # Adding the smallRNAseq data to the example MOList object
-expMOList <- MOList(expMOList, 
-                    smallRNAseq = smallRNAseq_heart,
-                    smallRNAGroupBy = smallRNAseq_heart_samples$Age)
+expMOList <- MOList(expMOList,
+  smallRNAseq = smallRNAseq_heart,
+  smallRNAGroupBy = smallRNAseq_heart_samples$Age
+)
 
 # Annotate the small RNAs using the package-provided human annotation
 expMOList <- annotateSmallRNA(expMOList, "human")

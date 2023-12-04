@@ -61,7 +61,7 @@ plotVolcanoRNA(expMOList)
 plotVolcano(expMOList,
   omic = "RNAseq",
   log2FC = 0,
-  adjP = 0.01,results
+  adjP = 0.01,
   upColor = "purple",
   downColor = "green",
   title = "Volcano plot for DE mRNA"
