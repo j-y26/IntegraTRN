@@ -29,4 +29,10 @@ runIntegraTRN()
 \insertRef{huynh2010inferring}{IntegraTRN}
 
 \insertRef{chang2020mirnet}{IntegraTRN}
+
+\insertRef{DT}{IntegraTRN}
+
+\insertRef{shinyBS}{IntegraTRN}
+
+\insertRef{shiny}{IntegraTRN}
 }

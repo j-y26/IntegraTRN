@@ -35,16 +35,24 @@ analysis, DESeq2 or EdgeR}
 An MOList object containing the differential analysis results
 \itemize{
 \item \code{RNAseq}: A numeric matrix containing the RNAseq data
-\item \code{RNAseqSamples}: A list containing the sample names and grouping
-                        information for the RNAseq data
+\item \code{RNAseqSamples}: A list with two elements, \code{samples} and
+                           \code{groupBy}. Each is a character vector
+                           containing the sample names and grouping
+                           information for the RNAseq data
 \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
-\item \code{smallRNAseqSamples}: A list containing the sample names and
-                             grouping information for the smallRNAseq data
+\item \code{smallRNAseqSamples}: A list with two elements, \code{samples}
+                                 and \code{groupBy}. Each is a character
+                                 vector containing the sample names and
+                                 grouping information for the smallRNAseq
+                                 data
 \item \code{proteomics}: A numeric matrix containing the proteomics data
-\item \code{proteomicsSamples}: A list containing the sample names and
-                          grouping information for the proteomics data
+\item \code{proteomicsSamples}: A list with two elements, \code{samples} and
+                                \code{groupBy}. Each is a character vector
+                                containing the sample names and grouping
+                                information for the proteomics data
 \item \code{ATACpeaks}: A list containing the ATAC peaks for condition 1 and
-                  condition 2
+                        condition 2. Each element is a data frame with
+                        columns \code{chr}, \code{start}, \code{end}.
 \item \code{DERNAseq}: A DETag object containing the differential
                        expression analysis results for the RNAseq data
 \item \code{DEsmallRNAseq}: A DETag object containing the differential

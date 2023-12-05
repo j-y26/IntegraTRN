@@ -37,7 +37,7 @@ format. The columns minimally includes "regulator",
 "target", and "regulatorType".}
 
 \item{\code{predicted}}{A logical value indicating whether the transcriptional
-regulatory network contains inffered interactions.}
+regulatory network contains inferred interactions.}
 
 \item{\code{omics}}{A character string indicating the omics data used to construct
 the transcriptional regulatory network.}

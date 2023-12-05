@@ -330,10 +330,12 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #' @description This function generates a one-to-one matching between the
 #'              RNAseq samples and the small RNAseq samples using the
 #'              optimal pair matching algorithm, which is a variant of nearest
-#'              neighbor matching. The matching is based on the grouping
-#'              variable and other variables in the sample data frames.
+#'              neighbor matching that performs global optimization of the
+#'              minimum distance between matched pairs instead of local
+#'              greedy optimization.
 #'
-#' @param objMOList An object of class MOList
+#' @param objMOList An object of class MOList. The object must contain both
+#'                  RNAseq and small RNAseq data.
 #' @param sampleDFRNAseq A data frame containing the RNAseq sample information.
 #'                       Each sample is a row in the data frame, with row names
 #'                       being the sample names that correspond to the sample
@@ -343,10 +345,10 @@ nnRNAMatch <- function(objMOList, sampleDFRNAseq, sampleDFSmallRNAseq) {
 #'                            frame, with row names being the sample names that
 #'                            correspond to the sample names in the MOList
 #'                            object.
-#' @param varMatch A vector of variable names that will be used for matching.
-#'                 The variable names should be present in both sampleDFRNAseq
-#'                 and sampleDFSmallRNAseq. If NULL, default to use all
-#'                 common variables in the sample data frames.
+#' @param varMatch A character vector of variable names that will be used for
+#'                 matching. The variable names should be present in both
+#'                 sampleDFRNAseq and sampleDFSmallRNAseq. If NULL, default to
+#'                 use all common variables in the sample data frames.
 #'
 #' @return An object of class MOList with the matching information stored in
 #'         a list of two numeric vectors with equal length, where each element
@@ -538,7 +540,8 @@ matchSamplesRNAsmallRNA <- function(objMOList,
 #' @description This function exports the match result of RNAseq and small
 #'              RNAseq samples.
 #'
-#' @param objMOList An object of class MOList
+#' @param objMOList An object of class MOList that has been performed matching
+#'                  using matchSamplesRNAsmallRNA().
 #'
 #' @return A data frame containing the match result, with the following format:
 #' \itemize{
@@ -550,7 +553,7 @@ matchSamplesRNAsmallRNA <- function(objMOList,
 #'
 #' @examples
 #' # Use the package data
-#' data("expMOList")
+#' data("expMOList") # data has already been performed matching
 #' # Export the match result
 #' exportMatchResult(expMOList)
 #'

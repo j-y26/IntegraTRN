@@ -7,13 +7,8 @@
 TRNet(TRNmetadata, predicted, omics)
 }
 \arguments{
-\item{TRNmetadata}{A data frame containing all interaction data for the
-transcriptional regulatory network in adjacency list
-format. The columns minimally includes "regulator",
-"target", and "regulatorType".}
-
 \item{predicted}{A logical value indicating whether the transcriptional
-regulatory network contains inffered interactions.}
+regulatory network contains inferred interactions.}
 
 \item{omics}{A character string indicating the omics data used to construct
 the transcriptional regulatory network.}

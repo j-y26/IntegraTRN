@@ -104,15 +104,24 @@ plotBaseVolcano <- function(deg,
 #'
 #' @param objMOList An MOList object containing the differential expression
 #'                  results for mRNA.
-#' @param omic The omic type, one of "RNAseq", "smallRNAseq", or "proteomics"
-#' @param log2FC The cutoff for log2 fold change. Default is 0.
-#' @param adjP The cutoff for adjusted p-value. Default is 0.05.
-#' @param upColor The color for up-regulated genes. Default is "firebrick3".
-#' @param downColor The color for down-regulated genes. Default is "dodgerblue3"
-#' @param title The title for the plot. Default is NULL.
-#' @param highlight A vector of gene names to highlight in the plot. Default
-#'                  is NULL.
-#' @param pointSize The size of the points in the plot. Default is 1.
+#' @param omic The omic type, one of "RNAseq", "smallRNAseq", or "proteomics".
+#'             Must match the cases as defined here. Default is "RNAseq".
+#' @param log2FC A numeric value specifying the cutoff for log2 fold change.
+#'               Must be a non-negative number. Default is 0.
+#' @param adjP A numeric value specifying the cutoff for adjusted p-value.
+#'             Must be between 0 and 1. Default is 0.05.
+#' @param upColor A character string specifying the color for up-regulated
+#'                genes. Default is "firebrick3".
+#' @param downColor A character string specifying the color for down-regulated
+#'                  genes. Default is "dodgerblue3".
+#' @param title A single character string specifying the title for the plot.
+#'              Default is NULL, which means no title is added.
+#' @param highlight A character vector specifying the gene names to highlight
+#'                  in the plot. The names of the genes must be consistent with
+#'                  the row names of the provided raw data. Otherwise,
+#'                  non-matching gene names will be ignored. Default is NULL.
+#' @param pointSize A positive numeric value specifying the size of the points
+#'                  in the plot. Default is 1.
 #'
 #' @return A ggplot object
 #'
@@ -270,17 +279,22 @@ annoSncList <- function(deg, annoList) {
 #'              differentially expressed small RNAs based on log2 fold change
 #'              and adjusted p-value. The user can specify the cutoffs for log2
 #'              fold change and adjusted p-value. The user can also specify a
-#'              l ist of genes to highlight in the plot. The users can define
+#'              list of genes to highlight in the plot. The users can define
 #'              a color scheme used for color-coding each type of small RNAs.
 #'              The default color scheme is provided.
 #'
 #' @param objMOList An MOList object containing the differential expression
 #'                  results for small RNAs.
-#' @param log2FC The cutoff for log2 fold change. Default is 0.
-#' @param adjP The cutoff for adjusted p-value. Default is 0.05.
+#' @param log2FC A non-negative numeric value specifying the cutoff for log2
+#'               fold change. Default is 0.
+#' @param adjP A numeric value specifying the cutoff for adjusted p-value.
+#'             Must be between 0 and 1. Default is 0.05.
 #' @param colScheme A character vector specifying the colors used to annotate
 #'                  each type of small RNA. The length of the vector must be
 #'                  equal to or greater than the number of types of small RNAs.
+#'                  Each must be a valid color name recognized by R or a
+#'                  hexadecimal color code. Default is a color scheme specified
+#'                  by the "BuPu" palette in the RColorBrewer package.
 #' @param title A character vector specifying the title for the plot. Default
 #'              is NULL.
 #' @param highlight A vector of gene names to highlight in the plot.
@@ -300,6 +314,8 @@ annoSncList <- function(deg, annoList) {
 #' \insertRef{villanueva2019ggplot2}{IntegraTRN}
 #'
 #' \insertRef{dplyr}{IntegraTRN}
+#'
+#' \insertRef{RColorBrewer}{IntegraTRN}
 #'
 #' @examples
 #' # Use the package-provided example data
@@ -415,14 +431,19 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'              The user can specify the title for the plot.
 #'
 #' @details Raw counts are normalized by RLE method and then transformed by
-#'         variance stabilizing transformation (VST) before PCA analysis.
+#'          variance stabilizing transformation (VST) before PCA analysis.
 #'
 #' @param matrix A numeric matrix containing the count-based omics data, must be
 #'               raw count expression matrix, not normalized by any method
-#' @param groupBy A vector of factors for grouping samples
-#' @param batch A vector of factors for batch effect, default is NULL
-#' @param title The title for the plot, default is NULL
-#' @param col1 The color for the first group, default is "#440154"
+#' @param groupBy A vector of factors for grouping samples, which should be
+#'               consistent with the order of samples in the count matrix.
+#' @param batch A vector of factors for batch effect, which should be consistent
+#'              with the order of samples in the count matrix. Default is NULL.
+#' @param title A character string specifying the title for the plot, default
+#'              is NULL.
+#' @param col1 A string specifying the color for the first group, which should
+#'             be a valid color name recognized by R or a hexadecimal color
+#'             code. Default is "#440154".
 #' @param col2 The color for the second group, default is "#fde725". If
 #'             continuous grouping variable is used, the color gradient will be
 #'             used instead of the two colors
@@ -546,7 +567,9 @@ countPCA <- function(matrix,
 #'                  small RNAs
 #' @param batch A vector of factors for batch effect, default is NULL. Used to
 #'              correct batch effect in the PCA analysis for count normalization
-#' @param col1 The color for the first group, default is "#440154"
+#' @param col1 A string specifying the color for the first group, which should
+#'             be a valid color name recognized by R or a hexadecimal color
+#'             code. Default is "#440154".
 #' @param col2 The color for the second group, default is "#fde725". If
 #'             continuous grouping variable is used, the color gradient will be
 #'             used instead of the two colors
@@ -571,7 +594,6 @@ countPCA <- function(matrix,
 #' \insertRef{love2014moderated}{IntegraTRN}
 #'
 #' @examples
-#' \dontrun{
 #' # Loading example smallRNAseq data
 #' data("expMOList")
 #' data("smallRNAseq_heart") # small RNAseq count matrix
@@ -594,7 +616,6 @@ countPCA <- function(matrix,
 #'
 #' # Plot the PCA plot for piRNA
 #' pcaPlotList$piRNA
-#' }
 #'
 plotSmallRNAPCAs <- function(objMOList,
                              batch = NULL,
@@ -680,10 +701,13 @@ plotSmallRNAPCAs <- function(objMOList,
 #'
 #' @description This function generates a peak coverage plot for differential
 #'              accessible regions based on the ATACseq data. This is a wrapper
-#'              function for the covplot function in the ChIPseeker package.
+#'              function for the \code{\link[covplot]{ChIPseeker}} function in
+#'              the ChIPseeker package.
 #'
 #' @param objMOList An MOList object containing the differential accessible
-#'                  regions
+#'                  regions. The objMOList object must contain a DEATAC
+#'                  element, which is a result of providing the ATACseq data
+#'                  and performing the diffOmics() function.
 #' @param title The title for the plot, default is "ATAC Peaks over Chromosomes"
 #'
 #' @return A ggplot object
@@ -701,7 +725,7 @@ plotSmallRNAPCAs <- function(objMOList,
 #' @examples
 #' \dontrun{
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #'
 #' # Annotates the peaks in the example data and performs motif enrichment
 #' # Using human annotations as an example
@@ -864,6 +888,7 @@ plotATACAnno <- function(objMOList) {
 #' txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 #' annoDb <- "org.Hs.eg.db"
 #' bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+#' }
 #'
 #' # Load PWMs from JASPAR
 #' data("jasparVertebratePWM")
@@ -878,14 +903,19 @@ plotATACAnno <- function(objMOList) {
 #' )
 #'
 #' # Example 1: Plot the motif heatmap by default parameters
+#' # This example should not show up any motif but instead issue an warning
+#' # and returns NULL since no motif are found to be differentially
+#' # enriched at adjusted p value < 0.05
+#'
+#' \dontrun{
 #' plotATACMotifHeatmap(expMOList)
+#' }
 #'
 #' # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01)
 #'
 #' # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
 #' plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
-#' }
 #'
 plotATACMotifHeatmap <- function(objMOList,
                                  pValueAdj = 0.05,
@@ -921,6 +951,15 @@ plotATACMotifHeatmap <- function(objMOList,
   maxEnr <- max((enrichedMotifs[sel, ])@assays@data@listData$log2enr)
 
   # Plot the heatmap
+  # Plotting the heatmap when there is no motif to plot will cause an error
+  # Instead, a warning is issued and the function returns NULL
+  if (sum(sel) == 0) {
+    warning("No motif to plot.")
+    return(NULL)
+  } else {
+    # Continue
+  }
+  # Plotting the heatmap
   monaLisa::plotMotifHeatmaps(
     x = enrichedMotifs[sel, ],
     which.plots = pramToPlot,

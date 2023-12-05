@@ -21,7 +21,7 @@
 #'                   format. The columns minimally includes "regulator",
 #'                   "target", and "regulatorType".
 #' @slot predicted A logical value indicating whether the transcriptional
-#'                 regulatory network contains inffered interactions.
+#'                 regulatory network contains inferred interactions.
 #' @slot omics A character string indicating the omics data used to construct
 #'             the transcriptional regulatory network.
 #' @slot .Data A list containing additional network information
@@ -47,8 +47,15 @@ setClass("TRNet",
 #'                    transcriptional regulatory network in adjacency list
 #'                    format. The columns minimally includes "regulator",
 #'                    "target", and "regulatorType".
+#' \itemize{
+#'  \item{\code{regulator}: A character string indicating the regulator gene
+#'                          or transcript.}
+#' \item{\code{target}: A character string indicating the target gene or
+#'                      transcript.}
+#' \item{\code{regulatorType}: A character string indicating the type of
+#'                             regulator.}
 #' @param predicted A logical value indicating whether the transcriptional
-#'                  regulatory network contains inffered interactions.
+#'                  regulatory network contains inferred interactions.
 #' @param omics A character string indicating the omics data used to construct
 #'              the transcriptional regulatory network.
 #'
@@ -142,7 +149,7 @@ setMethod(
 #' @aliases parseVertexMetadata,TRNet-method
 #'
 #' @description This function parses vertex metadata from the TRNet network
-#'              metadata
+#'              metadata and returns the type of each vertex
 #'
 #' @param trn A TRNet object
 #'

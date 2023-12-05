@@ -54,6 +54,7 @@ library("BSgenome.Hsapiens.UCSC.hg38")
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 annoDb <- "org.Hs.eg.db"
 bsgenome <- BSgenome.Hsapiens.UCSC.hg38
+}
 
 # Load PWMs from JASPAR
 data("jasparVertebratePWM")
@@ -68,14 +69,19 @@ expMOList <- annotateATACPeaksMotif(expMOList,
 )
 
 # Example 1: Plot the motif heatmap by default parameters
+# This example should not show up any motif but instead issue an warning
+# and returns NULL since no motif are found to be differentially
+# enriched at adjusted p value < 0.05
+
+\dontrun{
 plotATACMotifHeatmap(expMOList)
+}
 
 # Example 2: Plot the motif heatmap with unadjusted p-value cutoff of 0.01
 plotATACMotifHeatmap(expMOList, pValue = 0.01)
 
 # Example 3: Plot the motif heatmap with log2 fold enrichment cutoff of 1
 plotATACMotifHeatmap(expMOList, pValue = 0.01, log2FEnrich = 1)
-}
 
 }
 \references{

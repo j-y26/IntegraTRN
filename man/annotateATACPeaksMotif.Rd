@@ -17,20 +17,31 @@ annotateATACPeaksMotif(
 \arguments{
 \item{objMOList}{An object of class MOList}
 
-\item{tssRegion}{The region around the TSS to annotate with
-(default: +/- 3000)}
+\item{tssRegion}{A numeric vector of length 2, specifying the region around
+the TSS to annotate with (default: +/- 3000). The first and
+second elements of the vector specify the base pairs
+upstream and downstream of the TSS, respectively.}
 
 \item{TxDb}{The TxDb object to use for annotation, using one of the TxDb
-packages}
+packages. See examples in how to generate the TxDb object.}
 
 \item{annoDb}{The annotation database to use for annotation, using one of
-the org.*.eg.db packages. Must be a valid string for the name
-of the package. For details, see the vignette of the ChIPseeker
-package for custom annotation databases.}
+ the org.*.eg.db packages. Must be a valid string for the name
+ of the package. In addition, before calling the function, the
+ user must load the corresponding annotation package using
+'library(org.*.eg.db)'. For example, if the user wants to use
+the org.Hs.eg.db package for human samples, the user must first
+load the package using 'library(org.Hs.eg.db)' and then supply
+the string "org.Hs.eg.db" to the annoDb argument. For details,
+see the vignette of the ChIPseeker package for
+custom annotation databases.}
 
-\item{bsgenome}{The BSgenome object that contains the genome sequence
- Read the Bioconductor
-vignette for the BSgenome package for more details.}
+\item{bsgenome}{The BSgenome object that contains the genome sequence.
+Should be a valid BSgenome object generated using the
+one of the BSgenome packages. The genome sequence should
+correspond to the genome version used for the TxDb object.
+Read the Bioconductor vignette for the BSgenome package for
+more details.}
 
 \item{pwmL}{A PWMatrixList object containing the position-weight matrices
 (PWMs) to use for motif enrichment analysis. The PWMs can be
@@ -67,6 +78,15 @@ The annotation is performed using the TxDb object and annotation
 \examples{
 \dontrun{
 # Generate position-weight matrices (PWMs) from the JASPAR database
+# This is an example of how to generate the PWMs from the JASPAR database
+# Alternative databases can be used, as long as a PWMatrixList object is
+# generated
+# This example requires users to have the JASPAR2022 package installed,
+# which is only available on Bioconductor 3.18 or later
+# To install the package, run the following command in R:
+# BiocManager::install("JASPAR2022")
+
+# Generate the PWMs
 pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
   opts = list(
     matrixtype = "PWM",
@@ -74,10 +94,10 @@ pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,
   )
 )
 # Alternatively, the package has provided a pre-generated PWM list
-data(pwmL)
+data("jasparVertebratePWM")
 
 # Make use of the package's provided example data
-data(expMOList)
+data("expMOList")
 
 # Annotate the ATACseq peaks with genomic features and perform motif
 # enrichment analysis
@@ -86,7 +106,7 @@ expMOList <- annotateATACPeaksMotif(expMOList,
   TxDb = TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene,
   annoDb = "org.Hs.eg.db",
   bsgenome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
-  pwmL = pwmL,
+  pwmL = jasparVertebratePWM,
   fixedWidth = 500
 )
 }

@@ -18,26 +18,35 @@ MOList(
 }
 \arguments{
 \item{objMOList}{An object of class MOList for appending/exchanging omics
-data}
+data. If provided, the MOList object will be modified by
+appending/exchanging the omics data. If not provided, a new
+MOList object will be constructed. Provision of the
+objMOList parameter determines the mode of the constructor
+function}
 
 \item{RNAseq}{A numeric matrix containing the RNAseq data, with row names as
 gene names and column names as sample names}
 
 \item{RNAGroupBy}{A vector of grouping information for the RNAseq data, used
-to perform differential expression analysis}
+to perform differential expression analysis. Must be a
+vector of the same length as the number of samples in the
+RNAseq data}
 
 \item{smallRNAseq}{A numeric matrix containing the smallRNAseq data, with row
 names as gene names and column names as sample names}
 
 \item{smallRNAGroupBy}{A vector of grouping information for the smallRNAseq
-data, used to perform differential expression analysis}
+data, used to perform differential expression analysis.
+ Must be a vector of the same length as the number of
+ samples in the smallRNAseq data}
 
 \item{proteomics}{A numeric matrix containing the proteomics data, with row
 names as gene names and column names as sample names}
 
 \item{proteomicsGroupBy}{A vector of grouping information for the proteomics
 data, used to perform differential expression
-analysis}
+analysis. Must be a vector of the same length as
+the number of samples in the proteomics data}
 
 \item{ATACpeak1}{A character string containing the path to the BED file
 containing the unified ATAC peaks for condition 1. The

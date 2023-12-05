@@ -22,7 +22,8 @@ representing a feature. The exact columns depend on the
 method used for the analysis}
 
 \item{\code{method}}{A character string specifying the program used for the analysis,
-must be one of the valid METHODS defined}
+must be one of the valid METHODS defined, including "DESeq2",
+"edgeR", and "GRangesATAC"}
 
 \item{\code{normalizedCounts}}{A matrix containing the normalized counts for the
 genes, with each row representing a gene and each

@@ -40,11 +40,12 @@ This function filters the top differential genes by a names
  \item {pvalue}{The p-value of the gene}
  \item {padj}{The adjusted p-value of the gene}
  \item {piValue}{The pi-value of the gene, calculated by the formula
-                -log10(padj) * sign(logFC)}
+                \code{-log10(padj) * sign(logFC)}}
  \item {rank}{The rank of the gene in the differential expression results.
               Positive for up-regulated genes and negative for down-
               regulated genes. A rank of 1 indicates the most up-regulated
-              gene and a rank of -1 indicates the most down-regulated gene.}
+              gene and a rank of -1 indicates the most down-regulated gene.
+              This ranking is also consistent with a decreasing pi-value.}
 }}
 
 \item{\code{method}}{A character string indicating the method used to calculate the

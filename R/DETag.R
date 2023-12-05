@@ -32,7 +32,8 @@ DESEQ2_FIELDS <- c("log2FoldChange", "pvalue", "padj")
 #'                representing a feature. The exact columns depend on the
 #'                method used for the analysis
 #' @slot method A character string specifying the program used for the analysis,
-#'              must be one of the valid METHODS defined
+#'              must be one of the valid METHODS defined, including "DESeq2",
+#'              "edgeR", and "GRangesATAC"
 #' @slot normalizedCounts A matrix containing the normalized counts for the
 #'                        genes, with each row representing a gene and each
 #'                        column representing a sample
@@ -58,7 +59,10 @@ setClass("DETag", slots = c(
 #' @description This function validates the DETag class
 #'
 #' @param DEResult A data frame containing the differential expression analysis
-#'                 results
+#'                 results as the outputs from respective programs, with each
+#'                 row representing a gene and each column representing a
+#'                 feature. The exact columns depend on the method used for the
+#'                 analysis
 #' @param method A character string specifying the program used for the
 #'               analysis, must be one of the valid METHODS defined
 #'
@@ -100,8 +104,12 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 #' @description This function creates an object of the DETag class
 #'
 #' @param DEResult A data frame containing the differential expression analysis
-#'                 results
-#' @param method A character string specifying the program used for the analysis
+#'                 results. The exact columns depend on the method used for the
+#'                 analysis, with each row representing a gene and each column
+#'                 representing a feature
+#' @param method A character string specifying the program used for the
+#'               analysis, must be one of the valid METHODS defined, including
+#'               "DESeq2", "edgeR", and "GRangesATAC"
 #'
 #' @param normalizedCounts A matrix containing the normalized counts for the
 #'                         genes, with each row representing a gene and each

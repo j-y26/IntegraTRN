@@ -28,8 +28,10 @@ validateInteractionAdjList <- function(adjList) {
   }
 
   if (!all(NETWORK_FIELD[1:2] %in% names(adjList))) {
-    warning("Invalid element names provided.")
-    warning("Setting the first element as regulator and second as target.")
+    warning(paste0(
+      "Invalid element names provided. Setting the first element ",
+      "as regulator and second as target."
+    ))
     names(adjList)[1:2] <- NETWORK_FIELD[1:2]
   } else {
     # Do nothing
@@ -49,20 +51,26 @@ validateInteractionAdjList <- function(adjList) {
 #'              interactions of the target genes.
 #'
 #' @param objMOList A MOList object containing the omics data
-#' @param miR2Genes A list containing the target genes and their
-#'                       regulatory miRNAs. Must contain elements "regulator"
-#'                       for the miRNAs and "target" for the upregulated genes.
+#' @param miR2Genes A list containing the target genes and their regulatory
+#'                  miRNAs. Must contain elements "regulator" for the miRNAs
+#'                  and "target" for the target genes. The two elements must
+#'                  be character vectors of the same length.
 #' \itemize{
 #'  \item \code{regulator}: A character vector containing the miRNAs
-#'  \item \code{target}: A character vector containing the upregulated genes
+#'  \item \code{target}: A character vector containing the target genes
 #' }
-#' @param tf2Genes A list containing the target genes and their
-#'                      regulatory transcription factors. See above format.
+#' @param tf2Genes A list containing the target genes and their regulatory
+#'                 transcription factors. Must contain elements "regulator" for
+#'                 the transcription factors and "target" for the target genes.
+#'                 The two elements must be character vectors of the same
+#'                 length. See the examples for detailed format.
 #'
 #' @return An object of class MOList, with a element "extInteractions" added,
 #'         which is a list of lists. Each lower level list must follow the
 #'         format of the input data, i.e., must contain elements "regulator"
-#'        and "target". See the examples for details.
+#'         and "target" in the adjacent list format. The names of the regulator
+#'         and target elements should correspond to the names provided with the
+#'         input data. See the examples for details.
 #' \itemize{
 #' \item \code{miR2Genes}: A list containing the target genes
 #'                              and their regulatory miRNAs
@@ -146,8 +154,10 @@ loadExtInteractions <- function(objMOList,
 #'              TFs will be used to construct the network. Any values set on
 #'              data that is not available will be ignored.
 #'
-#' @param rnaAdjPval The adjusted p-value cutoff for the RNAseq data
-#' @param rnaLogFC The log fold change cutoff for the RNAseq data
+#' @param rnaAdjPval The adjusted p-value cutoff for the RNAseq data, must be
+#'                   a numeric value between 0 and 1. Default is 0.05.
+#' @param rnaLogFC The log fold change cutoff for the RNAseq data, must be a
+#'                 positive number. Default is 0.
 #' @param rnaTopGenes A numeric value indicating either the fraction (0-1) of
 #'                    top differential genes or the number (1-Inf) of top
 #'                    differential genes. If the number specified is greater
@@ -155,8 +165,12 @@ loadExtInteractions <- function(objMOList,
 #'                    pCutoff, then topGenes will be set to the number of DE
 #'                    genes. This is to select the top differential mRNAs.
 #'                    To include all the differential mRNAs, set this to 1.
-#' @param smallRNAAdjPval The adjusted p-value cutoff for the smallRNAseq data
-#' @param smallRNALogFC The log fold change cutoff for the smallRNAseq data
+#'                    Default is 1.
+#' @param smallRNAAdjPval The adjusted p-value cutoff for the smallRNAseq data.
+#'                        Must be a numeric value between 0 and 1. Default is
+#'                        0.05.
+#' @param smallRNALogFC The log fold change cutoff for the smallRNAseq data.
+#'                      Must be a positive number. Default is 0.
 #' @param smallRNATopGenes A numeric value indicating either the fraction (0-1)
 #'                         of top differential genes or the number (1-Inf) of
 #'                         top differential genes. If the number specified is
@@ -164,11 +178,16 @@ loadExtInteractions <- function(objMOList,
 #'                         logFCCutoff and pCutoff, then topGenes will be set
 #'                         to the number of DE genes. This is to select the top
 #'                         differential small RNAs. To include all the
-#'                         differential small RNAs, set this to 1.
-#' @param proteomicsAdjPval The adjusted p-value cutoff for the proteomics data
-#' @param proteomicsLogFC The log fold change cutoff for the proteomics data
+#'                         differential small RNAs, set this to 1. Default is
+#'                         1.
+#' @param proteomicsAdjPval The adjusted p-value cutoff for the proteomics data.
+#'                          Must be a numeric value between 0 and 1. Default is
+#'                          0.05.
+#' @param proteomicsLogFC The log fold change cutoff for the proteomics data.
+#'                        Must be a positive number. Default is 0.
 #' @param atacMotifAdjPval The adjusted p-value cutoff for the ATACseq motif
-#'                         enrichment analysis
+#'                         enrichment analysis. Must be a numeric value between
+#'                         0 and 1. Default is 0.05.
 #' @param atacMotifPval The p-value cutoff for the ATACseq motif enrichment
 #'                      analysis. This value is defaulted to NULL, but if the
 #'                      user specifies this value, then the adjusted p-value
@@ -205,13 +224,13 @@ loadExtInteractions <- function(objMOList,
 #' omiCutoffs$proteomicsLogFC <- 1.5
 #'
 setOmicCutoffs <- function(rnaAdjPval = 0.05,
-                           rnaLogFC = 1,
+                           rnaLogFC = 0,
                            rnaTopGenes = 1,
                            smallRNAAdjPval = 0.05,
-                           smallRNALogFC = 1,
+                           smallRNALogFC = 0,
                            smallRNATopGenes = 1,
                            proteomicsAdjPval = 0.05,
-                           proteomicsLogFC = 1,
+                           proteomicsLogFC = 0,
                            atacMotifAdjPval = 0.05,
                            atacMotifPval = NULL,
                            atacMotifLogFC = NULL) {
@@ -256,7 +275,8 @@ setOmicCutoffs <- function(rnaAdjPval = 0.05,
 #'
 #' @aliases print.OMICutoffs
 #'
-#' @description This function prints the cutoffs for the omics data.
+#' @description This function prints the cutoffs for the omics data to the
+#'              console.
 #'
 #' @param x An OMICutoffs object
 #' @param ... Other arguments passed to the print function
@@ -609,19 +629,28 @@ combineSncInteractions <- function(predInteract,
 #' @param smallRNAtypes A character vector containing the small RNA types that
 #'                      the user wants to use to construct the network. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
-#'                     "tRNA", and "circRNA". If "all" is specified, then all
-#'                     the small RNA types will be used.
-#' @param targetDirection A character vector indicating the direction of the
-#'                        target genes. Default to "both". Other options include
-#'                       "up" and "down".
+#'                      "tRNA", and "circRNA". If "all" is specified, then all
+#'                      the small RNA types will be used.
+#' @param targetDirection A single-length character vector indicating the
+#'                        direction of expression change of the target genes.
+#'                        Default to "both". Other options include "up" and
+#'                        "down".
 #' @param predicted A logical value indicating whether to perform predicted
 #'                  inference of small RNA - mRNA interactions. Default to TRUE.
-#' @param ntree The number of trees to grow in the random forest model
-#' @param nthreads The number of threads to use for parallel processing
+#'                  Prediction utilizes the correlation of expression between
+#'                  small RNAs and mRNAs, which is highly recommended for adding
+#'                  an additional level of condition-specificity to the network.
+#' @param ntree The number of trees to grow in the random forest model, Must be
+#'              a positive integer. Default is 1000.
+#' @param nthreads The number of threads to use for parallel processing. Must be
+#'                 a positive integer between 1 and the number of available
+#'                 cores on the user's machine. Default is 1.
 #' @param treeMethod The method to use for the random forest model. Either "RF"
-#'                   or "ET". See the documentation for the GENIE3 package for
-#'                   details.
-#' @param seed The seed to use for the random forest model
+#'                   or "ET" for random forest and extra trees, respectively.
+#'                   See the documentation for the \code{\link[GENIE3]{GENIE3}}
+#'                   package for details. Default is "RF".
+#' @param seed The seed to use for the random forest model. Must be a positive
+#'             integer. Default is 91711.
 #'
 #' @return A TRNet object containing the transcriptional regulatory network
 #'
@@ -648,7 +677,7 @@ combineSncInteractions <- function(predInteract,
 #'
 #' # Construct the network
 #' \dontrun{
-#' myTRNet <- constructTRN(expMOList, omiCutoffs)
+#' myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
 #' }
 #'
 constructTRN <- function(objMOList,
@@ -667,6 +696,10 @@ constructTRN <- function(objMOList,
   atacSeq <- is.null(objMOList$DEATAC)
   extTF2gene <- is.null(objMOList$extInteractions$tf2Genes)
   extmiR2gene <- is.null(objMOList$extInteractions$miR2Genes)
+  checkOmics <- c(
+    rnaSeq, smallRNAseq, proteomics, atacSeq, extTF2gene,
+    extmiR2gene
+  )
 
   # Validate inputs
   if (rnaSeq) {
@@ -679,6 +712,27 @@ constructTRN <- function(objMOList,
     stop("Invalid small RNA type specification. See ?constructTRN for details.")
   } else {
     # Do nothing
+  }
+
+  # Logic for validating whether a small RNA - TF - mRNA network can be
+  # constructed
+  if ((sum(checkOmics) == 5 && !rnaSeq) ||
+    (sum(checkOmics) == 4 && !rnaSeq && !proteomics)) {
+    # 1. Only RNAseq is available or only RNAseq and proteomics are available
+    stop(paste0(
+      "A small RNA - TF - mRNA network cannot be constructed with ",
+      "only RNAseq and/or proteomics data. It is highly recommended to ",
+      "search for externally curated interactions based on the RNAseq ",
+      "target genes."
+    ))
+  } else if (extmiR2gene && extTF2gene && !predicted) {
+    # 2. No external data and predictive inference is disabled
+    stop(paste0(
+      "A small RNA-TF-mRNA network cannot be constructed without ",
+      "any external data and predictive inference disabled. Without any ",
+      "externally curated global interaction data, the network only relies ",
+      "on the predictive inference of regulator -target interactions."
+    ))
   }
 
   # Based on the availability of the data, different methods will be used to

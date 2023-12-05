@@ -50,6 +50,9 @@ topTag
 
 # Example 2: Select the top 50 differential genes with default cutoffs
 \dontrun{
+# In this example, a warning should be expected. This is because 50 is
+# greater than the number of differentially expressed genes in the example
+# data
 topTag <- TOPTag(deTag, topGenes = 50)
 topTag
 }

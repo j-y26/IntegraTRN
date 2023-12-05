@@ -18,13 +18,18 @@ plotVolcanoSmallRNA(
 \item{objMOList}{An MOList object containing the differential expression
 results for small RNAs.}
 
-\item{log2FC}{The cutoff for log2 fold change. Default is 0.}
+\item{log2FC}{A non-negative numeric value specifying the cutoff for log2
+fold change. Default is 0.}
 
-\item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
+\item{adjP}{A numeric value specifying the cutoff for adjusted p-value.
+Must be between 0 and 1. Default is 0.05.}
 
 \item{colScheme}{A character vector specifying the colors used to annotate
 each type of small RNA. The length of the vector must be
-equal to or greater than the number of types of small RNAs.}
+equal to or greater than the number of types of small RNAs.
+Each must be a valid color name recognized by R or a
+hexadecimal color code. Default is a color scheme specified
+by the "BuPu" palette in the RColorBrewer package.}
 
 \item{title}{A character vector specifying the title for the plot. Default
 is NULL.}
@@ -42,7 +47,7 @@ This function generates a volcano plot for visualizing
              differentially expressed small RNAs based on log2 fold change
              and adjusted p-value. The user can specify the cutoffs for log2
              fold change and adjusted p-value. The user can also specify a
-             l ist of genes to highlight in the plot. The users can define
+             list of genes to highlight in the plot. The users can define
              a color scheme used for color-coding each type of small RNAs.
              The default color scheme is provided.
 }
@@ -66,4 +71,6 @@ plotVolcanoSmallRNA(expMOList,
 \insertRef{villanueva2019ggplot2}{IntegraTRN}
 
 \insertRef{dplyr}{IntegraTRN}
+
+\insertRef{RColorBrewer}{IntegraTRN}
 }

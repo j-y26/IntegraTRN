@@ -15,7 +15,8 @@
 The cutoffs for the omics data
 }
 \description{
-This function prints the cutoffs for the omics data.
+This function prints the cutoffs for the omics data to the
+             console.
 }
 \examples{
 omiCutoffs <- setOmicCutoffs()

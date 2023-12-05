@@ -8,9 +8,13 @@ DETag(DEResult, method, normalizedCounts = NULL)
 }
 \arguments{
 \item{DEResult}{A data frame containing the differential expression analysis
-results}
+results. The exact columns depend on the method used for the
+analysis, with each row representing a gene and each column
+representing a feature}
 
-\item{method}{A character string specifying the program used for the analysis}
+\item{method}{A character string specifying the program used for the
+analysis, must be one of the valid METHODS defined, including
+"DESeq2", "edgeR", and "GRangesATAC"}
 
 \item{normalizedCounts}{A matrix containing the normalized counts for the
 genes, with each row representing a gene and each

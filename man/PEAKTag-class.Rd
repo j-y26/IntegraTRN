@@ -15,7 +15,7 @@ The PEAKTag S4 class inherits the DETag class and is a more
 \describe{
 \item{\code{DEResult}}{A data frame containing the annotated peak information
 \itemize{
- \item \code{chr}: Chromosome
+\item \code{chr}: Chromosome
 \item \code{start}: Start coordinate
 \item \code{end}: End coordinate
 \item \code{Condition}: Condition of the peak, "-" for peaks from condition 1

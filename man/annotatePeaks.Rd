@@ -42,7 +42,7 @@ The annotation is performed using the TxDb object and annotation
          chromosome name, or the use of "chrM", "M", "MT" for mitochondrial
          DNA), the TxDb object may need to be adjusted to match the style
          used in the peak file. See the vignette of the ChIPseeker package
-         for more details. By default, we recommend using the UCSC style
+         for more details. By default, it is recommended using the UCSC style
          genomic coordinates, and the use of the
          TxDb.Hsapiens.UCSC.hg38.knownGene and org.Hs.eg.db packages for
          human samples, and the TxDb.Mmusculus.UCSC.mm10.knownGene and

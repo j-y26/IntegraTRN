@@ -13,16 +13,26 @@ INTERACTION_FIELDS <- c("ID", "Target")
 #' Multi-Omics List (MOList) S4 class
 #'
 #' @description This class is used to store the multi-omics data, including
-#'              RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+#'              RNAseq, smallRNAseq, proteomics, and ATAC peaks data. It
+#'              inherits the list class, so that it operates like a list with
+#'              subset and replacement methods for non-raw data. The raw data
+#'              for each omic type are held within slots and should not be
+#'              accessed directly.
+#'
 #' @slot RNAseq A numeric matrix containing the RNAseq data
-#' @slot RNAseqSamples A list containing the sample names and grouping
-#'                     information for the RNAseq data
+#' @slot RNAseqSamples A list with two elements: samples and groupBy. The
+#'                     samples element is a character vector containing the
+#'                     sample names for the RNAseq data. The groupBy element is
+#'                     a character vector containing the grouping information
+#'                     for the RNAseq data, used to perform differential
+#'                     expression analysis. Both elements have the same length as
+#'                     the number of samples in the RNAseq data
 #' @slot smallRNAseq A numeric matrix containing the smallRNAseq data
-#' @slot smallRNAseqSamples A list containing the sample names and grouping
-#'                          information for the smallRNAseq data
+#' @slot smallRNAseqSamples A list with two elements: samples and groupBy.
+#'                          Has the same format as the RNAseqSamples slot
 #' @slot proteomics A numeric matrix containing the proteomics data
-#' @slot proteomicsSamples A list containing the sample names and grouping
-#'                         information for the proteomics data
+#' @slot proteomicsSamples A list with two elements: samples and groupBy.
+#'                         Has the same format as the RNAseqSamples slot
 #' @slot ATACpeaks A list containing the ATAC peaks for condition 1 and
 #'                 condition 2 that are found to be differentially accessible.
 #'                 The users should ensure that each BED file used as input
@@ -204,12 +214,12 @@ validateMOInputs <- function(RNAseq,
 #'  \item \code{RNAseqSamples}: A list containing the sample names and grouping
 #'                            information for the RNAseq data
 #'  \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
-#' \item \code{smallRNAseqSamples}: A list containing the sample names and
+#'  \item \code{smallRNAseqSamples}: A list containing the sample names and
 #'                               grouping information for the smallRNAseq data
-#' \item \code{proteomics}: A numeric matrix containing the proteomics data
-#' \item \code{proteomicsSamples}: A list containing the sample names and
+#'  \item \code{proteomics}: A numeric matrix containing the proteomics data
+#'  \item \code{proteomicsSamples}: A list containing the sample names and
 #'                             grouping information for the proteomics data
-#' \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
+#'  \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
 #'                         peaks for condition 1 and condition 2
 #' }
 #'
@@ -249,17 +259,21 @@ setOmics <- function(objMOList,
 #' @keywords internal
 #'
 #' @param RNAseq A numeric matrix containing the RNAseq data
-#' @param RNAGroupBy A vector of grouping information for the RNAseq data
+#' @param RNAGroupBy A vector of grouping information for the RNAseq data. Must
+#'                   be a vector of the same length as the number of samples in
+#'                   the RNAseq data
 #' @param smallRNAseq A numeric matrix containing the smallRNAseq data
 #' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#'                        data
+#'                        data. Must be a vector of the same length as the
+#'                        number of samples in the smallRNAseq data
 #' @param proteomics A numeric matrix containing the proteomics data
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
-#'                          data
+#'                          data. Must be a vector of the same length as the
+#'                          number of samples in the proteomics data
 #' @param peakCond1 A data frame containing the differentially accessible ATAC
-#'                  peaks for condition 1
+#'                  peaks for condition 1. Should follow the BED format
 #' @param peakCond2 A data frame containing the differentially accessible ATAC
-#'                  peaks for condition 2
+#'                  peaks for condition 2. Should follow the BED format
 #'
 #' @return An object of class MOList
 #' \itemize{
@@ -442,21 +456,31 @@ validateMOList <- function(objMOList) {
 #'              each omics data separately. The RNAseq data is required for the
 #'              initial construction of the MOList object. If data of existing
 #'              omics type is provided, old data will be replaced.
+#'
 #' @param objMOList An object of class MOList for appending/exchanging omics
-#'                  data
+#'                  data. If provided, the MOList object will be modified by
+#'                  appending/exchanging the omics data. If not provided, a new
+#'                  MOList object will be constructed. Provision of the
+#'                  objMOList parameter determines the mode of the constructor
+#'                  function
 #' @param RNAseq A numeric matrix containing the RNAseq data, with row names as
 #'               gene names and column names as sample names
 #' @param RNAGroupBy A vector of grouping information for the RNAseq data, used
-#'                   to perform differential expression analysis
+#'                   to perform differential expression analysis. Must be a
+#'                   vector of the same length as the number of samples in the
+#'                   RNAseq data
 #' @param smallRNAseq A numeric matrix containing the smallRNAseq data, with row
 #'                    names as gene names and column names as sample names
 #' @param smallRNAGroupBy A vector of grouping information for the smallRNAseq
-#'                        data, used to perform differential expression analysis
+#'                       data, used to perform differential expression analysis.
+#'                        Must be a vector of the same length as the number of
+#'                        samples in the smallRNAseq data
 #' @param proteomics A numeric matrix containing the proteomics data, with row
 #'                   names as gene names and column names as sample names
 #' @param proteomicsGroupBy A vector of grouping information for the proteomics
 #'                          data, used to perform differential expression
-#'                          analysis
+#'                          analysis. Must be a vector of the same length as
+#'                          the number of samples in the proteomics data
 #' @param ATACpeak1 A character string containing the path to the BED file
 #'                  containing the unified ATAC peaks for condition 1. The
 #'                  BED file should NOT contain a header line. Alternatively,
@@ -904,7 +928,8 @@ setMethod("show", "MOList", function(object) {
 #'
 #' @param x A MOList object containing the omics data
 #' @param conversion A data frame containing the conversion information between
-#'                   protein and gene names
+#'                   protein and gene names, with names matching to the
+#'                   proteomics  and RNAseq raw count data
 #' \itemize{
 #' \item \code{protein}: Name of the protein
 #' \item \code{gene}: Name of the gene
@@ -913,9 +938,8 @@ setMethod("show", "MOList", function(object) {
 #' @return An object of class MOList
 #'
 #' @examples
-#' \dontrun{
 #' # Create example RNAseq and proteomics data
-#' rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+#' rnaseq <- matrix(sample(1:100, 50, replace = TRUE), ncol = 10)
 #' rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
 #' rnaGroupBy <- rep(c("A", "B"), each = 5)
 #' proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
@@ -932,13 +956,12 @@ setMethod("show", "MOList", function(object) {
 #'
 #' # Create an example conversion information
 #' conversion <- data.frame(
-#'   protein = paste0("protein_", seq_len(nrow(proteomics))),
+#'   protein = paste0("protein_", seq_len(nrow(rnaseq))),
 #'   gene = paste0("gene_", seq_len(nrow(proteomics)))
 #' )
 #'
 #' # Set the conversion information to the MOList object
 #' objMOList <- setGene2Protein(objMOList, conversion)
-#' }
 #'
 setGeneric(
   "setGene2Protein",

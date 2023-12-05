@@ -14,7 +14,9 @@ small RNAs}
 \item{batch}{A vector of factors for batch effect, default is NULL. Used to
 correct batch effect in the PCA analysis for count normalization}
 
-\item{col1}{The color for the first group, default is "#440154"}
+\item{col1}{A string specifying the color for the first group, which should
+be a valid color name recognized by R or a hexadecimal color
+code. Default is "#440154".}
 
 \item{col2}{The color for the second group, default is "#fde725". If
 continuous grouping variable is used, the color gradient will be
@@ -30,7 +32,6 @@ This function generates a PCA plot for each type of small RNA
              separating samples based on their phenotypes.
 }
 \examples{
-\dontrun{
 # Loading example smallRNAseq data
 data("expMOList")
 data("smallRNAseq_heart") # small RNAseq count matrix
@@ -53,7 +54,6 @@ pcaPlotList$miRNA
 
 # Plot the PCA plot for piRNA
 pcaPlotList$piRNA
-}
 
 }
 \references{

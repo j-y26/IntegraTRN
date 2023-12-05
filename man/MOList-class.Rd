@@ -6,25 +6,34 @@
 \title{Multi-Omics List (MOList) S4 class}
 \description{
 This class is used to store the multi-omics data, including
-             RNAseq, smallRNAseq, proteomics, and ATAC peaks data.
+             RNAseq, smallRNAseq, proteomics, and ATAC peaks data. It
+             inherits the list class, so that it operates like a list with
+             subset and replacement methods for non-raw data. The raw data
+             for each omic type are held within slots and should not be
+             accessed directly.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{RNAseq}}{A numeric matrix containing the RNAseq data}
 
-\item{\code{RNAseqSamples}}{A list containing the sample names and grouping
-information for the RNAseq data}
+\item{\code{RNAseqSamples}}{A list with two elements: samples and groupBy. The
+samples element is a character vector containing the
+sample names for the RNAseq data. The groupBy element is
+a character vector containing the grouping information
+for the RNAseq data, used to perform differential
+expression analysis. Both elements have the same length as
+the number of samples in the RNAseq data}
 
 \item{\code{smallRNAseq}}{A numeric matrix containing the smallRNAseq data}
 
-\item{\code{smallRNAseqSamples}}{A list containing the sample names and grouping
-information for the smallRNAseq data}
+\item{\code{smallRNAseqSamples}}{A list with two elements: samples and groupBy.
+Has the same format as the RNAseqSamples slot}
 
 \item{\code{proteomics}}{A numeric matrix containing the proteomics data}
 
-\item{\code{proteomicsSamples}}{A list containing the sample names and grouping
-information for the proteomics data}
+\item{\code{proteomicsSamples}}{A list with two elements: samples and groupBy.
+Has the same format as the RNAseqSamples slot}
 
 \item{\code{ATACpeaks}}{A list containing the ATAC peaks for condition 1 and
 condition 2 that are found to be differentially accessible.

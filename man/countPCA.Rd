@@ -17,13 +17,18 @@ countPCA(
 \item{matrix}{A numeric matrix containing the count-based omics data, must be
 raw count expression matrix, not normalized by any method}
 
-\item{groupBy}{A vector of factors for grouping samples}
+\item{groupBy}{A vector of factors for grouping samples, which should be
+consistent with the order of samples in the count matrix.}
 
-\item{batch}{A vector of factors for batch effect, default is NULL}
+\item{batch}{A vector of factors for batch effect, which should be consistent
+with the order of samples in the count matrix. Default is NULL.}
 
-\item{title}{The title for the plot, default is NULL}
+\item{title}{A character string specifying the title for the plot, default
+is NULL.}
 
-\item{col1}{The color for the first group, default is "#440154"}
+\item{col1}{A string specifying the color for the first group, which should
+be a valid color name recognized by R or a hexadecimal color
+code. Default is "#440154".}
 
 \item{col2}{The color for the second group, default is "#fde725". If
 continuous grouping variable is used, the color gradient will be
@@ -38,7 +43,7 @@ This function performs PCA analysis for count-based omics data.
 }
 \details{
 Raw counts are normalized by RLE method and then transformed by
-        variance stabilizing transformation (VST) before PCA analysis.
+         variance stabilizing transformation (VST) before PCA analysis.
 }
 \examples{
 # Use the package-provided example data

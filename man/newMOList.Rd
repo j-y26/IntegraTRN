@@ -18,23 +18,27 @@ newMOList(
 \arguments{
 \item{RNAseq}{A numeric matrix containing the RNAseq data}
 
-\item{RNAGroupBy}{A vector of grouping information for the RNAseq data}
+\item{RNAGroupBy}{A vector of grouping information for the RNAseq data. Must
+be a vector of the same length as the number of samples in
+the RNAseq data}
 
 \item{smallRNAseq}{A numeric matrix containing the smallRNAseq data}
 
 \item{smallRNAGroupBy}{A vector of grouping information for the smallRNAseq
-data}
+data. Must be a vector of the same length as the
+number of samples in the smallRNAseq data}
 
 \item{proteomics}{A numeric matrix containing the proteomics data}
 
 \item{proteomicsGroupBy}{A vector of grouping information for the proteomics
-data}
+data. Must be a vector of the same length as the
+number of samples in the proteomics data}
 
 \item{peakCond1}{A data frame containing the differentially accessible ATAC
-peaks for condition 1}
+peaks for condition 1. Should follow the BED format}
 
 \item{peakCond2}{A data frame containing the differentially accessible ATAC
-peaks for condition 2}
+peaks for condition 2. Should follow the BED format}
 }
 \value{
 An object of class MOList

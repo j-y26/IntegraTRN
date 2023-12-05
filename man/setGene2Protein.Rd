@@ -10,7 +10,8 @@ setGene2Protein(x, conversion)
 \item{x}{A MOList object containing the omics data}
 
 \item{conversion}{A data frame containing the conversion information between
-                  protein and gene names
+                  protein and gene names, with names matching to the
+                  proteomics  and RNAseq raw count data
 \itemize{
 \item \code{protein}: Name of the protein
 \item \code{gene}: Name of the gene
@@ -29,9 +30,8 @@ This function sets the conversion between protein and gene names
              of the conversion information.
 }
 \examples{
-\dontrun{
 # Create example RNAseq and proteomics data
-rnaseq <- matrix(sample(1:100, 100, replace = TRUE), ncol = 10)
+rnaseq <- matrix(sample(1:100, 50, replace = TRUE), ncol = 10)
 rownames(rnaseq) <- paste0("gene_", seq_len(nrow(rnaseq)))
 rnaGroupBy <- rep(c("A", "B"), each = 5)
 proteomics <- matrix(sample(1:100, 30, replace = TRUE), ncol = 6)
@@ -48,12 +48,11 @@ objMOList <- MOList(
 
 # Create an example conversion information
 conversion <- data.frame(
-  protein = paste0("protein_", seq_len(nrow(proteomics))),
+  protein = paste0("protein_", seq_len(nrow(rnaseq))),
   gene = paste0("gene_", seq_len(nrow(proteomics)))
 )
 
 # Set the conversion information to the MOList object
 objMOList <- setGene2Protein(objMOList, conversion)
-}
 
 }

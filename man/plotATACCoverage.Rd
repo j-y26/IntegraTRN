@@ -8,7 +8,9 @@ plotATACCoverage(objMOList, title = "ATAC Peaks over Chromosomes")
 }
 \arguments{
 \item{objMOList}{An MOList object containing the differential accessible
-regions}
+regions. The objMOList object must contain a DEATAC
+element, which is a result of providing the ATACseq data
+and performing the diffOmics() function.}
 
 \item{title}{The title for the plot, default is "ATAC Peaks over Chromosomes"}
 }
@@ -18,12 +20,13 @@ A ggplot object
 \description{
 This function generates a peak coverage plot for differential
              accessible regions based on the ATACseq data. This is a wrapper
-             function for the covplot function in the ChIPseeker package.
+             function for the \code{\link[covplot]{ChIPseeker}} function in
+             the ChIPseeker package.
 }
 \examples{
 \dontrun{
 # Use the package-provided example data
-data(expMOList)
+data("expMOList")
 
 # Annotates the peaks in the example data and performs motif enrichment
 # Using human annotations as an example

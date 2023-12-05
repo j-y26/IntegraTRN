@@ -9,22 +9,28 @@ loadExtInteractions(objMOList, miR2Genes = NULL, tf2Genes = NULL)
 \arguments{
 \item{objMOList}{A MOList object containing the omics data}
 
-\item{miR2Genes}{A list containing the target genes and their
-                      regulatory miRNAs. Must contain elements "regulator"
-                      for the miRNAs and "target" for the upregulated genes.
+\item{miR2Genes}{A list containing the target genes and their regulatory
+                 miRNAs. Must contain elements "regulator" for the miRNAs
+                 and "target" for the target genes. The two elements must
+                 be character vectors of the same length.
 \itemize{
  \item \code{regulator}: A character vector containing the miRNAs
- \item \code{target}: A character vector containing the upregulated genes
+ \item \code{target}: A character vector containing the target genes
 }}
 
-\item{tf2Genes}{A list containing the target genes and their
-regulatory transcription factors. See above format.}
+\item{tf2Genes}{A list containing the target genes and their regulatory
+transcription factors. Must contain elements "regulator" for
+the transcription factors and "target" for the target genes.
+The two elements must be character vectors of the same
+length. See the examples for detailed format.}
 }
 \value{
 An object of class MOList, with a element "extInteractions" added,
         which is a list of lists. Each lower level list must follow the
         format of the input data, i.e., must contain elements "regulator"
-       and "target". See the examples for details.
+        and "target" in the adjacent list format. The names of the regulator
+        and target elements should correspond to the names provided with the
+        input data. See the examples for details.
 \itemize{
 \item \code{miR2Genes}: A list containing the target genes
                              and their regulatory miRNAs

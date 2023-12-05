@@ -6,6 +6,8 @@
 
 #' Launch Shiny App for package IntegraTRN
 #'
+#' @aliases runIntegraTRN
+#'
 #' @description This is a function that launches the Shiny app for the package
 #'              IntegraTRN. The Shiny app permits the users to perform
 #'              differential analysis of the user-input omics data as well as
@@ -21,6 +23,12 @@
 #' \insertRef{huynh2010inferring}{IntegraTRN}
 #'
 #' \insertRef{chang2020mirnet}{IntegraTRN}
+#'
+#' \insertRef{DT}{IntegraTRN}
+#'
+#' \insertRef{shinyBS}{IntegraTRN}
+#'
+#' \insertRef{shiny}{IntegraTRN}
 #'
 #' @export
 #'

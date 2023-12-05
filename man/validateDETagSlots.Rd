@@ -8,7 +8,10 @@ validateDETagSlots(DEResult, method, normalizedCounts = NULL)
 }
 \arguments{
 \item{DEResult}{A data frame containing the differential expression analysis
-results}
+results as the outputs from respective programs, with each
+row representing a gene and each column representing a
+feature. The exact columns depend on the method used for the
+analysis}
 
 \item{method}{A character string specifying the program used for the
 analysis, must be one of the valid METHODS defined}

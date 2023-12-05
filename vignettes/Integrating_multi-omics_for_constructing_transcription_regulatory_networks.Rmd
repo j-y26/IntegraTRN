@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
-  @chang2020mirnet, @villanueva2019ggplot2, @dplyr
+  @chang2020mirnet, @villanueva2019ggplot2, @dplyr, @DT
 ---
 
 ```{r, include = FALSE}

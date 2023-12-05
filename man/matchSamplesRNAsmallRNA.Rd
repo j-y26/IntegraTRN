@@ -12,7 +12,8 @@ matchSamplesRNAsmallRNA(
 )
 }
 \arguments{
-\item{objMOList}{An object of class MOList}
+\item{objMOList}{An object of class MOList. The object must contain both
+RNAseq and small RNAseq data.}
 
 \item{sampleDFRNAseq}{A data frame containing the RNAseq sample information.
 Each sample is a row in the data frame, with row names
@@ -25,10 +26,10 @@ frame, with row names being the sample names that
 correspond to the sample names in the MOList
 object.}
 
-\item{varMatch}{A vector of variable names that will be used for matching.
-The variable names should be present in both sampleDFRNAseq
-and sampleDFSmallRNAseq. If NULL, default to use all
-common variables in the sample data frames.}
+\item{varMatch}{A character vector of variable names that will be used for
+matching. The variable names should be present in both
+sampleDFRNAseq and sampleDFSmallRNAseq. If NULL, default to
+use all common variables in the sample data frames.}
 }
 \value{
 An object of class MOList with the matching information stored in
@@ -49,8 +50,9 @@ An object of class MOList with the matching information stored in
 This function generates a one-to-one matching between the
              RNAseq samples and the small RNAseq samples using the
              optimal pair matching algorithm, which is a variant of nearest
-             neighbor matching. The matching is based on the grouping
-             variable and other variables in the sample data frames.
+             neighbor matching that performs global optimization of the
+             minimum distance between matched pairs instead of local
+             greedy optimization.
 }
 \examples{
 # Create a MOList object with RNAseq and small RNAseq data,

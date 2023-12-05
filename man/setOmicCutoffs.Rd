@@ -6,22 +6,24 @@
 \usage{
 setOmicCutoffs(
   rnaAdjPval = 0.05,
-  rnaLogFC = 1,
+  rnaLogFC = 0,
   rnaTopGenes = 1,
   smallRNAAdjPval = 0.05,
-  smallRNALogFC = 1,
+  smallRNALogFC = 0,
   smallRNATopGenes = 1,
   proteomicsAdjPval = 0.05,
-  proteomicsLogFC = 1,
+  proteomicsLogFC = 0,
   atacMotifAdjPval = 0.05,
   atacMotifPval = NULL,
   atacMotifLogFC = NULL
 )
 }
 \arguments{
-\item{rnaAdjPval}{The adjusted p-value cutoff for the RNAseq data}
+\item{rnaAdjPval}{The adjusted p-value cutoff for the RNAseq data, must be
+a numeric value between 0 and 1. Default is 0.05.}
 
-\item{rnaLogFC}{The log fold change cutoff for the RNAseq data}
+\item{rnaLogFC}{The log fold change cutoff for the RNAseq data, must be a
+positive number. Default is 0.}
 
 \item{rnaTopGenes}{A numeric value indicating either the fraction (0-1) of
 top differential genes or the number (1-Inf) of top
@@ -29,11 +31,15 @@ differential genes. If the number specified is greater
 than the number of DE genes based on logFCCutoff and
 pCutoff, then topGenes will be set to the number of DE
 genes. This is to select the top differential mRNAs.
-To include all the differential mRNAs, set this to 1.}
+To include all the differential mRNAs, set this to 1.
+Default is 1.}
 
-\item{smallRNAAdjPval}{The adjusted p-value cutoff for the smallRNAseq data}
+\item{smallRNAAdjPval}{The adjusted p-value cutoff for the smallRNAseq data.
+Must be a numeric value between 0 and 1. Default is
+0.05.}
 
-\item{smallRNALogFC}{The log fold change cutoff for the smallRNAseq data}
+\item{smallRNALogFC}{The log fold change cutoff for the smallRNAseq data.
+Must be a positive number. Default is 0.}
 
 \item{smallRNATopGenes}{A numeric value indicating either the fraction (0-1)
 of top differential genes or the number (1-Inf) of
@@ -42,14 +48,19 @@ greater than the number of DE genes based on
 logFCCutoff and pCutoff, then topGenes will be set
 to the number of DE genes. This is to select the top
 differential small RNAs. To include all the
-differential small RNAs, set this to 1.}
+differential small RNAs, set this to 1. Default is
+1.}
 
-\item{proteomicsAdjPval}{The adjusted p-value cutoff for the proteomics data}
+\item{proteomicsAdjPval}{The adjusted p-value cutoff for the proteomics data.
+Must be a numeric value between 0 and 1. Default is
+0.05.}
 
-\item{proteomicsLogFC}{The log fold change cutoff for the proteomics data}
+\item{proteomicsLogFC}{The log fold change cutoff for the proteomics data.
+Must be a positive number. Default is 0.}
 
 \item{atacMotifAdjPval}{The adjusted p-value cutoff for the ATACseq motif
-enrichment analysis}
+enrichment analysis. Must be a numeric value between
+0 and 1. Default is 0.05.}
 
 \item{atacMotifPval}{The p-value cutoff for the ATACseq motif enrichment
 analysis. This value is defaulted to NULL, but if the

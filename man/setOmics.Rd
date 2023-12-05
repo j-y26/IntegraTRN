@@ -41,12 +41,12 @@ An object of class MOList
  \item \code{RNAseqSamples}: A list containing the sample names and grouping
                            information for the RNAseq data
  \item \code{smallRNAseq}: A numeric matrix containing the smallRNAseq data
-\item \code{smallRNAseqSamples}: A list containing the sample names and
+ \item \code{smallRNAseqSamples}: A list containing the sample names and
                               grouping information for the smallRNAseq data
-\item \code{proteomics}: A numeric matrix containing the proteomics data
-\item \code{proteomicsSamples}: A list containing the sample names and
+ \item \code{proteomics}: A numeric matrix containing the proteomics data
+ \item \code{proteomicsSamples}: A list containing the sample names and
                             grouping information for the proteomics data
-\item \code{ATACpeaks}: A list containing the differentially accessible ATAC
+ \item \code{ATACpeaks}: A list containing the differentially accessible ATAC
                         peaks for condition 1 and condition 2
 }
 }

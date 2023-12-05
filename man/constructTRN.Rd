@@ -24,27 +24,36 @@ wants to use to construct the network}
 data}
 
 \item{smallRNAtypes}{A character vector containing the small RNA types that
- the user wants to use to construct the network. The
- available types are "miRNA", "piRNA", "snRNA", "snoRNA",
+the user wants to use to construct the network. The
+available types are "miRNA", "piRNA", "snRNA", "snoRNA",
 "tRNA", and "circRNA". If "all" is specified, then all
 the small RNA types will be used.}
 
-\item{targetDirection}{A character vector indicating the direction of the
- target genes. Default to "both". Other options include
-"up" and "down".}
+\item{targetDirection}{A single-length character vector indicating the
+direction of expression change of the target genes.
+Default to "both". Other options include "up" and
+"down".}
 
 \item{predicted}{A logical value indicating whether to perform predicted
-inference of small RNA - mRNA interactions. Default to TRUE.}
+inference of small RNA - mRNA interactions. Default to TRUE.
+Prediction utilizes the correlation of expression between
+small RNAs and mRNAs, which is highly recommended for adding
+an additional level of condition-specificity to the network.}
 
-\item{ntree}{The number of trees to grow in the random forest model}
+\item{ntree}{The number of trees to grow in the random forest model, Must be
+a positive integer. Default is 1000.}
 
-\item{nthreads}{The number of threads to use for parallel processing}
+\item{nthreads}{The number of threads to use for parallel processing. Must be
+a positive integer between 1 and the number of available
+cores on the user's machine. Default is 1.}
 
 \item{treeMethod}{The method to use for the random forest model. Either "RF"
-or "ET". See the documentation for the GENIE3 package for
-details.}
+or "ET" for random forest and extra trees, respectively.
+See the documentation for the \code{\link[GENIE3]{GENIE3}}
+package for details. Default is "RF".}
 
-\item{seed}{The seed to use for the random forest model}
+\item{seed}{The seed to use for the random forest model. Must be a positive
+integer. Default is 91711.}
 }
 \value{
 A TRNet object containing the transcriptional regulatory network
@@ -64,7 +73,7 @@ omiCutoffs <- setOmicCutoffs() # use default cutoffs
 
 # Construct the network
 \dontrun{
-myTRNet <- constructTRN(expMOList, omiCutoffs)
+myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
 }
 
 }

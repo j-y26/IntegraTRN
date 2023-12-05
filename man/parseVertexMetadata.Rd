@@ -15,7 +15,7 @@ A data frame containing the vertex metadata
 }
 \description{
 This function parses vertex metadata from the TRNet network
-             metadata
+             metadata and returns the type of each vertex
 }
 \examples{
 # Define some example edges

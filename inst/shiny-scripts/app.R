@@ -3183,6 +3183,9 @@ server <- function(input, output, session) {
     continueExecution <- TRUE
 
     # Check whether the input satisfies the requirements to generate the network
+    # Although this is checked in the constructTRN function, it is better to
+    # explicitly check here to alert the user instead of causing an error
+
     # Conditions where the network cannot be generated:
     # 1. Only one omics data type is selected (RNAseq)
     rnaOnly <- length(omicsDataTypes()) == 1 && RNA %in% omicsDataTypes()

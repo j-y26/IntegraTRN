@@ -7,7 +7,8 @@
 exportMatchResult(objMOList)
 }
 \arguments{
-\item{objMOList}{An object of class MOList}
+\item{objMOList}{An object of class MOList that has been performed matching
+using matchSamplesRNAsmallRNA().}
 }
 \value{
 A data frame containing the match result, with the following format:
@@ -22,7 +23,7 @@ This function exports the match result of RNAseq and small
 }
 \examples{
 # Use the package data
-data("expMOList")
+data("expMOList") # data has already been performed matching
 # Export the match result
 exportMatchResult(expMOList)
 

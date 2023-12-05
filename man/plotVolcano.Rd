@@ -20,22 +20,31 @@ plotVolcano(
 \item{objMOList}{An MOList object containing the differential expression
 results for mRNA.}
 
-\item{omic}{The omic type, one of "RNAseq", "smallRNAseq", or "proteomics"}
+\item{omic}{The omic type, one of "RNAseq", "smallRNAseq", or "proteomics".
+Must match the cases as defined here. Default is "RNAseq".}
 
-\item{log2FC}{The cutoff for log2 fold change. Default is 0.}
+\item{log2FC}{A numeric value specifying the cutoff for log2 fold change.
+Must be a non-negative number. Default is 0.}
 
-\item{adjP}{The cutoff for adjusted p-value. Default is 0.05.}
+\item{adjP}{A numeric value specifying the cutoff for adjusted p-value.
+Must be between 0 and 1. Default is 0.05.}
 
-\item{upColor}{The color for up-regulated genes. Default is "firebrick3".}
+\item{upColor}{A character string specifying the color for up-regulated
+genes. Default is "firebrick3".}
 
-\item{downColor}{The color for down-regulated genes. Default is "dodgerblue3"}
+\item{downColor}{A character string specifying the color for down-regulated
+genes. Default is "dodgerblue3".}
 
-\item{title}{The title for the plot. Default is NULL.}
+\item{title}{A single character string specifying the title for the plot.
+Default is NULL, which means no title is added.}
 
-\item{highlight}{A vector of gene names to highlight in the plot. Default
-is NULL.}
+\item{highlight}{A character vector specifying the gene names to highlight
+in the plot. The names of the genes must be consistent with
+the row names of the provided raw data. Otherwise,
+non-matching gene names will be ignored. Default is NULL.}
 
-\item{pointSize}{The size of the points in the plot. Default is 1.}
+\item{pointSize}{A positive numeric value specifying the size of the points
+in the plot. Default is 1.}
 }
 \value{
 A ggplot object
