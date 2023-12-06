@@ -102,12 +102,20 @@ validateMatrix <- function(matrix, groupBy) {
     stop("The sequencing data contains NA values. Please check the validity of
     your data.")
   } else if (any(is.na(groupBy))) {
-    stop("Please provide correct grouping information for the sequencing data.")
+    stop("Please provide correct grouping information for the count data.")
   } else if (!is.numeric(matrix) || !is.matrix(matrix)) {
     stop("The sequencing data must be a numeric matrix.")
+  } else if (!all(matrix >= 0)) {
+    stop("The count values in the sequencing data must be non-negative.")
+  } else if (!all(matrix == round(matrix))) {
+    stop(paste0("The raw input data must be un-normalized counts as obtained ",
+      "from the raw counting of the sequencing reads. All count values are ",
+      "expected to be integers."))
   } else if (ncol(matrix) != length(groupBy)) {
     stop("The number of samples in the sequencing data must match the length of
     the grouping information.")
+  } else if (length(unique(groupBy)) < 2) {
+    stop("A minimum of two groups are required for the count data.")
   } else {
     # Do nothing
   }

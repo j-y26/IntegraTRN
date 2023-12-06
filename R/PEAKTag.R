@@ -106,15 +106,14 @@ PEAKTag <- function(objDETag,
   # Validating inputs
   if (!is(objDETag, "DETag")) {
     stop("The input must be a DETag object")
-  }
-  if (!is.null(annotatedPeaks) && !is(annotatedPeaks, "csAnno")) {
+  } else if (!is.null(annotatedPeaks) && !is(annotatedPeaks, "csAnno")) {
     stop("The annotated peaks must be a csAnno object")
-  }
-  if (!is.null(TxDB) && !is(TxDB, "TxDb")) {
+  } else if (!is.null(TxDB) && !is(TxDB, "TxDb")) {
     stop("The TxDb object must be a TxDb object")
-  }
-  if (!is.null(annoDB) && !is.character(annoDB)) {
+  } else if (!is.null(annoDB) && !is.character(annoDB)) {
     stop("The annotation database must be a character string")
+  } else {
+    # Continue
   }
 
   # The DETag object must be generated using the GRangesATAC method
@@ -128,12 +127,18 @@ PEAKTag <- function(objDETag,
   objPEAKTag <- as(objDETag, "PEAKTag")
   if (!is.null(annotatedPeaks)) {
     objPEAKTag@annotatedPeaks <- annotatedPeaks
+  } else {
+    # Continue
   }
   if (!is.null(TxDB)) {
     objPEAKTag@TxDB <- TxDB
+  } else {
+    # Continue
   }
   if (!is.null(annoDB)) {
     objPEAKTag@annoDB <- annoDB
+  } else {
+    # Continue
   }
 
   return(objPEAKTag)

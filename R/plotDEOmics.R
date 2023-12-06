@@ -565,6 +565,8 @@ countPCA <- function(matrix,
   # Add the title
   if (!is.null(title)) {
     pcaPlot <- pcaPlot + ggplot2::ggtitle(title)
+  } else {
+    # Continue
   }
 
   return(pcaPlot)

@@ -91,6 +91,8 @@ validateDataAnno <- function(objMOList, annoList) {
 filterGeneCounts <- function(objMOList, omic) {
   if (!(omic %in% COUNT_OMICS)) {
     stop("The input omics data is not supported for filtering")
+  } else {
+    # Continue
   }
 
   omicData <- getRawData(objMOList, omic)

@@ -94,6 +94,8 @@ checkSmallAnnoCoverage <- function(objMOList, anno) {
              analysis to check for annotation coverage on differentially
             expressed small RNAs.")
     return(invisible(NULL))
+  } else {
+    # Continue
   }
 
   # Retrieve small RNA transcripts with adjusted p-value < 0.05
