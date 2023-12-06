@@ -877,8 +877,6 @@ setMethod("getSampleInfo", "MOList", function(x, experiment) {
 #' # or simply type the object name
 #' expMOList
 #'
-#' @export
-#'
 setMethod("show", "MOList", function(object) {
   cat("MOList object with the following slots:\n")
   cat(
@@ -916,7 +914,7 @@ setMethod("show", "MOList", function(object) {
 
 #' Setting conversion between protein and gene names
 #'
-#' @aliases setGene2Protein
+#' @aliases setGene2Protein,MOList-method
 #'
 #' @description This function sets the conversion between protein and gene names
 #'              for the proteomics data. The user can provide a data frame
@@ -936,6 +934,8 @@ setMethod("show", "MOList", function(object) {
 #' }
 #'
 #' @return An object of class MOList
+#'
+#' @export
 #'
 #' @examples
 #' # Create example RNAseq and proteomics data

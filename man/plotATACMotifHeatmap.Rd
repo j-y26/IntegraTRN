@@ -42,7 +42,6 @@ The motif enrichment analysis can be exceptionally stringent for
          pValueAdj will be ignored.
 }
 \examples{
-\dontrun{
 # Use the package-provided example data
 data(expMOList)
 
@@ -54,7 +53,7 @@ library("BSgenome.Hsapiens.UCSC.hg38")
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 annoDb <- "org.Hs.eg.db"
 bsgenome <- BSgenome.Hsapiens.UCSC.hg38
-}
+
 
 # Load PWMs from JASPAR
 data("jasparVertebratePWM")

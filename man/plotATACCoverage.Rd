@@ -20,7 +20,7 @@ A ggplot object
 \description{
 This function generates a peak coverage plot for differential
              accessible regions based on the ATACseq data. This is a wrapper
-             function for the \code{\link[covplot]{ChIPseeker}} function in
+             function for the \code{\link[ChIPseeker]{covplot}} function in
              the ChIPseeker package.
 }
 \examples{

@@ -2,6 +2,7 @@
 % Please edit documentation in R/MOList.R
 \name{setGene2Protein}
 \alias{setGene2Protein}
+\alias{setGene2Protein,MOList-method}
 \title{Setting conversion between protein and gene names}
 \usage{
 setGene2Protein(x, conversion)

@@ -328,7 +328,10 @@ annoSncList <- function(deg, annoList) {
 #' plotVolcanoSmallRNA(expMOList,
 #'   log2FC = 0,
 #'   adjP = 0.01,
-#'   colScheme = "YlOrRd",
+#'   colScheme = c(
+#'     "#cb997e", "#dd1c77", "#df65b0",
+#'     "#c994c7", "#a7a7d2", "#7bccc4"
+#'   ),
 #'   title = "Volcano plot for DE small RNA"
 #' )
 #'
@@ -497,6 +500,21 @@ countPCA <- function(matrix,
   # Check if the input is a numeric matrix
   if (!is.matrix(matrix) || !is.numeric(matrix)) {
     stop("The input must be a numeric matrix.")
+  } else if (length(groupBy) != ncol(matrix)) {
+    stop(paste0(
+      "The length of the grouping variable must be equal to the ",
+      "number of columns in the count matrix."
+    ))
+  } else if (length(unique(groupBy)) == 1) {
+    stop("Only one group is provided. Please provide at least two groups.")
+  } else if (!is.null(batch) && length(unique(batch)) == 1) {
+    warning("Only one batch is provided. Batch correction is not performed.")
+    batch <- NULL
+  } else if (!is.null(batch) && length(batch) != ncol(matrix)) {
+    stop(paste0(
+      "The length of the batch variable must be equal to the ",
+      "number of columns in the count matrix."
+    ))
   } else {
     # Continue
   }
@@ -701,7 +719,7 @@ plotSmallRNAPCAs <- function(objMOList,
 #'
 #' @description This function generates a peak coverage plot for differential
 #'              accessible regions based on the ATACseq data. This is a wrapper
-#'              function for the \code{\link[covplot]{ChIPseeker}} function in
+#'              function for the \code{\link[ChIPseeker]{covplot}} function in
 #'              the ChIPseeker package.
 #'
 #' @param objMOList An MOList object containing the differential accessible
@@ -876,7 +894,6 @@ plotATACAnno <- function(objMOList) {
 #'
 #'
 #' @examples
-#' \dontrun{
 #' # Use the package-provided example data
 #' data(expMOList)
 #'
@@ -888,7 +905,7 @@ plotATACAnno <- function(objMOList) {
 #' txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 #' annoDb <- "org.Hs.eg.db"
 #' bsgenome <- BSgenome.Hsapiens.UCSC.hg38
-#' }
+#'
 #'
 #' # Load PWMs from JASPAR
 #' data("jasparVertebratePWM")
@@ -954,7 +971,7 @@ plotATACMotifHeatmap <- function(objMOList,
   # Plotting the heatmap when there is no motif to plot will cause an error
   # Instead, a warning is issued and the function returns NULL
   if (sum(sel) == 0) {
-    warning("No motif to plot.")
+    stop("No motif to plot.")
     return(NULL)
   } else {
     # Continue

@@ -29,6 +29,7 @@ Suggests:
     knitr,
     org.Hs.eg.db,
     org.Mm.eg.db,
+    RColorBrewer,
     rmarkdown,
     testthat (>= 3.0.0),
     TFBSTools,

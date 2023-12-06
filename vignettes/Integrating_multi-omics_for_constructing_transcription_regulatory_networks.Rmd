@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
-  @chang2020mirnet, @villanueva2019ggplot2, @dplyr, @DT
+  @chang2020mirnet, @villanueva2019ggplot2, @dplyr
 ---
 
 ```{r, include = FALSE}
@@ -242,8 +242,7 @@ containing the outputs of **`DESeq2`** or **`edgeR`**, with choice of using a
 consistent interface.
 
 ```{r message = FALSE, tidy=TRUE}
-exportDE(myRNADETag, original = TRUE) %>%
-  DT::datatable(options = list(pageLength = 5, scrollX = TRUE))
+exportDE(myRNADETag, original = TRUE) %>% head(5)
 ```
 
 By having **`original = TRUE`**, the data frame remains exactly the same as the
@@ -282,8 +281,7 @@ myTopRNAResults[, 1:4] <- format(myTopRNAResults[, 1:4],
   digits = 4,
   scientific = TRUE
 )
-# Let us explore it interactively
-DT::datatable(myTopRNAResults, options = list(pageLength = 5))
+head(myTopRNAResults)
 ```
 
 Here, a rank of 1 and -1 indicates the most up- and down-regulated gene.
@@ -526,7 +524,7 @@ results as a data frame to see where each individual peaks are located.
 
 ```{r message = FALSE, tidy=TRUE}
 myMotifs <- as.data.frame(myMOList$DEATAC)
-DT::datatable(myMotifs, options = list(pageLength = 5, scrollX = TRUE))
+head(myMotifs)
 ```
 
 Then we can explore the key part of the analysis, which is the differentially

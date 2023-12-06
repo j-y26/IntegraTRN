@@ -62,7 +62,10 @@ plotVolcanoSmallRNA(expMOList)
 plotVolcanoSmallRNA(expMOList,
   log2FC = 0,
   adjP = 0.01,
-  colScheme = "YlOrRd",
+  colScheme = c(
+    "#cb997e", "#dd1c77", "#df65b0",
+    "#c994c7", "#a7a7d2", "#7bccc4"
+  ),
   title = "Volcano plot for DE small RNA"
 )
 
