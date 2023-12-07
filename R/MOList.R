@@ -91,14 +91,18 @@ setClass("MOList",
 #' @description This function validates the matrix and grouping information for
 #'              the sequencing data. The matrix must be a numeric matrix, and
 #'              the grouping information must be a vector of the same length as
-#'              the number of samples in the sequencing data.
+#'              the number of samples in the sequencing data. Assumes that the
+#'              input matrix is not NULL.
+#'
 #' @param matrix A numeric matrix containing the sequencing data
 #' @param groupBy A vector of grouping information for the sequencing data
 #'
 #' @return NULL
 #'
 validateMatrix <- function(matrix, groupBy) {
-  if (any(is.na(matrix))) {
+  if (is.null(groupBy)) {
+    stop("Grouping information must be provided for provided count data.")
+  } else if (any(is.na(matrix))) {
     stop("The sequencing data contains NA values. Please check the validity of
     your data.")
   } else if (any(is.na(groupBy))) {
@@ -108,9 +112,11 @@ validateMatrix <- function(matrix, groupBy) {
   } else if (!all(matrix >= 0)) {
     stop("The count values in the sequencing data must be non-negative.")
   } else if (!all(matrix == round(matrix))) {
-    stop(paste0("The raw input data must be un-normalized counts as obtained ",
+    stop(paste0(
+      "The raw input data must be un-normalized counts as obtained ",
       "from the raw counting of the sequencing reads. All count values are ",
-      "expected to be integers."))
+      "expected to be integers."
+    ))
   } else if (ncol(matrix) != length(groupBy)) {
     stop("The number of samples in the sequencing data must match the length of
     the grouping information.")
@@ -123,6 +129,39 @@ validateMatrix <- function(matrix, groupBy) {
 }
 
 
+#' Validate BED files for peak information
+#'
+#' @keywords internal
+#'
+#' @description This function validates the BED files for peak information.
+#'              The BED files are expected to contain minimally the chromosome,
+#'              start, and end coordinates of the peaks. This function provides
+#'              extendibility for future implementation of additional data
+#'              fields in the BED files, such as ChIP-seq peaks. Assumes that
+#'              the input peak file is not NULL
+#'
+#' @param peak A data frame containing the peak information in the BED format
+#'
+#' @return NULL
+#'
+#' @references
+#' \insertRef{grandi2022chromatin}{IntegraTRN}
+#'
+validatePeaks <- function(peak) {
+  if (!is.data.frame(peak)) {
+    stop("The peak information must be able to be read as a data frame.")
+  } else if (any(is.na(peak[, CHROMINFO]))) {
+    stop("Missing values in the chromosome information in the ATAC peaks.")
+  } else if (any(peak[, "start"] < 0) || any(peak[, "end"] < 0)) {
+    stop("The start and end coordinates of the peaks must be non-negative.")
+  } else if (any(peak[, "start"] > peak[, "end"])) {
+    stop("The start coordinates must be smaller than the end coordinates.")
+  } else {
+    # Do nothing
+  }
+}
+
+
 #' Validate the inputs for the MOList constructor
 #'
 #' @keywords internal
@@ -131,6 +170,7 @@ validateMatrix <- function(matrix, groupBy) {
 #'              It uses the validateMatrix function to validate the sequencing
 #'              data, and checks for missing values in the chromosome
 #'              information in the ATAC peaks.
+#'
 #' @param RNAseq A numeric matrix containing the RNAseq data
 #' @param RNAGroupBy A vector of grouping information for the RNAseq data
 #' @param smallRNAseq A numeric matrix containing the smallRNAseq data
@@ -185,12 +225,8 @@ validateMOInputs <- function(RNAseq,
   }
   # Check for missing values in the chromosome information in the ATAC peaks
   if (!is.null(peakCond1) && !is.null(peakCond2)) {
-    if (any(is.na(peakCond1[, CHROMINFO])) ||
-      any(is.na(peakCond2[, CHROMINFO]))) {
-      stop("Missing values in the chromosome information in the ATAC peaks.")
-    } else {
-      # Do nothing
-    }
+    validatePeaks(peakCond1)
+    validatePeaks(peakCond2)
   } else {
     # Do nothing
   }
@@ -202,6 +238,10 @@ validateMOInputs <- function(RNAseq,
 #' @keywords internal
 #'
 #' @description This function sets the non-mRNA omics data to the MOList object.
+#'              This is a helper function used by the contructor of the MOList
+#'              object to overwrite existing omics data. This is one mode of
+#'              the constructor function, which is used to append/exchange
+#'              omics data to the MOList object.
 #'
 #' @param objMOList An object of class MOList for appending/exchanging omics
 #'                  data
@@ -239,24 +279,46 @@ setOmics <- function(objMOList,
                      peakCond1,
                      peakCond2) {
   if (!is.null(smallRNAseq)) {
+    # Alter the user of overwriting existing data
+    if (dim(objMOList@smallRNAseq)[1] != 0) {
+      cat("Small RNAseq: Previous small RNAseq data has been overwritten.\n")
+      objMOList$DEsmallRNAseq <- NULL # Remove the previous DE results
+    } else {
+      cat("Small RNAseq: Small RNAseq data has been added.\n")
+    }
     objMOList@smallRNAseq <- smallRNAseq
     objMOList@smallRNAseqSamples$samples <- getSampleNames(smallRNAseq)
     objMOList@smallRNAseqSamples$groupBy <- smallRNAGroupBy
   } else {
-    # Do nothing
+    cat("Small RNAseq: Optional small RNAseq data has NOT been provided.\n")
   }
   if (!is.null(proteomics)) {
+    # Alter again for proteomics data
+    if (dim(objMOList@proteomics)[1] != 0) {
+      cat("Proteomics:   Previous proteomics data has been overwritten.\n")
+      objMOList$DEproteomics <- NULL # Remove the previous DE results
+    } else {
+      cat("Proteomics:   Proteomics data has been added.\n")
+    }
     objMOList@proteomics <- proteomics
     objMOList@proteomicsSamples$samples <- getSampleNames(proteomics)
     objMOList@proteomicsSamples$groupBy <- proteomicsGroupBy
   } else {
-    # Do nothing
+    cat("Proteomics:   Optional proteomics data has NOT been provided.\n")
   }
   if (!is.null(peakCond1) && !is.null(peakCond2)) {
+    # Same for ATAC peaks
+    if (!is.null(objMOList@ATACpeaks$peaksCond1) &&
+      !is.null(objMOList@ATACpeaks$peaksCond2)) {
+      cat("ATACseq:      Previous ATAC peaks data has been overwritten.\n")
+      objMOList$DEATAC <- NULL # Remove the previous DE results
+    } else {
+      cat("ATACseq:      ATAC peaks data has been added.\n")
+    }
     objMOList@ATACpeaks$peaksCond1 <- peakCond1
     objMOList@ATACpeaks$peaksCond2 <- peakCond2
   } else {
-    # Do nothing
+    cat("ATACseq:      Optional ATAC peaks data has NOT been provided.\n")
   }
   return(objMOList)
 }
@@ -265,6 +327,10 @@ setOmics <- function(objMOList,
 #' Construct a new MOList object
 #'
 #' @keywords internal
+#'
+#' @description This function constructs a new MOList object, which is used to
+#'              store the multi-omics data. Fulfills the CREATION mode of the
+#'              constructor function.
 #'
 #' @param RNAseq A numeric matrix containing the RNAseq data
 #' @param RNAGroupBy A vector of grouping information for the RNAseq data. Must
@@ -314,6 +380,7 @@ newMOList <- function(RNAseq,
       groupBy = RNAGroupBy
     )
   )
+  cat("RNAseq:       RNAseq data has been added.\n")
   # Set the non-mRNA omics data
   objMOList <- setOmics(
     objMOList, smallRNAseq, smallRNAGroupBy,
@@ -326,6 +393,10 @@ newMOList <- function(RNAseq,
 #' Append/exchange omics data for the existing MOList object
 #'
 #' @keywords internal
+#'
+#' @description This function appends/exchanges omics data for the existing
+#'              MOList object. Fulfills the APPEND/EXCHANGE mode of the
+#'              constructor function.
 #'
 #' @param objMOList An object of class MOList for appending/exchanging omics
 #'                  data
@@ -370,6 +441,8 @@ modifyMOList <- function(objMOList,
     objMOList@RNAseq <- RNAseq
     objMOList@RNAseqSamples$samples <- getSampleNames(RNAseq)
     objMOList@RNAseqSamples$groupBy <- RNAGroupBy
+    cat("RNAseq:       Previous RNAseq data has been overwritten.\n")
+    objMOList$DERNAseq <- NULL # Remove the previous DE results
   } else {
     # Do nothing
   }
@@ -385,6 +458,12 @@ modifyMOList <- function(objMOList,
 #' Validate omics raw data with sample information
 #'
 #' @keywords internal
+#'
+#' @description This function validates the omics raw data with sample. This is
+#'              a helper function used as part of the validator of the MOList
+#'              object. Hence, it provides basic sanity checks for the omics
+#'              data and sample information that are less stringent than the
+#'              input validation checks.
 #'
 #' @param dataMatrix A numeric matrix containing the omics data
 #' @param sampleInfo A list containing the sample names and grouping information
@@ -419,8 +498,13 @@ validateOmics <- function(dataMatrix, sampleInfo) {
 #'
 #' @keywords internal
 #'
-#' @param objMOList An object of class MOList for appending/exchanging omics
-#'                  data
+#' @description This function validates the MOList object. It provides sanity
+#'              checks for the omics data and sample information specified in
+#'              each slot of the MOList object. All S4 methods of this class
+#'              should call this function to validate the MOList object after
+#'              any modification is performed.
+#'
+#' @param objMOList An object of class MOList with any form of modification
 #'
 #' @return NULL
 #'
