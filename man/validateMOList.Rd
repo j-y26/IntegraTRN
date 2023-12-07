@@ -7,10 +7,13 @@
 validateMOList(objMOList)
 }
 \arguments{
-\item{objMOList}{An object of class MOList for appending/exchanging omics
-data}
+\item{objMOList}{An object of class MOList with any form of modification}
 }
 \description{
-Validator of the MOList S4 object
+This function validates the MOList object. It provides sanity
+             checks for the omics data and sample information specified in
+             each slot of the MOList object. All S4 methods of this class
+             should call this function to validate the MOList object after
+             any modification is performed.
 }
 \keyword{internal}

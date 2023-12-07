@@ -57,6 +57,8 @@ An object of class MOList
 }
 }
 \description{
-Construct a new MOList object
+This function constructs a new MOList object, which is used to
+             store the multi-omics data. Fulfills the CREATION mode of the
+             constructor function.
 }
 \keyword{internal}

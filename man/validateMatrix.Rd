@@ -15,6 +15,7 @@ validateMatrix(matrix, groupBy)
 This function validates the matrix and grouping information for
              the sequencing data. The matrix must be a numeric matrix, and
              the grouping information must be a vector of the same length as
-             the number of samples in the sequencing data.
+             the number of samples in the sequencing data. Assumes that the
+             input matrix is not NULL.
 }
 \keyword{internal}

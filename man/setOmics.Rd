@@ -52,5 +52,9 @@ An object of class MOList
 }
 \description{
 This function sets the non-mRNA omics data to the MOList object.
+             This is a helper function used by the contructor of the MOList
+             object to overwrite existing omics data. This is one mode of
+             the constructor function, which is used to append/exchange
+             omics data to the MOList object.
 }
 \keyword{internal}

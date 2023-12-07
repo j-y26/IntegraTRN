@@ -13,6 +13,10 @@ validateOmics(dataMatrix, sampleInfo)
 for the omics data}
 }
 \description{
-Validate omics raw data with sample information
+This function validates the omics raw data with sample. This is
+             a helper function used as part of the validator of the MOList
+             object. Hence, it provides basic sanity checks for the omics
+             data and sample information that are less stringent than the
+             input validation checks.
 }
 \keyword{internal}

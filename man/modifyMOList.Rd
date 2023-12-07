@@ -57,6 +57,8 @@ An object of class MOList
 }
 }
 \description{
-Append/exchange omics data for the existing MOList object
+This function appends/exchanges omics data for the existing
+             MOList object. Fulfills the APPEND/EXCHANGE mode of the
+             constructor function.
 }
 \keyword{internal}

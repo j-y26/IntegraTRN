@@ -76,7 +76,31 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
   } else if (any(is.na(DEResult[, 1:3]))) {
     stop("Some key differential analysis results are missing")
   } else {
-    # Do nothing
+    if (method == DESEQ2) {
+      # DESeq2
+      if (!all(DESEQ2_FIELDS %in% colnames(DEResult))) {
+        stop(
+          "The DEResult slot must contain the following columns: ",
+          paste0(DESEQ2_FIELDS, collapse = ", ")
+        )
+      } else {
+        # Do nothing
+      }
+    } else if (method == EDGER) {
+      # edgeR
+      if (!all(EDGER_FIELDS %in% colnames(DEResult))) {
+        stop(
+          "The DEResult slot must contain the following columns: ",
+          paste0(EDGER_FIELDS, collapse = ", ")
+        )
+      } else {
+        # Do nothing
+      }
+    } else if (method == ATAC_GRANGE) {
+      # Do nothing
+    } else {
+      stop("The method is not supported")
+    }
   }
   # method
   if (!is.character(method) || !method %in% METHODS) {
@@ -89,9 +113,20 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
   if (!is.null(normalizedCounts) &&
     (!is.matrix(normalizedCounts) || !is.numeric(normalizedCounts))) {
     stop("The normalizedCounts slot must be a numeric matrix")
+  } else if (!is.null(normalizedCounts)) {
+    # Check the consistency between DEResult and normalizedCounts
+    if (!all(rownames(DEResult) %in% rownames(normalizedCounts))) {
+      stop("The row names of DEResult and normalizedCounts must be the same")
+    } else if (all(rownames(DEResult) == 1:nrow(DEResult)) ||
+      all(rownames(normalizedCounts) == 1:nrow(normalizedCounts))) {
+      stop("Please set valid gene/transcript names as the row names of results")
+    } else {
+      # Do nothing
+    }
   } else {
     # Do nothing
   }
+
 
   return(invisible(NULL))
 }
