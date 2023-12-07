@@ -26,6 +26,31 @@ library(IntegraTRN)
 library(dplyr)
 ```
 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# Since devtools does not install the vignette dependencies, we need to install
+# these Suggested packages manually
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (!requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly = TRUE)) {
+  BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
+}
+if (!requireNamespace("TxDb.Hsapiens.UCSC.hg38.knownGene", quietly = TRUE)) {
+  BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+}
+if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
+  BiocManager::install("org.Hs.eg.db")
+}
+if (!requireNamespace("ggpubr", quietly = TRUE)) {
+  BiocManager::install("ggpubr")
+}
+if (!requireNamespace("RColorBrewer", quietly = TRUE)) {
+  BiocManager::install("RColorBrewer")
+}
+if (!requireNamespace("ggrepel", quietly = TRUE)) {
+  BiocManager::install("ggrepel")
+}
+```
 
 ## Introduction
 
@@ -255,7 +280,7 @@ performs piValue transformation [@reimand2019pathway] and ranking based on a
 user-specified criteria. For example, let's retrieve genes that have at least
 0.1 log2 fold change and select the top 200  ranked genes.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, warning=FALSE}
 myRNATOPTag <- TOPTag(myRNADETag,
   pCutoff = 0.05,
   logFCCutoff = 0.1,
@@ -524,7 +549,7 @@ results as a data frame to see where each individual peaks are located.
 
 ```{r message = FALSE, tidy=TRUE}
 myMotifs <- as.data.frame(myMOList$DEATAC)
-head(myMotifs)
+head(myMotifs[, 1:8])   # Many annotations, see the first 8 attributes
 ```
 
 Then we can explore the key part of the analysis, which is the differentially
