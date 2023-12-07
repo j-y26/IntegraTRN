@@ -163,13 +163,15 @@ validateDETagSlots <- function(DEResult, method, normalizedCounts = NULL) {
 #' @examples
 #' # Create an example data frame
 #' deResult <- data.frame(
-#'   gene = paste0("gene", seq_len(10)),
-#'   logFC = runif(10),
-#'   adj.P.Val = runif(10)
+#'   log2FoldChange = runif(10),
+#'   padj = runif(10),
+#'   pvalue = runif(10)
 #' )
+#' rownames(deResult) <- paste0("gene", seq_len(10))
 #'
 #' # Create a normalized counts matrix
 #' normalizedCounts <- matrix(runif(100), nrow = 10)
+#' rownames(normalizedCounts) <- paste0("gene", seq_len(10))
 #'
 #' # Create an object of the DETag class
 #' deTag <- DETag(deResult, "DESeq2", normalizedCounts)
@@ -216,10 +218,11 @@ DETag <- function(DEResult, method, normalizedCounts = NULL) {
 #' @examples
 #' # Create an example data frame
 #' deResult <- data.frame(
-#'   gene = paste0("gene", seq_len(10)),
-#'   logFC = runif(10),
-#'   adj.P.Val = runif(10)
+#'   log2FoldChange = runif(10),
+#'   padj = runif(10),
+#'   pvalue = runif(10)
 #' )
+#' rownames(deResult) <- paste0("gene", seq_len(10))
 #'
 #' # Create a normalized counts matrix
 #' normalizedCounts <- matrix(runif(100), nrow = 10)

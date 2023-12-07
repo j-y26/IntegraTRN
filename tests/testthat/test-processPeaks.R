@@ -79,7 +79,10 @@ test_that("annotate and enrich for motifs", {
   # motif enrichment
   expMOList <- enrichMotifs(expMOList, bsgenome, jasparVertebratePWM)
   expect_false(is.null(expMOList$DEATAC$motifEnrichment))
-  expect_equal(class(expMOList$DEATAC$motifEnrichment)[1], "SummarizedExperiment")
+  expect_equal(
+    class(expMOList$DEATAC$motifEnrichment)[1],
+    "SummarizedExperiment"
+  )
 })
 
 

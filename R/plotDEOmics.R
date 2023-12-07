@@ -76,8 +76,8 @@ plotBaseVolcano <- function(deg,
     ggplot2::geom_hline(yintercept = -log(adjP, 10), linetype = "dashed") +
     ggplot2::geom_vline(xintercept = c(-log2FC, log2FC), linetype = "dashed") +
     ggplot2::theme(
-      axis.line = ggplot2::element_line(size = 0.7),
-      axis.ticks = ggplot2::element_line(size = 0.4),
+      axis.line = ggplot2::element_line(linewidth = 0.7),
+      axis.ticks = ggplot2::element_line(linewidth = 0.4),
       axis.text = ggplot2::element_text(size = 10)
     )
 

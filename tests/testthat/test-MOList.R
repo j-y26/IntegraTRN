@@ -161,7 +161,7 @@ test_that("validateMOInputs throws error if groupBy contains NA", {
     proteomics = testMatrix,
     proteomicsGroupBy = NULL,
     peakCond1 = NULL, peakCond2 = NULL
-  ), "match")
+  ), "Grouping")
 })
 
 test_that("validateMOInputs throws error if some data does not contain
@@ -175,7 +175,7 @@ test_that("validateMOInputs throws error if some data does not contain
       proteomics = NULL, proteomicsGroupBy = NULL,
       peakCond1 = NULL, peakCond2 = NULL
     ),
-    "replicates"
+    "minimum"
   )
   expect_error(
     validateMOInputs(
@@ -185,7 +185,7 @@ test_that("validateMOInputs throws error if some data does not contain
       proteomics = NULL, proteomicsGroupBy = NULL,
       peakCond1 = NULL, peakCond2 = NULL
     ),
-    "replicates"
+    "minimum"
   )
   expect_error(
     validateMOInputs(
@@ -195,7 +195,7 @@ test_that("validateMOInputs throws error if some data does not contain
       proteomicsGroupBy = 1,
       peakCond1 = NULL, peakCond2 = NULL
     ),
-    "replicates"
+    "minimum"
   )
 })
 

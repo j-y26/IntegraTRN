@@ -549,7 +549,7 @@ results as a data frame to see where each individual peaks are located.
 
 ```{r message = FALSE, tidy=TRUE}
 myMotifs <- as.data.frame(myMOList$DEATAC)
-head(myMotifs[, 1:8])   # Many annotations, see the first 8 attributes
+head(myMotifs[, 1:8]) # Many annotations, see the first 8 attributes
 ```
 
 Then we can explore the key part of the analysis, which is the differentially

@@ -6,7 +6,9 @@
 
 # Load libraries
 library(shiny)
-library(shinyBS) # for interactive elementss
+library(shinyBS) # for interactive elements
+library(dplyr) # for data manipulation for file download
+library(IntegraTRN)
 
 # Define some global variables
 RNA <- "RNAseq"
@@ -72,13 +74,13 @@ data("RNAseq_heart", package = "IntegraTRN")
 data("RNAseq_heart_samples", package = "IntegraTRN")
 data("smallRNAseq_heart", package = "IntegraTRN")
 data("smallRNAseq_heart_samples", package = "IntegraTRN")
-data("proteomics_heart", package = "IntegraTRN")
-data("proteomics_heart_samples", package = "IntegraTRN")
+data("protein_heart", package = "IntegraTRN")
+data("protein_heart_samples", package = "IntegraTRN")
 data("miR2Genes", package = "IntegraTRN")
 data("tf2Genes", package = "IntegraTRN")
 data("jasparVertebratePWM", package = "IntegraTRN")
 data("proteinGeneIDConvert", package = "IntegraTRN")
-
+data("sncRNAAnnotation", package = "IntegraTRN")
 
 
 #' Helper function to check for missing inputs
@@ -156,7 +158,7 @@ getFullDEResults <- function(objMOList,
 #' @param genAssembly A character string indicating the genome assembly
 #'
 #' @return A list of annotation databases
-#' 
+#'
 getAnnotationDatabases <- function(genAssembly, session, input) {
   # Retrieve the list of annotation databases
   annotationDatabases <- BIOC_ANNOTATION[[genAssembly]]
@@ -1313,7 +1315,7 @@ server <- function(input, output, session) {
       paste("small_rna_annotation_hsapiens", "csv", sep = ".")
     },
     content = function(file) {
-      SNCANNOLIST_HSAPIENS %>%
+      sncRNAAnnotation %>%
         utils::stack() %>%
         dplyr::rename(transcript = values, type = ind) %>%
         write.csv(file, row.names = FALSE)
@@ -3108,6 +3110,11 @@ server <- function(input, output, session) {
           value = 1,
           min = 1, max = 32, step = 1
         ),
+        tags$p("Note: to use parallel processing for network inference, please
+                make sure the number of threads is less than or equal to the
+                number of cores available on your computer. In addition,
+                ensure that packages 'doParallel' and 'doRNG' are installed.
+                Alternatively, use a single thread.")
       )
     }
   })

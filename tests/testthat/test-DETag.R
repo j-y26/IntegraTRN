@@ -33,6 +33,7 @@ deResult2 <- data.frame(
 rownames(deResult2) <- c("gene1", "gene2", "gene3", "gene4", "gene5")
 
 normCounts <- matrix(1:25, nrow = 5, ncol = 5)
+rownames(normCounts) <- c("gene1", "gene2", "gene3", "gene4", "gene5")
 
 peaks <- data.frame(
   chr = c("chr1", "chr2", "chr3", "chr4", "chr5"),

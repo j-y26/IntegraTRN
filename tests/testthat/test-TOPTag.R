@@ -137,7 +137,8 @@ test_that("filter edgeR", {
 })
 
 test_that("wrong method", {
-  deTag3 <- DETag(deResult, "edgeR", normCounts)
+  deTag3 <- DETag(deResult, "DESeq2", normCounts)
+  deTag3@method <- "edgeR" # force it to be a wrong method
   expect_error(TOPTag(deTag3,
     logFCCutoff = 1, pCutoff = 0.0007,
     topGenes = 1, direction = "both"
