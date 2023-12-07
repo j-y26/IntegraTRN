@@ -6,18 +6,21 @@
 
 # Load libraries
 library(shiny)
-library(shinyBS) # for interactive elements
-library(DT) # for interactive tables
+library(shinyBS) # for interactive elementss
 
 # Define some global variables
-# Note that RNA, SMALLRNA, ATAC, and PROTEIN is already defined within the
-# package
-# The following variables are used to define external data types
-# Note these definitions are only available within the app
+RNA <- "RNAseq"
+SMALLRNA <- "smallRNAseq"
+ATAC <- "ATACseq"
+PROTEIN <- "proteomics"
+COUNT_OMICS <- c(RNA, SMALLRNA, PROTEIN)
+DESEQ2 <- "DESeq2"
+EDGER <- "edgeR"
 MIRNA <- "miRNA_target"
 TF <- "TF_target"
 HSAPIENS <- "Human (hg38)" # species + assembly to support multiple assemblies
 MMUSCULUS <- "Mouse (mm10)"
+CHROMINFO <- c("chr", "start", "end")
 
 # input data names
 INPUT_LIST <- list(
@@ -63,6 +66,20 @@ DT_OPTIONS_DEOUTPUT <- list(
   pageLength = 10,
   lengthMenu = c(5, 10, 20, 50)
 )
+
+# Package data must be load to allow data access
+data("RNAseq_heart", package = "IntegraTRN")
+data("RNAseq_heart_samples", package = "IntegraTRN")
+data("smallRNAseq_heart", package = "IntegraTRN")
+data("smallRNAseq_heart_samples", package = "IntegraTRN")
+data("proteomics_heart", package = "IntegraTRN")
+data("proteomics_heart_samples", package = "IntegraTRN")
+data("miR2Genes", package = "IntegraTRN")
+data("tf2Genes", package = "IntegraTRN")
+data("jasparVertebratePWM", package = "IntegraTRN")
+data("proteinGeneIDConvert", package = "IntegraTRN")
+
+
 
 #' Helper function to check for missing inputs
 #'
@@ -139,11 +156,13 @@ getFullDEResults <- function(objMOList,
 #' @param genAssembly A character string indicating the genome assembly
 #'
 #' @return A list of annotation databases
+#' 
 getAnnotationDatabases <- function(genAssembly, session, input) {
   # Retrieve the list of annotation databases
   annotationDatabases <- BIOC_ANNOTATION[[genAssembly]]
   # Check if the annotation packages are installed
   stillMissing <- c()
+
   if (!requireNamespace(annotationDatabases$organism, quietly = TRUE)) {
     stillMissing <- c(stillMissing, annotationDatabases$organism)
   }
@@ -209,10 +228,6 @@ getAnnotationDatabases <- function(genAssembly, session, input) {
 }
 
 
-
-
-
-
 # Although some dynamic UI code seems to be repetitive, it is necessary to
 # define them separately to ensure that the UI elements are generated
 # dynamically based on user inputs, and UI elements can only be generated
@@ -224,12 +239,16 @@ ui <- fluidPage(
   # Since fileInput labels are detailed instructions, custom CSS
   # is used to make the labels not bold
   tags$style(HTML(".control-label { font-weight: normal; }")),
+  # adapted from Dung Le and user_stack_overflow's solutions at
+  # https://stackoverflow.com/questions/61108606/
+  # how-to-make-text-label-regular-font-not-bold-in-bootstrap
 
   # Also since there are multi-level headers, to better format the text,
   # custom CSS is used to define bold and italic headers
   tags$style(HTML("h5 { font-weight: bold;
                         font-style: italic;
                         font-size: 1.1em; }")),
+  # generative AI was queried to help facilitate the design of the CSS
 
   # Title of the application
   titlePanel(tags$h1(tags$b("IntegraTRN:"), "Integrating multi-omics data for
@@ -853,10 +872,10 @@ ui <- fluidPage(
             bsCollapsePanel(
               title = "RNAseq Raw Data Input",
               tags$h5("Raw Count Matrix for RNAseq:"),
-              DTOutput("rnaseqRawCountDT"),
+              DT::DTOutput("rnaseqRawCountDT"),
               br(),
               tags$h5("Sample Metadata for RNAseq:"),
-              DTOutput("rnaseqRawSampleMetadataDT")
+              DT::DTOutput("rnaseqRawSampleMetadataDT")
             ),
             # Contents are conditionally shown for every data type except for
             # RNAseq
@@ -908,7 +927,7 @@ ui <- fluidPage(
 
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
-          DTOutput(outputId = "rnaseqDETable"),
+          DT::DTOutput(outputId = "rnaseqDETable"),
           tags$p(
             tags$b("Note: "),
             "Selected rows will be highlighted in the volcano plot."
@@ -954,7 +973,7 @@ ui <- fluidPage(
 
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
-          DTOutput(outputId = "smallRnaDETable"),
+          DT::DTOutput(outputId = "smallRnaDETable"),
           tags$p(
             tags$b("Note: "),
             "Selected rows will be highlighted in the volcano plot."
@@ -993,7 +1012,7 @@ ui <- fluidPage(
 
           # Table of DE results
           tags$h5("Table of Differential Expression Results"),
-          DTOutput(outputId = "proteomicsDETable"),
+          DT::DTOutput(outputId = "proteomicsDETable"),
           tags$p(
             tags$b("Note: "),
             "Selected rows will be highlighted in the volcano plot."
@@ -1036,7 +1055,7 @@ ui <- fluidPage(
           plotOutput(outputId = "atacMotifHeatmap", height = "650px"),
           br(),
           tags$h5("Annotated Peaks"),
-          DTOutput(outputId = "atacMotifTable"),
+          DT::DTOutput(outputId = "atacMotifTable"),
           br(),
           br(),
           tags$b("Download the analysis results:"),
@@ -1076,7 +1095,7 @@ ui <- fluidPage(
 
           # Table of network results
           tags$h5("Inferred Regulatory Interactions"),
-          DTOutput(outputId = "networkTableDT"),
+          DT::DTOutput(outputId = "networkTableDT"),
           br(),
 
           # Download the network results
@@ -2028,21 +2047,21 @@ server <- function(input, output, session) {
   # Display the results of raw data input to the user in the Data Input
   # main panel
   # RNAseq
-  output$rnaseqRawCountDT <- renderDT(
+  output$rnaseqRawCountDT <- DT::renderDT(
     rnaseqCountMatrix(),
     options = DT_OPTIONS_INPUT
   )
-  output$rnaseqRawSampleMetadataDT <- renderDT(
+  output$rnaseqRawSampleMetadataDT <- DT::renderDT(
     rnaseqSampleMetadata(),
     options = DT_OPTIONS_INPUT
   )
 
   # Small RNAseq
-  output$smallRnaseqRawCountDT <- renderDT(
+  output$smallRnaseqRawCountDT <- DT::renderDT(
     smallRnaseqCountMatrix(),
     options = DT_OPTIONS_INPUT
   )
-  output$smallRnaseqRawSampleMetadataDT <- renderDT(
+  output$smallRnaseqRawSampleMetadataDT <- DT::renderDT(
     smallRnaseqSampleMetadata(),
     options = DT_OPTIONS_INPUT
   )
@@ -2050,20 +2069,20 @@ server <- function(input, output, session) {
     if (useSmallRNAseq()) {
       tagList(
         tags$h5("Raw Count Matrix for Small RNAseq:"),
-        DTOutput("smallRnaseqRawCountDT"),
+        DT::DTOutput("smallRnaseqRawCountDT"),
         br(),
         tags$h5("Sample Metadata for RNAseq:"),
-        DTOutput("smallRnaseqRawSampleMetadataDT"),
+        DT::DTOutput("smallRnaseqRawSampleMetadataDT"),
       )
     }
   })
 
   # Proteomics
-  output$proteomicsRawCountDT <- renderDT(
+  output$proteomicsRawCountDT <- DT::renderDT(
     proteomicsCountMatrix(),
     options = DT_OPTIONS_INPUT
   )
-  output$proteomicsRawSampleMetadataDT <- renderDT(
+  output$proteomicsRawSampleMetadataDT <- DT::renderDT(
     proteomicsSampleMetadata(),
     options = DT_OPTIONS_INPUT
   )
@@ -2071,20 +2090,20 @@ server <- function(input, output, session) {
     if (useProteomics()) {
       tagList(
         tags$h5("Raw Count Matrix for Proteomics:"),
-        DTOutput("proteomicsRawCountDT"),
+        DT::DTOutput("proteomicsRawCountDT"),
         br(),
         tags$h5("Sample Metadata for Proteomics:"),
-        DTOutput("proteomicsRawSampleMetadataDT"),
+        DT::DTOutput("proteomicsRawSampleMetadataDT"),
       )
     }
   })
 
   # ATACseq
-  output$atacPeak1DT <- renderDT(
+  output$atacPeak1DT <- DT::renderDT(
     atacPeak1(),
     options = DT_OPTIONS_INPUT
   )
-  output$atacPeak2DT <- renderDT(
+  output$atacPeak2DT <- DT::renderDT(
     atacPeak2(),
     options = DT_OPTIONS_INPUT
   )
@@ -2092,16 +2111,16 @@ server <- function(input, output, session) {
     if (useATACseq()) {
       tagList(
         tags$h5("Peaks for Condition 1:"),
-        DTOutput("atacPeak1DT"),
+        DT::DTOutput("atacPeak1DT"),
         br(),
         tags$h5("Peaks for Condition 2:"),
-        DTOutput("atacPeak2DT"),
+        DT::DTOutput("atacPeak2DT"),
       )
     }
   })
 
   # External miRNA - target interactions
-  output$miRNATargetDT <- renderDT(
+  output$miRNATargetDT <- DT::renderDT(
     miRNATarget(),
     options = DT_OPTIONS_INPUT
   )
@@ -2109,13 +2128,13 @@ server <- function(input, output, session) {
     if (usemiRNATarget()) {
       tagList(
         tags$h5("miRNA - Target Interactions:"),
-        DTOutput("miRNATargetDT"),
+        DT::DTOutput("miRNATargetDT"),
       )
     }
   })
 
   # External TF - target interactions
-  output$TFTargetDT <- renderDT(
+  output$TFTargetDT <- DT::renderDT(
     TFTarget(),
     options = DT_OPTIONS_INPUT
   )
@@ -2123,7 +2142,7 @@ server <- function(input, output, session) {
     if (useTFTarget()) {
       tagList(
         tags$h5("TF - Target Interactions:"),
-        DTOutput("TFTargetDT"),
+        DT::DTOutput("TFTargetDT"),
       )
     }
   })
@@ -2707,7 +2726,7 @@ server <- function(input, output, session) {
           rnaDF <- getFullDEResults(objMOList, omic = RNA)
           # Show only 3 digits with scientific notation
           rnaDF[, -1] <- format(rnaDF[, -1], digits = 4, scientific = TRUE)
-          output$rnaseqDETable <- renderDT(
+          output$rnaseqDETable <- DT::renderDT(
             rnaDF,
             filter = "top",
             options = DT_OPTIONS_DEOUTPUT
@@ -2746,7 +2765,7 @@ server <- function(input, output, session) {
               digits = 4,
               scientific = TRUE
             )
-            output$smallRnaDETable <- renderDT(
+            output$smallRnaDETable <- DT::renderDT(
               smallRnaDF,
               filter = "top",
               options = DT_OPTIONS_DEOUTPUT
@@ -2802,7 +2821,7 @@ server <- function(input, output, session) {
               digits = 4,
               scientific = TRUE
             )
-            output$proteomicsDETable <- renderDT(
+            output$proteomicsDETable <- DT::renderDT(
               proteomicsDF,
               filter = "top",
               options = DT_OPTIONS_DEOUTPUT
@@ -2842,7 +2861,7 @@ server <- function(input, output, session) {
           if (useATACseq()) {
             # ATACseq motif enrichment table
             atacDF <- getFullDEResults(objMOList, omic = ATAC)
-            output$atacMotifTable <- renderDT(
+            output$atacMotifTable <- DT::renderDT(
               atacDF,
               filter = "top",
               options = c(DT_OPTIONS_DEOUTPUT, scrollX = TRUE)
@@ -3321,7 +3340,7 @@ server <- function(input, output, session) {
             plotNetwork(trNet, interactive = TRUE)
           })
           # Render the table of all interactions
-          output$networkTableDT <- renderDT(
+          output$networkTableDT <- DT::renderDT(
             exportEdgeSet(trNet),
             filter = "top",
             options = DT_OPTIONS_DEOUTPUT

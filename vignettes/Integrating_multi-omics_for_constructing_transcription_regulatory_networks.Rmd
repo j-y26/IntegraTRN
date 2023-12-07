@@ -42,13 +42,13 @@ if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
   BiocManager::install("org.Hs.eg.db")
 }
 if (!requireNamespace("ggpubr", quietly = TRUE)) {
-  BiocManager::install("ggpubr")
+  install.packages("ggpubr")
 }
 if (!requireNamespace("RColorBrewer", quietly = TRUE)) {
-  BiocManager::install("RColorBrewer")
+  install.packages("RColorBrewer")
 }
 if (!requireNamespace("ggrepel", quietly = TRUE)) {
-  BiocManager::install("ggrepel")
+  install.packages("ggrepel")
 }
 ```
 
