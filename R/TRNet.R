@@ -449,4 +449,80 @@ setMethod(
 )
 
 
+#' @title Exporting the TRN network to a third-party file format
+#'
+#' @aliases writeTRN,TRNet-method
+#'
+#' @description This function exports the TRN network to a third-party file
+#'              format. It is a wrapper function for the igraph::write_graph
+#'              function.
+#'
+#' @param trn A TRNet object
+#' @param file A connection, or a single-length character string containing the
+#'             file to write to
+#' @param format A character string specifying the format of the file to write
+#'               to. The default is "graphml". Supported formats include
+#'               "edgelist", "pajek", "ncol", "lgl", "graphml", "dimacs", "gml",
+#'               "dot", and "leda". See \code{\link[igraph]{write_graph}} for
+#'               details.
+#'
+#' @return NULL
+#'
+#' @export
+#'
+#' @importFrom igraph write_graph
+#'
+#' @references
+#' \insertRef{csardi2006igraph}{IntegraTRN}
+#'
+#' @seealso
+#' \code{\link[igraph]{write_graph}}
+#'
+#' @examples
+#' # Use the package data
+#' data("expMOList")
+#'
+#' # Set the cutoffs for the omics data
+#' omiCutoffs <- setOmicCutoffs() # use default cutoffs
+#'
+#' # Construct the network
+#' \dontrun{
+#' myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
+#' }
+#'
+#' # Create a temporary file
+#' tempFile <- tempfile(fileext = ".graphml")
+#'
+#' # Export the network to the temporary file with default format
+#' \dontrun{
+#' writeTRN(myTRNet, file = tempFile)
+#' }
+#'
+#' # Or specify the file format
+#' \dontrun{
+#' tempFile2 <- tempfile(fileext = ".gml")
+#' writeTRN(myTRNet, file = tempFile2, format = "gml")
+#' }
+#'
+setGeneric(
+  "writeTRN",
+  function(trn, file, format = ".graphml") {
+    standardGeneric("writeTRN")
+  }
+)
+setMethod(
+  "writeTRN", "TRNet",
+  function(trn, file, format = "graphml") {
+    if (! format %in% c("edgelist", "pajek", "ncol", "lgl", "graphml",
+                        "dimacs", "gml", "dot", "leda")) {
+      stop("Unsupported file format. Should be one of the following: ",
+           "edgelist, pajek, ncol, lgl, graphml, dimacs, gml, dot, leda")
+    } else {
+      # Do nothing
+    }
+    igraph::write_graph(trn@network, file, format)
+  }
+)
+
+
 # [END]

@@ -18,6 +18,7 @@ Depends:
 biocViews: 
     Software, Network, NetworkInference, GeneRegulation, DifferentialExpression
 Suggests: 
+    BiocManager,
     BSgenome,
     BSgenome.Hsapiens.UCSC.hg38,
     BSgenome.Mmusculus.UCSC.mm10,

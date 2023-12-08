@@ -465,19 +465,22 @@ countDiffExpr <- function(objMOList, omic, batch, program = DESEQ2) {
 #' @examples
 #' # Generate example datasets
 #' rnaseq <- matrix(sample(0:100, 1000, replace = TRUE), nrow = 100, ncol = 10)
-#' rnaseqSGroupBy <- rep(c("A", "B"), each = 5)
+#' rownames(rnaseq) <- paste0("gene", 1:100)
+#' rnaseqGroupBy <- rep(c("A", "B"), each = 5)
 #' smallRNAseq <- matrix(sample(0:100, 500, replace = TRUE),
 #'   nrow = 100, ncol = 5
 #' )
-#' smallRNAseqSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#' smallRNAseqGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#' rownames(smallRNAseq) <- paste0("gene", 1:100)
 #' protein <- matrix(sample(0:100, 500, replace = TRUE), nrow = 100, ncol = 5)
-#' proteinSGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#' proteinGroupBy <- rep(c("A", "B"), each = 3)[1:5]
+#' rownames(protein) <- paste0("gene", 1:100)
 #'
 #' # Create a MOList object
 #' objMOList <- MOList(
-#'   RNAseq = rnaseq, RNAGroupBy = rnaseqSGroupBy,
-#'   smallRNAseq = smallRNAseq, smallRNAGroupBy = smallRNAseqSGroupBy,
-#'   proteomics = protein, proteomicsGroupBy = proteinSGroupBy
+#'   RNAseq = rnaseq, RNAGroupBy = rnaseqGroupBy,
+#'   smallRNAseq = smallRNAseq, smallRNAGroupBy = smallRNAseqGroupBy,
+#'   proteomics = protein, proteomicsGroupBy = proteinGroupBy
 #' )
 #'
 #' # Perform differential analysis

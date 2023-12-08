@@ -10,8 +10,12 @@
 [![License: GPL (\>=
 3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
 ![GitHub issues](https://img.shields.io/github/issues/j-y26/IntegraTRN)
+![R
+package](https://img.shields.io/github/r-package/v/j-y26/IntegraTRN?link=https%3A%2F%2Fgithub.com%2Fj-y26%2FIntegraTRN)
+![Docker
+Image](https://img.shields.io/docker/v/kirin26/integra_trn/v0.1.0?link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Fkirin26%2Fintegra_trn%2Fgeneral)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Description
@@ -52,9 +56,31 @@ devtools::install_github("j-y26/IntegraTRN", build_vignettes = TRUE)
 library("IntegraTRN")
 ```
 
-To run the shinyApp: `Under construction`
+To run the shinyApp:
+
+``` r
+runIntegraTRN()
+```
+
+A pre-built docker image based on Bioconductor release 3.18 is also
+available for one-step installation. To install the docker image, ensure
+that [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+has been installed on your computer. Then, run the following command in
+the terminal to setup and run the container:
+
+``` bash
+docker run -e PASSWORD=changeit \
+  -v ${pwd}:/home/rstudio/projects \
+  -p 8787:8787 kirin26/integra_trn:v0.1.0
+```
+
+In a browser, navigate to `[localhost:8787](http://localhost:8787)` and
+login with username `rstudio`.
 
 ## Overview
+
+To browse the available function and and data in the package, as well as
+the vignette tutorial, run the following commands in the R console:
 
 ``` r
 ls("package:IntegraTRN")
@@ -69,14 +95,19 @@ factor - gene regulatory network. The following is an overview of the
 functions in the package, in the order of use subjected to the types of
 omcis data available. `IntegraTRN` provides functions:
 
+#### Part 1 primarily consists of the following functionalities:
+
 1.  ***MOList*** for generating a `MOList` object that contains the
-    omics data and sample grouping information
+    omics data and sample grouping information; the singly responsible
+    function/object for handling all types of omics data
 2.  ***diffOmics*** for performing differential analysis on the omics
     data
 3.  ***annotateSmallRNA*** for annotating small RNA transcripts
-4.  ***plotVolcanoRNA*** for visualizing RNAseq differential expression
+4.  ***plotVolcano*** for visualizing differential expression results of
+    count-based omics data (RNAseq, small RNAseq, and proteomics) in the
+    form of volcano plots with up and down regulated genes highlighted
 5.  ***plotVolcanoSmallRNA*** for visualizing small RNAseq differential
-    expression
+    expression, highlighted by the type of small RNA
 6.  ***plotSmallRNAPCAs*** for visualizing small RNAseq principal
     component analysis for each type of small RNA
 7.  ***countPCA*** for general-purpose principal component analysis on
@@ -88,40 +119,99 @@ omcis data available. `IntegraTRN` provides functions:
 11. ***plotATACMotifHeatmap*** for visualizing the motif enrichment
     analysis as a heatmap comparing differentially enriched motifs
     between the two testing conditions
-12. ***matchSamplesRNAsmallRNA*** for matching the samples between
+12. ***exportDE***, a utility function for exporting the differential
+    expression results to a data frame
+13. ***as.data.frame***, a utility generic function for converting the
+    `PEAKTag` object to a data frame for easy manipulation
+14. ***asGRanges***, a utility generic function for converting the
+    `PEAKTag` object to a `GRanges` object for easy manipulation
+15. ***getRawData***, a utility function for easy access of the raw data
+    stored in the `MOList` object, which is an accessor function for the
+    `MOList` internal slots
+16. ***exportNormalizedCounts***, a utility function for exporting the
+    normalized counts after differential analysis
+17. ***DETag***, a utility function as a constructor for the `DETag`
+    object, useful for optimizing TRN construction workflow
+18. ***TOPTag***, a utility function as a constructor for the `TOPTag`
+    object, which inherits the `DETag` class with additional gene
+    selection criteria and ranking, useful for optimizing TRN
+    construction workflow
+19. ***PEAKTag***, a utility function as a constructor for the `PEAKTag`
+    object, which inherits the `DETag` class with specific peak
+    annotations, useful for optimizing TRN construction workflow
+
+#### Part 2 primarily consists of the following functionalities:
+
+20. ***matchSamplesRNAsmallRNA*** for matching the samples between
     RNAseq and small RNAseq data
-13. ***exportMatchResult*** for exporting the matching results to a data
+21. ***exportMatchResult*** for exporting the matching results to a data
     frame
-14. ***loadExtInteractions*** for loading external interaction data for
+22. ***loadExtInteractions*** for loading external interaction data for
     small RNA - gene and TF - gene interactions
-15. ***setOmicCutoffs*** for setting the cutoffs for differential
+23. ***setGene2Protein*** for setting the gene to protein name mapping
+24. ***setOmicCutoffs*** for setting the cutoffs for differential
     expression and accessibility used to filter the key elements in the
     TRN
-16. ***constructTRN*** for constructing the TRN
-17. ***plotNetwork*** for visualizing the TRN
-18. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN
+25. ***constructTRN*** for constructing the TRN
+26. ***plotNetwork*** for visualizing the TRN
+27. ***parseVertexMetadata*** for parsing the vertex metadata of the TRN
     to retrieve the key elements in the TRN
+28. ***exportEdgeSet***, a utility function for exporting the edge set
+    of the TRN
+29. ***exportIgraph***, a utility function for exporting an `igraph`
+    object of the TRN for further plot customization
+30. ***writeTRN***, a utility function for exporting the TRN to a file
+    in a compatible format for third-party network analysis softwares
+31. ***TRNet***, a utility function as a constructor for the `TRNet`
+    object, useful for optimizing TRN construction workflow if users
+    simply want to visualize a network without prior analysis
 
-The package also provides several datasets: - An RNAseq count matrix
+#### and finally integrating the two parts into a single workflow:
 
-- A small RNAseq count matrix coveting miRNA, tRNA, piRNA, snoRNA,
-  snRNA, and circRNA
+32. ***runIntegraTRN*** for running a shinyApp that integrates the two
+    parts into a user-friendly single workflow
 
-- A proteomics count matrix
+The package also provides several datasets: - An RNAseq count matrix:
+`RNAseq_heart`
 
-- Sample information for all above 3 omics data
+- A small RNAseq count matrix covering miRNA, tRNA, piRNA, snoRNA,
+  snRNA, and circRNA: `smallRNAseq_heart`
 
-- Two ATACseq peak files as raw data located in the `extdata` folder
+- A proteomics count matrix: `protein_heart`
 
-- An example miRNA-gene interaction dataset
+- Sample information for all above 3 omics data: `RNAseq_heart_samples`,
+  `smallRNAseq_heart_samples`, and `protein_heart_samples`
 
-- An example TF-gene interaction dataset
+- Two ATACseq peak files as raw data located in the `extdata` folder:
+  `peak1.bed` and `peak2.bed`
+
+- An example miRNA-gene interaction dataset: `miR2Genes`
+
+- An example TF-gene interaction dataset: `tf2Genes`
+
+- An example protein-gene name conversion information:
+  `proteinGeneIDConvert`
+
+- Position weight matrix (PWM) for vertebrate DNA binding motifs curated
+  by the JASPAR database 2022 release: `jasparVertebratePWM`
+
+- Small RNA type annotation for human small RNA transcripts:
+  `sncRNAAnnotation`
 
 - An example MOList object containing all types of omics data, but with
   a very light weight (100 genes only)
 
-Please refer to the package vignette for more details on these datasets
-illustrates the analysis pipeline of the package.
+Please refer to the package vignette
+`Integrating multi-omics for constructing transcriptional regulatory networks`
+for more details on these datasets and the illustration of the analysis
+pipeline.
+
+The package has also defined a set of key data structures, namely the S4
+classes `MOList`, `DETag`, `TOPTag`, `PEAKTag`, and `TRNet`. Please
+refer to the package vignette
+`Optimizing workflows for TRN construction` for more details on these
+data structures and how to use them effectively to extend the
+functionality of the package.
 
 An overview of the analysis pipeline is shown below:
 
@@ -138,8 +228,7 @@ The author of the package is Jielin Yang. The author defined all data
 structures used in this package, including the S4 classes `MOList`,
 `DETag`, `TOPTag`, `PEAKTag`, and `TRNet`. The author wrote the `MOList`
 function to construct the key data structure and performs validations on
-the input omics data. The package `GenomicTools.fileHandler` is used to
-read bed files. The function `diffOmics` performs differential
+the input omics data. The function `diffOmics` performs differential
 expression on RNAseq, small RNAseq, and proteomics data using a negative
 binomial model, which internally normalizes and performs differential
 analysis using the `DESeq2` or `edgeR` package. ATACseq peaks are
@@ -166,12 +255,22 @@ partially by the author’s discretion to generate a single coherent
 normalized expression matrix for both RNAseq and small RNAseq data that
 allows co-expression estimation. The inference of small RNA - gene
 interactions is performed by the `GENIE3` package, which internally uses
-a three-based algorithm to infer the interactions. The `igraph` package
-is used to visualize the TRN. Most data frame processing used internally
-in the functions is supported by the `dplyr` package. Generative AI tool
-was used to generate some unit test example data based on the author’s
-description. Generative AI results were incorporated into the tests at
-the author’s discretion.
+a three-based algorithm to infer the interactions. The author designed
+the method for predicted inference of small RNA - gene interactions
+based on two separate omic dataset. The `igraph` package is used to
+visualize the TRN, with interactive support provided by the `networkD3`
+package. Most data frame processing used internally in the functions is
+supported by the `dplyr` package. Generative AI tool was used to
+generate some unit test example data based on the author’s description.
+Generative AI results were incorporated into the tests at the author’s
+discretion. The packages `shiny`, `shinyBS`, and `DT` were used to
+implement with UI for the shinyApp. The author designed the shinyApp UI
+and logic and optimized the workflow for the shinyApp. In brief, with
+support of the above packages for separate functionalities, the author
+pioneered the analysis pipeline that integrates the different omics data
+and the logic for TRN inference and visualization with different levels
+of data integration. The author also pre-compile the package for the
+Docker image.
 
 ## References
 
@@ -233,6 +332,13 @@ Machlab, Dania, Lukas Burger, Charlotte Soneson, Filippo M Rijli, Dirk
 Schübeler, and Michael B Stadler. 2022. “monaLisa: An r/Bioconductor
 Package for Identifying Regulatory Motifs.” *Bioinformatics* 38 (9):
 2624–25.
+
+</div>
+
+<div id="ref-styler" class="csl-entry">
+
+Müller, Kirill, and Lorenz Walthert. 2023. *Styler: Non-Invasive Pretty
+Printing of r Code*. <https://CRAN.R-project.org/package=styler>.
 
 </div>
 

@@ -16,7 +16,7 @@ A list of 6 character vectors of small RNA
 }
 }
 \source{
-miRbase, piRNAbank, piRBase, GtRNAdb, circBase, GENCODE, and 
+miRbase, piRNAbank, piRBase, GtRNAdb, circBase, GENCODE, and
         piRNACluster
 }
 \usage{
