@@ -370,6 +370,46 @@ TRN. Here, the package focuses on creating a transcription factor - small RNA - 
 regulatory network. The following sections describe the role of each omics
 data in the TRN.
 
+#### Data preparation for TRN construction
+
+Before we begin, to more properly demonstrate the TRN construction workflow, we 
+will downsample the data to reduce the computational time. Here, we randomly
+select 500 genes from each of the omics data.
+
+```{r message = FALSE, warning=FALSE}
+set.seed(91711)
+# Count-based data
+RNAseq_heart <- RNAseq_heart[sample(nrow(RNAseq_heart), 500), ]
+smallRNAseq_heart <- smallRNAseq_heart[sample(nrow(smallRNAseq_heart), 500), ]
+protein_heart <- protein_heart[sample(nrow(protein_heart), 500), ]
+# Chromatin accessibility data
+peak1 <- read.table(atacPeak1Path, sep = "\t", header = FALSE)
+peak2 <- read.table(atacPeak2Path, sep = "\t", header = FALSE)
+peak1 <- peak1[sample(nrow(peak1), 500), ]
+peak2 <- peak2[sample(nrow(peak2), 500), ]
+set.seed(NULL)
+```
+
+We will then construct a **`MOList`** object using the downsampled data and
+perform differential analysis on each omics data.
+
+```{r message = FALSE, warning=FALSE}
+myMOList <- MOList(
+  RNAseq = RNAseq_heart,
+  RNAGroupBy = RNAseq_heart_samples$Age,
+  smallRNAseq = smallRNAseq_heart,
+  smallRNAGroupBy = smallRNAseq_heart_samples$Age,
+  proteomics = protein_heart,
+  proteomicsGroupBy = protein_heart_samples$Age,
+  ATACpeak1 = peak1,
+  ATACpeak2 = peak2
+)
+myMOList <- diffOmics(myMOList)
+```
+
+We will then begin discussing TRN construction with each component of the
+network starting from the targets of the regulatory interactions.
+
 ### Gene Expression
 
 The RNAseq data is the most commonly available omics data. In the case of a 
@@ -389,8 +429,15 @@ setOmicCutoffs(
 )
 ```
 
+Here, we specifically set the cutoffs for the RNAseq data. While the 
+**`setOmicCutoffs`** provides default cutoffs for other omics data, these 
+cutoffs are only considered if the selected data types are available.
+
 These parameters are directly correlated to the size of the network, and the
 which genes to be included defines the primary biological scope of the network.
+
+We will demonstrate the impact of these cutoffs on the TRN construction once
+we start to discuss regulators of the network.
 
 ### Protein Expression
 
@@ -465,6 +512,8 @@ degradation of the target mRNA or inhibiting the translation of the target mRNA.
 Small RNA data can come in two forms: small RNAseq data or miRNA-target
 interactions that are curated in third-party databases.
 
+#### Small RNAseq
+
 The benefit of small RNAseq data is that it provides a direct representation of
 the small RNA expression, which also cover multiple types of small RNAs. Most of
 them, except for miRNAs, are not well understood. However, they represent in 
@@ -479,13 +528,17 @@ patterns.
 With small RNAseq data, we can leverage all these tiny details to the package.
 
 ```{r message = FALSE}
+# Annotate the small RNAs
+myMOList <- annotateSmallRNA(myMOList, anno = "human")
+
 # Perform optimal matching between the RNAseq and small RNAseq data
 myMOList <- matchSamplesRNAsmallRNA(myMOList,
   sampleDFRNAseq = RNAseq_heart_samples,
   sampleDFSmallRNAseq = smallRNAseq_heart_samples
 )
+
 # Define a cutoff for RNAseq and small RNAseq
-omiCutoffs <- setOmicCutoffs(
+setOmicCutoffs(
   rnaAdjPval = 0.05,
   rnaLogFC = 0,
   rnaTopGenes = 0.2,
@@ -494,6 +547,8 @@ omiCutoffs <- setOmicCutoffs(
   smallRNATopGenes = 0.2
 )
 ```
+
+#### miRNA-target interactions
 
 On the other hand, miRNA-target interactions are curated from third-party
 databases. Since miRNAs have been well studied, the curated interactions has a
@@ -504,8 +559,86 @@ interest. Therefore, by providing the miRNA-target interactions, the package
 utilizes the differential expression analysis results and predicted miRNA
 expression to select the most relevant miRNA - mRNA interactions.
 
-To do so, we need to load the miRNA-target interactions into the **`MOList`**
-object.
+While fetching externally curated miRNA-target interactions is not a direct
+functionality of the package, it is straightforward as part of the pipeline.
+With the differential expression results, we can export a list of names of the
+target genes of interest, which are usually the inputs of most database
+searches.
+
+```{r message = FALSE, tidy=TRUE}
+geneList <- exportDE(myMOList$DERNAseq) %>% rownames()
+geneList[1:10]
+```
+
+Several databases are available for fetching miRNA-target interactions. For
+example, [**`miRNet`**](https://www.mirnet.ca/upload/GeneUploadView.xhtml) 
+[@chang2020mirnet] provides a comprehensive list of miRNA-target interactions
+with simply fetching using a list of target gene names. Similarly, additional
+databases such as [**`miRDB`**](https://mirdb.org/) [@chen2020mirdb] can also
+be searched, where users can integrate the results from multiple databases
+to obtain a more comprehensive, experimentally validated list of miRNA-target
+interactions.
+
+Alternatively, with a similar approach, we can also fetch the miRNA-target
+using differentially expressed miRNAs. This can be done by exporting the
+differentially expressed miRNAs and use them as input for the database search.
+
+```{r message = FALSE}
+smallRNAs <- getDESmallRNA(myMOList,
+                  padj = 0.05,
+                  log2fc = 0,
+                  type = "miRNA")
+head(smallRNAs, 5)
+```
+
+As an example, we use the **`multiMiR`** package to fetch the miRNA-target
+interactions from multiple databases.
+
+```{r message = FALSE, warning=FALSE, eval=FALSE}
+mir2geneMultiMiR <- multiMiR::get_multimir(
+  org = "hsa",
+  mirna = rownames(smallRNAs),
+  table   = 'validated',
+  summary = FALSE
+)
+mir2geneMultiMiR <- mir2geneMultiMiR@data
+```
+
+To avoid unnecessary database query, here we load an example of the results,
+where we randomly selected 500 interactions from the **`multiMiR`** results.
+
+```{r message = FALSE, warning=FALSE}
+data("mir2geneMultiMiR")
+```
+
+Since in the example data we used the `hsa` nomenclature for small RNAs and
+gene symbols for the target genes, we can extract only the information
+relevant to us.
+
+```{r message = FALSE, warning=FALSE}
+mir2geneMultiMiR <- mir2geneMultiMiR %>%
+  dplyr::select(mature_mirna_id, target_symbol) %>%
+  dplyr::rename(regulator = mature_mirna_id,
+                target = target_symbol)
+```
+
+We can then combine the regulatory interactions identified from the target gene
+centric approach and the miRNA centric approach.
+
+```{r message = FALSE, warning=FALSE}
+# Combine the two sets of interactions
+miR2Genes <- as.data.frame(miR2Genes)
+miR2Genes <- rbind(miR2Genes, mir2geneMultiMiR)
+
+# Remove any potential duplications across databases
+miR2Genes <- miR2Genes %>%
+  dplyr::distinct() %>%
+  as.list()
+```
+
+After obtaining a comprehensive list of miRNA-target interactions, we can then
+use the list to construct the TRN. To do so, we need to load the miRNA-target
+interactions into the **`MOList`** object.
 
 ```{r message = FALSE}
 myMOList <- loadExtInteractions(myMOList,
@@ -513,6 +646,83 @@ myMOList <- loadExtInteractions(myMOList,
 )
 ```
 
+#### TRN construction with different levels of biological scope
+
+As we have discussed earlier, the cutoffs for the RNAseq data as well as 
+whether to select genes that show consistent expression changes in 
+the transcriptomic and proteomic level are important factors that define the
+primary biological scope of the network. With the small RNA regulators available,
+we can visualize the impact of these cutoffs on the TRN construction.
+
+Let us define a less stringent cutoff first:
+
+```{r message = FALSE}
+omiCutoffs <- setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0,
+  rnaTopGenes = 0.5,
+  smallRNAAdjPval = 0.05,
+  smallRNALogFC = 0,
+  smallRNATopGenes = 0.5
+)
+```
+
+Without protein, the network we obtained is fairly large.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
+myTRN1 <- constructTRN(myMOList,
+  omiCutoffs = omiCutoffs,
+  useOmics = c("RNAseq", "smallRNAseq"),
+  targetDirection = "both"
+)
+plotNetwork(myTRN1)
+```
+
+Alternatively, we can enforce the network to only include genes that show
+consistent expression changes in both the transcriptomic and proteomic level.
+
+```{r message = FALSE}
+omiCutoffs <- setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0.1,
+  rnaTopGenes = 0.5,
+  smallRNAAdjPval = 0.05,
+  smallRNALogFC = 0,
+  smallRNATopGenes = 0.5,
+  proteomicsAdjPval = 0.05,
+  proteomicsLogFC = 0
+)
+```
+
+The network we obtained is much more stringent in explaining what are the most
+important regulations that directly explains the phenotypic changes between 
+the biological conditions of interests.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
+myTRN2 <- constructTRN(myMOList,
+  omiCutoffs = omiCutoffs,
+  useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
+  targetDirection = "both"
+)
+plotNetwork(myTRN2, interactive = TRUE)
+```
+
+Besides filtering the target genes, we can also limit our scope to the most
+important miRNA - target gene regulation. Since the biological function of
+miRNA are known, we could infer further biological insights from a 
+miRNA-target gene centric network.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
+myTRN3 <- constructTRN(myMOList,
+  omiCutoffs = omiCutoffs,
+  useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
+  targetDirection = "both",
+  smallRNAtypes = "miRNA"
+)
+plotNetwork(myTRN3, interactive = TRUE)
+```
+
+Interestingly, we can easily identify modules at this level of biological scope.
 
 ### Chromatin Accessibility and Transcription Factor Binding
 
