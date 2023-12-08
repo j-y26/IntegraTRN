@@ -22,6 +22,8 @@ Suggests:
     BSgenome,
     BSgenome.Hsapiens.UCSC.hg38,
     BSgenome.Mmusculus.UCSC.mm10,
+    circlize,
+    ComplexHeatmap,
     doParallel,
     doRNG,
     ggpubr (>= 0.6.0),
