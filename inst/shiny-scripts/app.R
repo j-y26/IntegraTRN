@@ -24,9 +24,9 @@ HSAPIENS <- "Human (hg38)" # species + assembly to support multiple assemblies
 MMUSCULUS <- "Mouse (mm10)"
 CHROMINFO <- c("chr", "start", "end")
 NETWORK_FORMAT <- c(
-      "edgelist", "pajek", "ncol", "lgl", "graphml",
-      "dimacs", "gml", "dot", "leda"
-    )
+  "edgelist", "pajek", "ncol", "lgl", "graphml",
+  "dimacs", "gml", "dot", "leda"
+)
 
 # input data names
 INPUT_LIST <- list(
@@ -3397,11 +3397,13 @@ server <- function(input, output, session) {
               paste("network_", Sys.Date(), ".", networkFormat(), sep = "")
             },
             content = function(file) {
-              tempfile <- tempfile(fileext = paste(".", 
-                                                   networkFormat(), sep = ""))
+              tempfile <- tempfile(fileext = paste(".",
+                networkFormat(),
+                sep = ""
+              ))
               writeTRN(trNet, file = tempfile, format = networkFormat())
               file.copy(tempfile, file)
-              unlink(tempfile)  # clean up to delete the temp file
+              unlink(tempfile) # clean up to delete the temp file
             }
           )
 

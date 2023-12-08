@@ -38,6 +38,9 @@ if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
 if (!requireNamespace("circlize", quietly = TRUE)) {
   install.packages("circlize")
 }
+if (!requireNamespace("multiMiR", quietly = TRUE)) {
+  BiocManager::install("multiMiR")
+}
 ```
 
 ## Introduction
@@ -199,7 +202,7 @@ what we consider to be the "top" differentially expressed genes. For example,
 we can retrieve the top 20 differentially expressed genes with any fold change, 
 with an adjusted p-value less than 0.05 considered to be significant.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, warning=FALSE}
 myRNATOPTag <- TOPTag(myRNADETag,
   pCutoff = 0.05,
   logFCCutoff = 0,
@@ -248,7 +251,7 @@ perform ranking while not filtering any genes. This can be done by setting a
 non-selective cutoff. Here, a `topGenes = 1` means that we are selecting all
 genes that satisfy the cutoffs.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message = FALSE, warning=FALSE}
 rankedResult <- TOPTag(myRNADETag,
   pCutoff = 1,
   logFCCutoff = 0,
@@ -585,9 +588,10 @@ differentially expressed miRNAs and use them as input for the database search.
 
 ```{r message = FALSE}
 smallRNAs <- getDESmallRNA(myMOList,
-                  padj = 0.05,
-                  log2fc = 0,
-                  type = "miRNA")
+  padj = 0.05,
+  log2fc = 0,
+  type = "miRNA"
+)
 head(smallRNAs, 5)
 ```
 
@@ -598,7 +602,7 @@ interactions from multiple databases.
 mir2geneMultiMiR <- multiMiR::get_multimir(
   org = "hsa",
   mirna = rownames(smallRNAs),
-  table   = 'validated',
+  table = "validated",
   summary = FALSE
 )
 mir2geneMultiMiR <- mir2geneMultiMiR@data
@@ -618,8 +622,10 @@ relevant to us.
 ```{r message = FALSE, warning=FALSE}
 mir2geneMultiMiR <- mir2geneMultiMiR %>%
   dplyr::select(mature_mirna_id, target_symbol) %>%
-  dplyr::rename(regulator = mature_mirna_id,
-                target = target_symbol)
+  dplyr::rename(
+    regulator = mature_mirna_id,
+    target = target_symbol
+  )
 ```
 
 We can then combine the regulatory interactions identified from the target gene
@@ -667,14 +673,20 @@ omiCutoffs <- setOmicCutoffs(
 )
 ```
 
-Without protein, the network we obtained is fairly large.
+Let's construct the TRN without considering the protein expression.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 myTRN1 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq"),
   targetDirection = "both"
 )
+```
+
+Without protein, the network we obtained is fairly large and complicated to
+interpret.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
 plotNetwork(myTRN1)
 ```
 
@@ -698,12 +710,17 @@ The network we obtained is much more stringent in explaining what are the most
 important regulations that directly explains the phenotypic changes between 
 the biological conditions of interests.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 myTRN2 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
   targetDirection = "both"
 )
+```
+
+Let's see the network.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
 plotNetwork(myTRN2, interactive = TRUE)
 ```
 
@@ -712,13 +729,18 @@ important miRNA - target gene regulation. Since the biological function of
 miRNA are known, we could infer further biological insights from a 
 miRNA-target gene centric network.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
+```{r message = FALSE, warning=FALSE, echo=FALSE}
 myTRN3 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
   targetDirection = "both",
   smallRNAtypes = "miRNA"
 )
+```
+
+Let's see the network.
+
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
 plotNetwork(myTRN3, interactive = TRUE)
 ```
 
@@ -746,6 +768,15 @@ myMOList <- loadExtInteractions(myMOList,
   tf2Genes = tf2Genes
 )
 ```
+
+The logic behind integrating ATACseq with TF-target interactions is similar to
+that of integrating small RNAseq with miRNA-target interactions. However, 
+instead of using tree-based classifier to predict the regulatory interactions
+between RNAseq and small RNAseq, ATACseq data alone is sufficient to identify
+enriched transcription factor motifs. Therefore, with the background of the 
+curated TF-target interactions, we can isolate the differentially enriched
+motifs from the biological conditions and extract regulatory interactions that
+are relevant to the biological process of interest.
 
 ### Summary of the TRN construction workflow
 

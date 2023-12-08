@@ -42,11 +42,14 @@ data(expMOList)
 # Retrieve all differentially expressed small RNAs
 getDESmallRNA(expMOList)
 # or alternatively, specify all the parameters
-getDESmallRNA(expMOList, 
-              padj = 0.05, 
-              log2fc = 0, 
-              type = c("miRNA", "piRNA", "tRNA", 
-                       "circRNA", "snRNA", "snoRNA"))
+getDESmallRNA(expMOList,
+  padj = 0.05,
+  log2fc = 0,
+  type = c(
+    "miRNA", "piRNA", "tRNA",
+    "circRNA", "snRNA", "snoRNA"
+  )
+)
 
 # Example 2: Retrieve differentially expressed miRNAs with default cutoffs
 getDESmallRNA(expMOList, type = "miRNA")

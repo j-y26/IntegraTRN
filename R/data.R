@@ -341,4 +341,41 @@
 #' }
 "sncRNAAnnotation"
 
+#' Example miRNA - mRNA interactions obtained with miRNA-centric approach
+#'
+#' A data frame containing the miRNA-target interactions obtained with the
+#' miRNA-centric approach. A list of microRNAs are queried against the
+#' miRecords, miRTarBase, and TarBase databases. 500 interactions are
+#' randomly selected.
+#'
+#' @format A data frame with 500 rows (interactions) and 10 columns (fields)
+#' \describe{
+#' \item{database}{the database where the interaction is found}
+#' \item{mature_mirna_acc}{the accession number of the mature miRNA}
+#' \item{mature_mirna_id}{the ID of the mature miRNA}
+#' \item{target_symbol}{the gene symbol of the target gene}
+#' \item{target_entrez}{the Entrez ID of the target gene}
+#' \item{target_ensembl}{the Ensembl ID of the target gene}
+#' \item{experiment}{the experiment that detected the interaction}
+#' \item{support_type}{the type of support for the interaction}
+#' \item{pubmed_id}{the PubMed ID of the publication where the interaction is
+#'                reported}
+#' \item{type}{the type of interaction, validated or not}
+#'
+#' @source miRecords, miRTarBase, and TarBase databases
+#'
+#' @references
+#' \insertRef{xiao2009mirecords}{IntegraTRN}
+#'
+#' \insertRef{huang2020mirtarbase}{IntegraTRN}
+#'
+#' \insertRef{karagkouni2018diana}{IntegraTRN}
+#'
+#' @examples
+#' \dontrun{
+#' mir2geneMultiMiR
+#' }
+#'
+"mir2geneMultiMiR"
+
 # [END]

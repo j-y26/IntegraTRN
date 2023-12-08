@@ -300,13 +300,13 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
 }
 
 #' Retrieve differentially expressed small RNAs with specified types
-#' 
+#'
 #' @description This function retrieves differentially expressed small RNAs
 #'              based on user-specified criteria. The criteria include the
 #'              following: 1. adjusted p-value; 2. log2 fold change; 3. small
 #'              RNA type. The function will return a data frame containing the
 #'              differentially expressed small RNAs that meet the criteria.
-#' 
+#'
 #' @param objMOList A object of class MOList
 #' @param padj A numeric value indicating the adjusted p-value threshold.
 #'             Default is 0.05.
@@ -314,53 +314,62 @@ annotateSmallRNA <- function(objMOList, anno = "human") {
 #'               Default is 0.
 #' @param type A character vector indicating the small RNA types to be
 #'             retrieved. The default is all small RNA types.
-#' 
+#'
 #' @return A data frame containing the differentially expressed small RNAs
 #'         that meet the criteria.
-#' 
+#'
 #' @importFrom dplyr %>% filter pull
-#' 
+#'
 #' @references
 #' \insertRef{dplyr}{IntegraTRN}
-#' 
+#'
 #' @export
-#' 
+#'
 #' @examples
 #' # Example 1: Retrieve all differentially expressed small RNAs
 #' # Use the package provided example data
 #' data(expMOList)
-#' 
+#'
 #' # Retrieve all differentially expressed small RNAs
 #' getDESmallRNA(expMOList)
 #' # or alternatively, specify all the parameters
-#' getDESmallRNA(expMOList, 
-#'               padj = 0.05, 
-#'               log2fc = 0, 
-#'               type = c("miRNA", "piRNA", "tRNA", 
-#'                        "circRNA", "snRNA", "snoRNA"))
-#' 
+#' getDESmallRNA(expMOList,
+#'   padj = 0.05,
+#'   log2fc = 0,
+#'   type = c(
+#'     "miRNA", "piRNA", "tRNA",
+#'     "circRNA", "snRNA", "snoRNA"
+#'   )
+#' )
+#'
 #' # Example 2: Retrieve differentially expressed miRNAs with default cutoffs
 #' getDESmallRNA(expMOList, type = "miRNA")
-#' 
+#'
 getDESmallRNA <- function(objMOList,
                           padj = 0.05,
                           log2fc = 0,
-                          type = c("miRNA", "piRNA", "tRNA", 
-                                   "circRNA", "snRNA", "snoRNA")) {
+                          type = c(
+                            "miRNA", "piRNA", "tRNA",
+                            "circRNA", "snRNA", "snoRNA"
+                          )) {
   # Check both differential expression and annotation exist
   if (is.null(objMOList$DEsmallRNAseq)) {
-    stop(paste0("Differential expression analysis has not been performed. ",
-                "Please perform differential expression analysis first."))
+    stop(paste0(
+      "Differential expression analysis has not been performed. ",
+      "Please perform differential expression analysis first."
+    ))
   } else if (is.null(objMOList$annoSncRNA)) {
     stop("No annotation exist. Please annotate the small RNAs first.")
   } else {
     # Continue
   }
-  
+
   # Check that type is valid
   if (!all(type %in% SMALLRNA_CATEGORIES)) {
-    stop(paste0("Invalid small RNA type. Please use one of the following: ",
-                paste(SMALLRNA_CATEGORIES, collapse = ", ")))
+    stop(paste0(
+      "Invalid small RNA type. Please use one of the following: ",
+      paste(SMALLRNA_CATEGORIES, collapse = ", ")
+    ))
   } else {
     # Continue
   }
@@ -378,7 +387,7 @@ getDESmallRNA <- function(objMOList,
     exportDE() %>%
     dplyr::mutate(transcriptType = findGeneType(rownames(.), anno)) %>%
     dplyr::filter(transcriptType %in% type)
-  
+
   return(deSmallRNA)
 }
 

@@ -30,6 +30,7 @@ Suggests:
     ggrepel,
     JASPAR2022,
     knitr,
+    multiMiR,
     org.Hs.eg.db,
     org.Mm.eg.db,
     RColorBrewer,
