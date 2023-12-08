@@ -513,10 +513,14 @@ setGeneric(
 setMethod(
   "writeTRN", "TRNet",
   function(trn, file, format = "graphml") {
-    if (! format %in% c("edgelist", "pajek", "ncol", "lgl", "graphml",
-                        "dimacs", "gml", "dot", "leda")) {
-      stop("Unsupported file format. Should be one of the following: ",
-           "edgelist, pajek, ncol, lgl, graphml, dimacs, gml, dot, leda")
+    if (!format %in% c(
+      "edgelist", "pajek", "ncol", "lgl", "graphml",
+      "dimacs", "gml", "dot", "leda"
+    )) {
+      stop(
+        "Unsupported file format. Should be one of the following: ",
+        "edgelist, pajek, ncol, lgl, graphml, dimacs, gml, dot, leda"
+      )
     } else {
       # Do nothing
     }

@@ -1,0 +1,559 @@
+---
+title: "Optimizing workflows for TRN construction"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Optimizing workflows for TRN construction}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
+nocite: |
+  @chang2020mirnet, @villanueva2019ggplot2, @dplyr
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE, warning=FALSE}
+# Load the package
+library(IntegraTRN)
+library(dplyr)
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# Since devtools does not install the vignette dependencies, we need to install
+# these Suggested packages manually
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
+  BiocManager::install("ComplexHeatmap")
+}
+if (!requireNamespace("circlize", quietly = TRUE)) {
+  install.packages("circlize")
+}
+```
+
+## Introduction
+
+Integrating multi-omics data is a powerful approach to understand the complex
+regulatory mechanisms that govern biological processes. Unlike most existing
+methods that focus on a single type of omics data, incorporating multiple omics
+data provides a more solid biological foundation for deciphering the key
+regulatory interactions that are involved in the biological process of interest.
+However, the analysis of multi-omics data is not trivial. In particular, the
+logic behind the workflow given different availability of the omics data 
+remains complicated.
+
+Here, in this vignette tutorial, we will demonstrate how to utilize the
+functionalities of the **`IntegraTRN`** package to optimize the workflow for
+constructing a transcriptional regulatory network (TRN) using multi-omics data.
+This vignette will also discusses the logic behind the workflow, informing the
+user of their options when constructing a TRN.
+
+We will cover the following topics:
+
+- Customizing the differential analysis of omics data
+  
+- TRN construction with different data availability
+
+A basic workflow of the **`IntegraTRN`** package has been demonstrated in the
+vignette 
+`Integrating multi-omics for constructing transcriptional regulatory networks`.
+It is highly recommended that users explore the basic workflow first before
+moving on to this vignette.
+
+See `help(package = "IntegraTRN")` for more information about the package and
+`citation("IntegraTRN")` for how to cite the package.
+
+## Data preparation
+
+The package has provided datasets for demonstration purposes. The datasets are
+fully simulated or partially simulated based on real data [@adar2023integrate]. 
+Here is an overview of the basic omics data used in this vignette:
+
+```{r message = FALSE, tidy=TRUE}
+data("RNAseq_heart") # RNAseq count matrix
+data("RNAseq_heart_samples") # RNAseq sample information
+data("smallRNAseq_heart") # small RNAseq count matrix
+data("smallRNAseq_heart_samples") # small RNAseq sample information
+data("protein_heart", package = "IntegraTRN") # Proteomics count matrix
+data("protein_heart_samples", package = "IntegraTRN") # Proteomics sample information
+data("miR2Genes", package = "IntegraTRN") # miRNA-target interactions, externally curated
+data("tf2Genes", package = "IntegraTRN") # TF-target interactions, externally curated
+data("proteinGeneIDConvert", package = "IntegraTRN") # Protein ID conversion table
+```
+
+Please use `?<dataset>` to see the details of each dataset.
+
+ATACseq data are separately provided as peak files. The peak files are in the
+BED format, which is a tab-delimited file format for genomic features. The BED
+files can be located in the **`extdata`** folder of the package.
+
+```{r message = FALSE, tidy=TRUE}
+atacPeak1Path <- system.file("extdata", "peak1.bed", package = "IntegraTRN")
+atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
+```
+
+Let us now begin different ways for optimizing our analytical workflow.
+
+## Customizing the differential analysis of omics data
+
+A key component of the package is the data structures it provides. The following
+are a list of the key S4 classes:
+
+- **`MOList`**: An **`MOList`** object is singly responsible for storing all the
+  omics data and the results of each step of the analysis. While the raw data
+  of each omic type are stored internally in the slots, all analysis results
+  are kept as list elements that allow easy subsetting and extraction. By 
+  exploiting this feature, we can customize our analysis by extracting and 
+  manipulating the results of the analysis.
+
+- **`DETag`**: A **`DETag`** object is the core S4 class that stores the results
+  of the differential expression analysis. It provides the users with a
+  composite structure for exploring the results of the analysis.
+
+- **`TOPTag`**: A **`TOPTag`** object is a subclass of the **`DETag`** object. 
+  Unlike the **`DETag`** object, the **`TOPtag`** object further limits the
+  results to a subset of genes that we are interested in. It this provides an
+  user-friendly interface for filtering and ranking top differentially expressed
+  genes/transcripts.
+
+- **`PEAKTag`**: Similar to **`TOPTag`**, a **`PEAKTag`** object is also a 
+  subclass of the **`DETag`** object. However, it is specifically designed for
+  handling peak annotation and motif enrichment analysis.
+
+- **`TRNet`**: Finally, as the final component of the traditional workflow, a
+  **`TRNet`** object is the core S4 class that stores the final TRN. Although 
+  itself operates as a data storage object, it can be easily integrated with
+  any third-party tools for further topological analysis or customized network
+  visualization.
+
+Let us begin with the first step of the analysis pipeline, which is to perform
+differential analysis on each omics data separately. We begin by exploring how
+these data structures facilitate flexible and detailed analysis of the results.
+
+### Exploring the results of the differential analysis
+
+We will first construct a **`MOList`** object using the data we have prepared.
+We consider the age of the samples as the grouping criteria for the differential
+analysis.
+
+```{r warning=FALSE}
+myMOList <- MOList(
+  RNAseq = RNAseq_heart,
+  RNAGroupBy = RNAseq_heart_samples$Age,
+  smallRNAseq = smallRNAseq_heart,
+  smallRNAGroupBy = smallRNAseq_heart_samples$Age,
+  proteomics = protein_heart,
+  proteomicsGroupBy = protein_heart_samples$Age,
+  ATACpeak1 = atacPeak1Path,
+  ATACpeak2 = atacPeak2Path
+)
+```
+
+With the package's one-step differential analysis function, we can easily
+explore the results of the differential analysis.
+
+```{r message = FALSE, tidy=TRUE}
+myMOList <- diffOmics(myMOList, program = "edgeR")
+```
+
+In the **`IntegraTRN`** package, several visualization methods are provided to
+explore the results of the differential analysis. These visualization methods
+are highly efficient in generating a overview of the results, allowing users to
+quickly identify the key changes that happen during the biological process.
+However, as biologists who generated the data, we may be interested in some
+particular aspects of the results. Therefore, we can further customize our
+experience by performing easy extraction of the results.
+
+To obtain the **`DETag`** object for a particular omics data, we can simply
+subset the **`MOList`** object using the name of the omics data. For example, to
+retrieve differential analysis result of the RNAseq data:
+
+```{r message = FALSE, tidy=TRUE}
+myRNADETag <- myMOList$DERNAseq
+```
+
+would work just fine. The **`DETag`** class has implemented several methods
+for users to easily extract the results. For example, we can directly export
+the results as a data frame using the **`exportDE`** function.
+
+```{r message = FALSE, tidy=TRUE}
+exportDE(myRNADETag) %>% head(5)
+```
+
+Furthermore, in certain conditions, such as generating a heatmap, we may want
+to explore only the differentially expressed genes as well as a normalized
+count matrix for visualization purposes. Besides subsetting the data frame 
+returned by the **`exportDE`** function, we can also further utilize the 
+functionality of its subclass, the **`TOPTag`** object. As the name suggests,
+the **`TOP`** part implies that we could easily perform filtering to obtain
+what we consider to be the "top" differentially expressed genes. For example,
+we can retrieve the top 20 differentially expressed genes with any fold change, 
+with an adjusted p-value less than 0.05 considered to be significant.
+
+```{r message = FALSE, tidy=TRUE}
+myRNATOPTag <- TOPTag(myRNADETag,
+  pCutoff = 0.05,
+  logFCCutoff = 0,
+  topGenes = 20,
+  direction = "both"
+)
+```
+
+Similarly, we can also export the results as a data frame. Furthermore, we can
+see that a ranking based on piValue is also provided.
+
+```{r message = FALSE, tidy=TRUE}
+exportDE(myRNATOPTag) %>% head(5)
+```
+
+In case where we want to obtain a normalized count matrix for visualization,
+such as when plotting a heatmap, we can also do so by a simple function call.
+
+```{r message = FALSE, tidy=TRUE}
+topRNANormCounts <- exportNormalizedCounts(myRNATOPTag)
+```
+
+We can then make a heatmap using the **`ComplexHeatmap`** package.
+
+```{r message = FALSE, fig.align='center', fig.width=6, fig.height=6, fig.cap="Figure 1. Heatmap of top 20 differentially expressed genes" }
+heatmapMatrix <- topRNANormCounts %>%
+  as.matrix() %>%
+  t() %>%
+  scale() %>%
+  t()
+exprRange <- range(heatmapMatrix)
+col <- circlize::colorRamp2(
+  c(exprRange[1], 0, exprRange[2]),
+  c("blue", "white", "red")
+)
+ComplexHeatmap::Heatmap(heatmapMatrix,
+  col = col,
+  show_column_names = FALSE
+)
+```
+
+Similarly, we can use the list of selected genes to perform gene set enrichment
+analysis (GSEA) [@reimand2019pathway]. While a rank based GSEA analysis utilizes
+all available genes, we can again utilize the **`TOPTag`** constructor to
+perform ranking while not filtering any genes. This can be done by setting a 
+non-selective cutoff. Here, a `topGenes = 1` means that we are selecting all
+genes that satisfy the cutoffs.
+
+```{r message = FALSE, tidy=TRUE}
+rankedResult <- TOPTag(myRNADETag,
+  pCutoff = 1,
+  logFCCutoff = 0,
+  topGenes = 1,
+  direction = "both"
+) %>% exportDE()
+```
+
+This can then be used by the users as import to the GSEA analysis.
+
+### Alternative differential analysis methods
+
+For most highly controlled experiments, the differential analysis
+between two conditions is fairly straightforward. However, in certain cases,
+especially for patient-derived samples, a much higher biological variability
+may be observed. How could we handle such variability? With the **`DETag`**
+class and the list behavior of the **`MOList`** object, this has been made
+possible.
+
+In the following section, we will explore an alternative differential analysis
+with multiple covariates. However, any alternative differential expression
+analysis can be performed at the user's discretion, and the results can be
+easily integrated into the **`MOList`** object.
+
+In the case of a population-based cohort, many attributes could be contributing
+to the biological variability. In our example, we can see that the following
+attributes are available:
+
+```{r message = FALSE, tidy=TRUE}
+colnames(RNAseq_heart_samples)
+```
+
+In this case, in the differential expression analysis, we can adjust for both
+sex and the batch effect. Again, we use the **`edgeR`** package for the
+differential expression analysis.
+
+```{r message = FALSE, warning=FALSE}
+# Create the edgeR DGEList object
+dgeList <- edgeR::DGEList(
+  counts = RNAseq_heart,
+  group = RNAseq_heart_samples$Age
+)
+# Filter lowly expressed genes
+keep <- edgeR::filterByExpr(dgeList)
+dgeList <- dgeList[keep, ]
+# Perform differential expression analysis
+design <- model.matrix(~ RNAseq_heart_samples$Age +
+  RNAseq_heart_samples$Sex +
+  RNAseq_heart_samples$Batch)
+dgeList <- edgeR::calcNormFactors(dgeList, method = "TMM") # or a compatible method
+dgeList <- edgeR::estimateDisp(dgeList, design)
+fit <- edgeR::glmQLFit(dgeList, design) # or other suitable models
+qlf <- edgeR::glmQLFTest(fit, coef = ncol(RNAseq_heart_samples))
+```
+
+With complex designs, the performance of user-defined differential expression
+analysis may be better than the one-step differential expression analysis
+provided by the **`IntegraTRN`** package. As we have obtained the results of
+the differential expression analysis, integrating the results back into the
+**`MOList`** object is fairly straightforward.
+
+To do so, we need to construct a **`DETag`** object. The core component of the
+**`DETag`** object is a result data frame, as the original output of **`edgeR`**
+or **`DESeq2`**. Additionally is a normalized count matrix.
+
+```{r message = FALSE, tidy=TRUE}
+# Obtaining the DE results and normalized count
+deResult <- edgeR::topTags(qlf, n = nrow(dgeList)) %>% as.data.frame()
+normCounts <- edgeR::cpm(dgeList) %>% as.matrix()
+
+# Construct the DETag object
+myNewRNADETag <- DETag(
+  DEResult = deResult,
+  method = "edgeR",
+  normalizedCounts = normCounts
+)
+```
+
+With the **`DETag`** object, we can then integrate the results back into the
+**`MOList`** object. 
+
+```{r message = FALSE, tidy=TRUE}
+myMOList$DERNAseq <- myNewRNADETag
+```
+
+This would further allow us to perform downstream analysis using the customized
+differential expression results.
+
+For the purpose of this specific example, we will not replace the original
+analysis results.
+
+While we have demonstrated the flexibility of the **`IntegraTRN`** package in
+case of the RNAseq data, other omics data can be handled in the same way. With
+these flexibility, we can not only explore the differential analysis results
+in a more detailed manner, but also customize the analysis that are specific to
+our data and biological question of interest.
+
+## TRN construction with different data availability
+
+Once we have optimize the first part of the analysis pipeline, we can then move
+on to the second part, which is to construct the TRN. In this section, we will
+discuss how the workflow is impacted by the availability of the omics data,
+and how users can make use of their best judgement select the most appropriate
+workflow.
+
+### Overview of multi-omics network construction
+
+In a simplistic way, network construction by integrating multiple
+omics data is a process of intersecting the regulatory interactions that are
+determined to be biologically relevant to the condition of interest. Having more
+omics data provided, the analytical workflow of the **`IntegraTRN`** package
+could identify the most relevant regulatory interactions with much higher
+confidence. However, the availability of the omics data is not always guaranteed.
+Therefore, the package take different approaches to handle different scenarios.
+
+In the following sections, we will discuss the contribution of each data type to 
+the TRN construction, and how the workflow make use of the data to construct the
+TRN. Here, the package focuses on creating a transcription factor - small RNA - mRNA
+regulatory network. The following sections describe the role of each omics
+data in the TRN.
+
+### Gene Expression
+
+The RNAseq data is the most commonly available omics data. In the case of a 
+transcriptional regulatory network, the RNAseq data is the most direct
+representation of the transcriptional activity. Therefore, the network employs
+differentially expressed genes (DEGs) as the regulatory targets of the TRN.
+
+When setting the cutoffs for constructing the TRN, there are several cutoffs to 
+consider. These include the fold change, the adjusted p-value, the top number of
+genes, and the direction of the change.
+
+```{r message = FALSE}
+setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0.1,
+  rnaTopGenes = 200
+)
+```
+
+These parameters are directly correlated to the size of the network, and the
+which genes to be included defines the primary biological scope of the network.
+
+### Protein Expression
+
+Similar to the RNAseq data, the proteomics data is also a direct representation
+of the transcriptional activity. However, proteomics provides a much more
+biologically relevant representation of the transcriptional activity, since
+the protein level remains a downstream product of the transcriptional and
+post-transcriptional regulation.
+
+Therefore, the proteomics data are used to further filter the DEGs obtained
+from the RNAseq data to extract the phenotypically relevant genes. However, an
+interesting limitation of proteomics experiments is that protein coverage is
+heavily affected by the sample quality as well as the technology used to 
+perform the experiment. Therefore, during prior exploratory analysis, we may
+fine-tune the cutoffs for the proteomics data to obtain the most relevant
+while minimizing the loss of information due to technical limitations.
+
+For example, when protein coverage is quite high, we could employ a regular 
+cutoff. Here, we limit the network to include only target genes that shows
+consistent expression changes in both the transcriptomic and proteomic level.
+
+```{r}
+setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0.1,
+  rnaTopGenes = 200,
+  proteomicsAdjPval = 0.05,
+  proteomicsLogFC = 0
+)
+```
+
+However, what if our proteomics experiment did not went very well? Are those data
+still useful? The answer depends on the biological question of interest. If we
+have identified our proteins of interest in the proteomics data, we can still
+construct the network using both the RNAseq and proteomics data. However, 
+the low coverage may negatively impact the differential analysis. We can either
+customize the differential analysis to be more sensitive to the proteomics data,
+or we can select genes shows consistent direction of change with the proteins.
+
+```{r}
+setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0.1,
+  rnaTopGenes = 200,
+  proteomicsAdjPval = 1,
+  proteomicsLogFC = 0
+)
+```
+
+For integrative use of the proteomics and RNAseq data, we need to make sure that
+a correct conversion between the protein IDs and the gene IDs are available. 
+This can be done by providing a data frame that contains the conversion table.
+
+```{r message = FALSE}
+myMOList <- setGene2Protein(myMOList, proteinGeneIDConvert)
+```
+
+Setting the conversion can be done any time before the TRN construction.
+
+Since the TRN is a TF - small RNA - mRNA network, having only the mRNA targets
+are unable to obtain any valid regulatory relationships. Therefore, the TRN
+construction requires at least one of the other data types to be available.
+
+### Small RNA Expression
+
+One of the key post-transcriptional regulatory mechanisms is the small RNA
+regulation. In particular, microRNAs (miRNAs) are the most well-studied small
+RNAs. Their regulatory mechanism is well understood, and they are known to be
+negatively regulating the expression of their target genes by facilitating
+degradation of the target mRNA or inhibiting the translation of the target mRNA.
+
+Small RNA data can come in two forms: small RNAseq data or miRNA-target
+interactions that are curated in third-party databases.
+
+The benefit of small RNAseq data is that it provides a direct representation of
+the small RNA expression, which also cover multiple types of small RNAs. Most of
+them, except for miRNAs, are not well understood. However, they represent in 
+very high abundance in the cell, and may play a role in the regulation of the
+transcriptome. Therefore, the small RNAseq data relies on predicted inference of
+the small RNA - mRNA interactions. Using the normalized count matrix of the
+RNAseq and the small RNAseq data, the package performs optimal pair matching
+between the two datasets and utilize a random-forest based classifier to predict
+and select the top small RNA - mRNA interactions based on their expression
+patterns.
+
+With small RNAseq data, we can leverage all these tiny details to the package.
+
+```{r message = FALSE}
+# Perform optimal matching between the RNAseq and small RNAseq data
+myMOList <- matchSamplesRNAsmallRNA(myMOList,
+  sampleDFRNAseq = RNAseq_heart_samples,
+  sampleDFSmallRNAseq = smallRNAseq_heart_samples
+)
+# Define a cutoff for RNAseq and small RNAseq
+omiCutoffs <- setOmicCutoffs(
+  rnaAdjPval = 0.05,
+  rnaLogFC = 0,
+  rnaTopGenes = 0.2,
+  smallRNAAdjPval = 0.05,
+  smallRNALogFC = 0,
+  smallRNATopGenes = 0.2
+)
+```
+
+On the other hand, miRNA-target interactions are curated from third-party
+databases. Since miRNAs have been well studied, the curated interactions has a
+broad coverage of the miRNA - mRNA interactions that have been experimentally
+validated. However, these interactions are not necessarily relevant to the
+biological process of interest, or not even related to the tissue/cell type of
+interest. Therefore, by providing the miRNA-target interactions, the package
+utilizes the differential expression analysis results and predicted miRNA
+expression to select the most relevant miRNA - mRNA interactions.
+
+To do so, we need to load the miRNA-target interactions into the **`MOList`**
+object.
+
+```{r message = FALSE}
+myMOList <- loadExtInteractions(myMOList,
+  miR2Genes = miR2Genes
+)
+```
+
+
+### Chromatin Accessibility and Transcription Factor Binding
+
+The chromatin accessibility data is a direct representation of the transcription
+factor (TF) binding. Therefore, the chromatin accessibility data is used to
+further construct the TRN by selecting the TFs that are found to be
+differentially enriched across the conditions of interest.
+
+ATACseq data is used in conjunction with the TF-target interactions to construct
+the TRN. Similar to the curated miRNA-target interactions, the TF-target
+also face limitations in terms of relevance to the biological process of
+interest. Therefore, the package utilizes the differential accessibility
+analysis with motif enrichment analysis to select the most relevant 
+TF - target interactions.
+
+To do so, we need to load the TF-target interactions into the **`MOList`**
+object.
+
+```{r message = FALSE}
+myMOList <- loadExtInteractions(myMOList,
+  tf2Genes = tf2Genes
+)
+```
+
+### Summary of the TRN construction workflow
+
+In general, the construction of the TRN is a process of intersecting the
+regulatory interactions that are determined to be biologically relevant to the
+condition of interest. The workflow of the **`IntegraTRN`** package is designed
+to be flexible to accommodate different availability of the omics data. However,
+with the ease of obtaining externally curated interactions, it is highly 
+recommended that users utilize public databases to obtain a comprehensive list
+of interactions to establish a global context. Then, the package can be used to
+select the most relevant interactions to the biological process of interest.
+
+## References
+
+<div id="refs"></div>
+
+## Session information
+
+```{r message = FALSE, tidy=TRUE}
+sessionInfo("IntegraTRN")
+```

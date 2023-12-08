@@ -217,7 +217,8 @@ TOPTag <- function(object,
   topTag <- new("TOPTag",
     DEResult = topDE,
     method = object@method,
-    normalizedCounts = object@normalizedCounts[rownames(topDE), ],
+    normalizedCounts = object@normalizedCounts[rownames(topDE), ] %>%
+      as.matrix(),
     logFCCutoff = logFCCutoff,
     pCutoff = pCutoff,
     topGenes = topGenes

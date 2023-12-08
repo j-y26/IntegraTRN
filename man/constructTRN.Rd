@@ -7,6 +7,7 @@
 constructTRN(
   objMOList,
   omiCutoffs,
+  useOmics = c("RNAseq", "smallRNAseq", "proteomics", "ATACseq", "extInteractions"),
   smallRNAtypes = "all",
   targetDirection = c("up", "down", "both"),
   predicted = TRUE,
@@ -22,6 +23,12 @@ wants to use to construct the network}
 
 \item{omiCutoffs}{A OMICutoffs object containing the cutoffs for the omics
 data}
+
+\item{useOmics}{A character vector containing the omics data that the user
+wants to use to construct the network. The available omics
+data are "RNAseq", "smallRNAseq", "proteomics", "ATACseq",
+and "extInteractions". By default, all the omics data will
+be used.}
 
 \item{smallRNAtypes}{A character vector containing the small RNA types that
 the user wants to use to construct the network. The

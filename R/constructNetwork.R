@@ -626,6 +626,11 @@ combineSncInteractions <- function(predInteract,
 #'                  wants to use to construct the network
 #' @param omiCutoffs A OMICutoffs object containing the cutoffs for the omics
 #'                   data
+#' @param useOmics A character vector containing the omics data that the user
+#'                 wants to use to construct the network. The available omics
+#'                 data are "RNAseq", "smallRNAseq", "proteomics", "ATACseq",
+#'                 and "extInteractions". By default, all the omics data will
+#'                 be used.
 #' @param smallRNAtypes A character vector containing the small RNA types that
 #'                      the user wants to use to construct the network. The
 #'                      available types are "miRNA", "piRNA", "snRNA", "snoRNA",
@@ -682,6 +687,11 @@ combineSncInteractions <- function(predInteract,
 #'
 constructTRN <- function(objMOList,
                          omiCutoffs,
+                         useOmics = c(
+                           "RNAseq", "smallRNAseq",
+                           "proteomics", "ATACseq",
+                           "extInteractions"
+                         ),
                          smallRNAtypes = "all",
                          targetDirection = c("up", "down", "both"),
                          predicted = TRUE,
@@ -689,13 +699,24 @@ constructTRN <- function(objMOList,
                          nthreads = 1,
                          treeMethod = "RF",
                          seed = 91711) {
+  # Check that the selected omics data are valid strings
+  if (!all(useOmics %in% c(RNA, SMALLRNA, PROTEIN, ATAC, "extInteractions"))) {
+    stop("Invalid omics data specification.")
+  } else {
+    # Continue
+  }
+
   # Check the available omics data
-  rnaSeq <- is.null(objMOList$DERNAseq)
-  smallRNAseq <- is.null(objMOList$DEsmallRNAseq)
-  proteomics <- is.null(objMOList$DEproteomics)
-  atacSeq <- is.null(objMOList$DEATAC)
-  extTF2gene <- is.null(objMOList$extInteractions$tf2Genes)
-  extmiR2gene <- is.null(objMOList$extInteractions$miR2Genes)
+  rnaSeq <- is.null(objMOList$DERNAseq) || (!"RNAseq" %in% useOmics)
+  smallRNAseq <- is.null(objMOList$DEsmallRNAseq) ||
+    (!"smallRNAseq" %in% useOmics)
+  proteomics <- is.null(objMOList$DEproteomics) ||
+    (!"proteomics" %in% useOmics)
+  atacSeq <- is.null(objMOList$DEATAC) || (!"ATACseq" %in% useOmics)
+  extTF2gene <- is.null(objMOList$extInteractions$tf2Genes) ||
+    (!"extInteractions" %in% useOmics)
+  extmiR2gene <- is.null(objMOList$extInteractions$miR2Genes) ||
+    (!"extInteractions" %in% useOmics)
   checkOmics <- c(
     rnaSeq, smallRNAseq, proteomics, atacSeq, extTF2gene,
     extmiR2gene
