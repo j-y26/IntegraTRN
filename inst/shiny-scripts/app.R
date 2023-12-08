@@ -23,6 +23,10 @@ TF <- "TF_target"
 HSAPIENS <- "Human (hg38)" # species + assembly to support multiple assemblies
 MMUSCULUS <- "Mouse (mm10)"
 CHROMINFO <- c("chr", "start", "end")
+NETWORK_FORMAT <- c(
+      "edgelist", "pajek", "ncol", "lgl", "graphml",
+      "dimacs", "gml", "dot", "leda"
+    )
 
 # input data names
 INPUT_LIST <- list(
@@ -293,10 +297,7 @@ ui <- fluidPage(
           br(),
 
           # Image summary of the package
-          tags$img(
-            src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/Schematics.jpg", # link cannot be broken to shorten the line
-            width = "550px", align = "center"
-          ),
+          tags$img(src = "https://raw.githubusercontent.com/j-y26/IntegraTRN/master/inst/extdata/Schematics.jpg", width = "100%"),
           tags$p("Schematics of the IntegraTRN package workflow"),
           br(),
           br(),
@@ -483,6 +484,7 @@ ui <- fluidPage(
               "TF - target gene interactions."
             )
           ),
+          br(),
           br(),
           tags$p("Please upload the selected data types in the following
                 sections."),
@@ -1109,6 +1111,20 @@ ui <- fluidPage(
           downloadButton(
             outputId = "downloadNetworkNodes",
             label = "Download node information (.csv)"
+          ),
+
+          # Button to select the type of file output
+          br(),
+          tags$b("Export the network to a third-party tool:"),
+          selectInput(
+            inputId = "networkFormat",
+            label = "Please select the format of the network file:",
+            choices = NETWORK_FORMAT,
+            selected = "graphml"
+          ),
+          downloadButton(
+            outputId = "downloadNetworkFile",
+            label = "Export network file"
           ),
         ),
         selected = "Data Input",
@@ -3369,6 +3385,26 @@ server <- function(input, output, session) {
               write.csv(parseVertexMetadata(trNet), file, row.names = FALSE)
             }
           )
+
+          # Network format for export
+          networkFormat <- reactive({
+            req(input$networkFormat)
+            return(input$networkFormat)
+          })
+          # Export the network with the defined format
+          output$downloadNetworkFile <- downloadHandler(
+            filename = function() {
+              paste("network_", Sys.Date(), ".", networkFormat(), sep = "")
+            },
+            content = function(file) {
+              tempfile <- tempfile(fileext = paste(".", 
+                                                   networkFormat(), sep = ""))
+              writeTRN(trNet, file = tempfile, format = networkFormat())
+              file.copy(tempfile, file)
+              unlink(tempfile)  # clean up to delete the temp file
+            }
+          )
+
           # Display main output tab
           showTab(
             inputId = "mainOutputTabsetPanel",
