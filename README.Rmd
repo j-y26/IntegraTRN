@@ -250,8 +250,8 @@ wrote the `setOmicCutoffs` function as an easy way for the users to decide on
 the inclusion criteria for the key elements in the TRN. The author wrote the
 `constructTRN` function, with a logic defined to integrate the different omics
 data depending on their availability, as well as whether predicted inference is
-used. The inference of predicted small RNA - gene interactions is supported
-partially by the author's discretion to generate a single coherent normalized
+used. The inference of predicted small RNA - gene interactions is supported by 
+the author's discretion to generate a single coherent normalized
 expression matrix for both RNAseq and small RNAseq data that allows 
 co-expression estimation. The inference of small RNA - gene interactions is
 performed by the `GENIE3` package, which internally uses a three-based algorithm

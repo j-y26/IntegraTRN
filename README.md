@@ -12,8 +12,8 @@
 ![GitHub issues](https://img.shields.io/github/issues/j-y26/IntegraTRN)
 ![R
 package](https://img.shields.io/github/r-package/v/j-y26/IntegraTRN?link=https%3A%2F%2Fgithub.com%2Fj-y26%2FIntegraTRN)
-![Docker
-Image](https://img.shields.io/docker/v/kirin26/integra_trn/v0.1.0?link=https%3A%2F%2Fhub.docker.com%2Frepository%2Fdocker%2Fkirin26%2Fintegra_trn%2Fgeneral)
+[![Docker
+Image](https://img.shields.io/badge/docker-v0.1.0-8A2BE2?label=Docker%20Image)](https://hub.docker.com/repository/docker/kirin26/integra_trn/general)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
@@ -74,7 +74,7 @@ docker run -e PASSWORD=changeit \
   -p 8787:8787 kirin26/integra_trn:v0.1.0
 ```
 
-In a browser, navigate to `[localhost:8787](http://localhost:8787)` and
+In a browser, navigate to [`localhost:8787`](http://localhost:8787) and
 login with username `rstudio`.
 
 ## Overview
@@ -171,8 +171,11 @@ omcis data available. `IntegraTRN` provides functions:
 32. ***runIntegraTRN*** for running a shinyApp that integrates the two
     parts into a user-friendly single workflow
 
-The package also provides several datasets: - An RNAseq count matrix:
-`RNAseq_heart`
+<br>
+
+The package also provides several datasets:
+
+- An RNAseq count matrix: `RNAseq_heart`
 
 - A small RNAseq count matrix covering miRNA, tRNA, piRNA, snoRNA,
   snRNA, and circRNA: `smallRNAseq_heart`
@@ -250,27 +253,26 @@ an easy way for the users to decide on the inclusion criteria for the
 key elements in the TRN. The author wrote the `constructTRN` function,
 with a logic defined to integrate the different omics data depending on
 their availability, as well as whether predicted inference is used. The
-inference of predicted small RNA - gene interactions is supported
-partially by the author’s discretion to generate a single coherent
-normalized expression matrix for both RNAseq and small RNAseq data that
-allows co-expression estimation. The inference of small RNA - gene
-interactions is performed by the `GENIE3` package, which internally uses
-a three-based algorithm to infer the interactions. The author designed
-the method for predicted inference of small RNA - gene interactions
-based on two separate omic dataset. The `igraph` package is used to
-visualize the TRN, with interactive support provided by the `networkD3`
-package. Most data frame processing used internally in the functions is
-supported by the `dplyr` package. Generative AI tool was used to
-generate some unit test example data based on the author’s description.
-Generative AI results were incorporated into the tests at the author’s
-discretion. The packages `shiny`, `shinyBS`, and `DT` were used to
-implement with UI for the shinyApp. The author designed the shinyApp UI
-and logic and optimized the workflow for the shinyApp. In brief, with
-support of the above packages for separate functionalities, the author
-pioneered the analysis pipeline that integrates the different omics data
-and the logic for TRN inference and visualization with different levels
-of data integration. The author also pre-compile the package for the
-Docker image.
+inference of predicted small RNA - gene interactions is supported by the
+author’s discretion to generate a single coherent normalized expression
+matrix for both RNAseq and small RNAseq data that allows co-expression
+estimation. The inference of small RNA - gene interactions is performed
+by the `GENIE3` package, which internally uses a three-based algorithm
+to infer the interactions. The author designed the method for predicted
+inference of small RNA - gene interactions based on two separate omic
+dataset. The `igraph` package is used to visualize the TRN, with
+interactive support provided by the `networkD3` package. Most data frame
+processing used internally in the functions is supported by the `dplyr`
+package. Generative AI tool was used to generate some unit test example
+data based on the author’s description. Generative AI results were
+incorporated into the tests at the author’s discretion. The packages
+`shiny`, `shinyBS`, and `DT` were used to implement with UI for the
+shinyApp. The author designed the shinyApp UI and logic and optimized
+the workflow for the shinyApp. In brief, with support of the above
+packages for separate functionalities, the author pioneered the analysis
+pipeline that integrates the different omics data and the logic for TRN
+inference and visualization with different levels of data integration.
+The author also pre-compile the package for the Docker image.
 
 ## References
 
