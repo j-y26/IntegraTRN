@@ -207,6 +207,9 @@ The package also provides several datasets:
 
 - An example TF-gene interaction dataset: `tf2Genes`
 
+- An lightweight example miRNA-gene interaction dataset with queried using a
+  miRNA centric approach: `mir2geneMultiMiR`
+
 - An example protein-gene name conversion information: `proteinGeneIDConvert`
 
 - Position weight matrix (PWM) for vertebrate DNA binding motifs curated by
@@ -215,7 +218,7 @@ The package also provides several datasets:
 - Small RNA type annotation for human small RNA transcripts: `sncRNAAnnotation`
 
 - An example MOList object containing all types of omics data, but with a very 
-  light weight (100 genes only)
+  light weight (100 genes only): `expMOList`
 
 Please refer to the package vignette 
 [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://j-y26.github.io/IntegraTRN-Docker/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html) 
