@@ -77,9 +77,7 @@ installed on your computer. Then, run the following command in the terminal to
 setup and run the container:
 
 ```{bash, eval=FALSE}
-docker run -e PASSWORD=changeit \
-  -v ${pwd}:/home/rstudio/projects \
-  -p 8787:8787 jyang26/integra_trn:v0.1.0
+docker run -e PASSWORD=changeit -v ${pwd}:/home/rstudio/projects -p 8787:8787 jyang26/integra_trn:v0.1.0
 ```
 
 In a browser, navigate to [`localhost:8787`](http://localhost:8787) and login 
@@ -182,11 +180,11 @@ package, in the order of use subjected to the types of omcis data available.
 For detailed information on the analysis pipeline, please refer to the package
 vignette 
 
-- [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html)
+- [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://j-y26.github.io/IntegraTRN-Docker/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html)
 
 and workflow optimization information, please refer to the package vignette
 
-- [`Optimizing workflows for TRN construction`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Optimizing_workflows_for_TRN_construction.html)
+- [`Optimizing workflows for TRN construction`](https://j-y26.github.io/IntegraTRN-Docker/Optimizing_workflows_for_TRN_construction.html)
 
 <br>
 
@@ -220,13 +218,14 @@ The package also provides several datasets:
   light weight (100 genes only)
 
 Please refer to the package vignette 
-`Integrating multi-omics for constructing transcriptional regulatory networks` 
+[`Integrating multi-omics for constructing transcriptional regulatory networks`](https://j-y26.github.io/IntegraTRN-Docker/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html) 
 for more details on these datasets and the illustration of the analysis
 pipeline.
 
 The package has also defined a set of key data structures, namely the S4 classes
 `MOList`, `DETag`, `TOPTag`, `PEAKTag`, and `TRNet`. Please refer to the package
-vignette `Optimizing workflows for TRN construction` for more details on these
+vignette [`Optimizing workflows for TRN construction`](https://j-y26.github.io/IntegraTRN-Docker/Optimizing_workflows_for_TRN_construction.html) 
+for more details on these
 data structures and how to use them effectively to extend the functionality of
 the package.
 
