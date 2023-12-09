@@ -378,7 +378,7 @@ palette defined in the **`RColorBrewer`** package [@RColorBrewer].
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 4. Volcano plot of small RNAseq data with each type of small RNA coloured"}
 # Plot Volcano plot of small RNAseq data
-plotVolcanoSmallRNA(myMOList, log2FC = 0, colScheme = smallRNAColors)
+plotVolcanoSmallRNA(myMOList, log2FC = 0)
 ```
 
 Alternatively, we can also specify a color scheme using the **`colScheme`**
