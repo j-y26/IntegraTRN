@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 [![License: GPL (>= 3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
 ![GitHub issues](https://img.shields.io/github/issues/j-y26/IntegraTRN)
 ![R package](https://img.shields.io/github/r-package/v/j-y26/IntegraTRN?link=https%3A%2F%2Fgithub.com%2Fj-y26%2FIntegraTRN)
-[![Docker Image](https://img.shields.io/badge/docker-v0.1.0-8A2BE2?label=Docker%20Image)](https://hub.docker.com/repository/docker/kirin26/integra_trn/general)
+[![Docker Image](https://img.shields.io/badge/docker-v0.1.0-8A2BE2?label=Docker%20Image)](https://hub.docker.com/repository/docker/jyang26/integra_trn/general)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
@@ -79,7 +79,7 @@ setup and run the container:
 ```{bash, eval=FALSE}
 docker run -e PASSWORD=changeit \
   -v ${pwd}:/home/rstudio/projects \
-  -p 8787:8787 kirin26/integra_trn:v0.1.0
+  -p 8787:8787 jyang26/integra_trn:v0.1.0
 ```
 
 In a browser, navigate to [`localhost:8787`](http://localhost:8787) and login 
