@@ -172,12 +172,12 @@ omcis data available. `IntegraTRN` provides functions:
 <br>
 
 For detailed information on the analysis pipeline, please refer to the
-package vignette
+package vignette:
 
 - [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://j-y26.github.io/IntegraTRN-Docker/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html)
 
-and workflow optimization information, please refer to the package
-vignette
+For workflow optimization information, please refer to the package
+vignette:
 
 - [`Optimizing workflows for TRN construction`](https://j-y26.github.io/IntegraTRN-Docker/Optimizing_workflows_for_TRN_construction.html)
 
