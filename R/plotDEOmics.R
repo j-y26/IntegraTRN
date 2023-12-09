@@ -139,7 +139,7 @@ plotBaseVolcano <- function(deg,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #'
 #' # Example 1: Generate the volcano plot by default parameters
 #' plotVolcano(expMOList)
@@ -319,7 +319,7 @@ annoSncList <- function(deg, annoList) {
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #'
 #' # Example 1: Generate the volcano plot by default parameters
 #' plotVolcanoSmallRNA(expMOList)
@@ -472,7 +472,7 @@ plotVolcanoSmallRNA <- function(objMOList,
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #' data(RNAseq_heart_samples)
 #'
 #' # Extract the information needed for PCA analysis for example RNAseq data
@@ -815,7 +815,7 @@ plotATACCoverage <- function(objMOList, title = "ATAC Peaks over Chromosomes") {
 #' @examples
 #' \dontrun{
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #'
 #' # Annotates the peaks in the example data and performs motif enrichment
 #' # Using human annotations as an example
@@ -897,7 +897,7 @@ plotATACAnno <- function(objMOList) {
 #'
 #' @examples
 #' # Use the package-provided example data
-#' data(expMOList)
+#' data("expMOList")
 #'
 #' # Annotates the peaks in the example data and performs motif enrichment
 #' # Using human annotations as an example
@@ -922,7 +922,7 @@ plotATACAnno <- function(objMOList) {
 #' )
 #'
 #' # Example 1: Plot the motif heatmap by default parameters
-#' # This example should not show up any motif but instead issue an warning
+#' # This example should not show up any motif but instead issue an error
 #' # and returns NULL since no motif are found to be differentially
 #' # enriched at adjusted p value < 0.05
 #'

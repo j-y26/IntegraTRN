@@ -27,7 +27,7 @@ This function constructs a PEAKTag object from a DETag object
 }
 \examples{
 # Make use of the package's provided example data
-data(expMOList)
+data("expMOList")
 
 # Retrieve the DETag object for the ATACseq peaks
 atacDETag <- expMOList$DEATAC

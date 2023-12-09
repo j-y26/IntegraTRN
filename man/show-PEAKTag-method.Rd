@@ -14,7 +14,7 @@ The print method for the PEAKTag class.
 }
 \examples{
 # Use the package's provided example data
-data(expMOList)
+data("expMOList")
 
 # Print the object
 print(expMOList$DEATAC)

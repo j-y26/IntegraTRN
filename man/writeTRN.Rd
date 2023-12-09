@@ -5,7 +5,7 @@
 \alias{writeTRN,TRNet-method}
 \title{Exporting the TRN network to a third-party file format}
 \usage{
-writeTRN(trn, file, format = ".graphml")
+writeTRN(trn, file, format = "graphml")
 }
 \arguments{
 \item{trn}{A TRNet object}
@@ -33,6 +33,7 @@ omiCutoffs <- setOmicCutoffs() # use default cutoffs
 
 # Construct the network
 \dontrun{
+# Expect warnings that show conditional network construction steps
 myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
 }
 

@@ -52,7 +52,7 @@ topTag
 \dontrun{
 # In this example, a warning should be expected. This is because 50 is
 # greater than the number of differentially expressed genes in the example
-# data
+# data with default logFC cutoff of 1
 topTag <- TOPTag(deTag, topGenes = 50)
 topTag
 }

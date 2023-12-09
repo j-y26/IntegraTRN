@@ -487,6 +487,7 @@ setMethod(
 #'
 #' # Construct the network
 #' \dontrun{
+#' # Expect warnings that show conditional network construction steps
 #' myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
 #' }
 #'
@@ -506,7 +507,7 @@ setMethod(
 #'
 setGeneric(
   "writeTRN",
-  function(trn, file, format = ".graphml") {
+  function(trn, file, format = "graphml") {
     standardGeneric("writeTRN")
   }
 )

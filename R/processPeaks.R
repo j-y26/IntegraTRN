@@ -331,13 +331,14 @@ enrichMotifs <- function(objMOList, bsgenome, pwmL, fixedWidth = 500) {
 #' @examples
 #' \dontrun{
 #' # Generate position-weight matrices (PWMs) from the JASPAR database
+#'
 #' # This is an example of how to generate the PWMs from the JASPAR database
 #' # Alternative databases can be used, as long as a PWMatrixList object is
 #' # generated
+#'
 #' # This example requires users to have the JASPAR2022 package installed,
 #' # which is only available on Bioconductor 3.18 or later
-#' # To install the package, run the following command in R:
-#' # BiocManager::install("JASPAR2022")
+#' # In addition, the TFBSTools package is required
 #'
 #' # Generate the PWMs
 #' pwmL <- TFBSTools::getMatrixSet(JASPAR2022::JASPAR2022,

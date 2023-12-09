@@ -17,12 +17,24 @@ A GRanges object
 Convert to a GRanges object
 }
 \examples{
-# Use the package's provided example data
-data(expMOList)
+\dontrun{
+# Use the package's provided example data and position weight matrix
+data("expMOList")
+data("jasparVertebratePWM")
+
+# Perform annotation and motif enrichment
+expMOList <- annotateATACPeaksMotif(
+  expMOList,
+  TxDb = TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene,
+  annoDb = "org.Hs.eg.db",
+  bsgenome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
+  pwmL = jasparVertebratePWM
+)
+
+# Once annotation and enrichment has been performed, the result becomes a
+# PEAKTag object (the DEATAC element)
 
 # Convert the object to a GRanges object
-# Requires that annotation has been performed
-\dontrun{
 asGRanges(expMOList$DEATAC)
 }
 

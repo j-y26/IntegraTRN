@@ -305,8 +305,11 @@ on the volcano plot. Let's first retrieve a few differentially expressed genes
 ```{r message = FALSE}
 genesToLabel <- exportDE(myRNADETag) %>%
   dplyr::filter(padj < 0.05, abs(logFC) > 0.1) %>%
-  head(3) %>%
+  dplyr::arrange(desc(logFC)) %>%
   rownames()
+# Get an up- and a down- regulated gene
+# For example use the 10th gene with highest fold change
+genesToLabel <- genesToLabel[c(10, length(genesToLabel) - 10)]
 ```
 
 Then we again plot the volcano plot, with some genes labeled. We can make use

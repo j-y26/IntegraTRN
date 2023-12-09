@@ -47,7 +47,7 @@ Raw counts are normalized by RLE method and then transformed by
 }
 \examples{
 # Use the package-provided example data
-data(expMOList)
+data("expMOList")
 data(RNAseq_heart_samples)
 
 # Extract the information needed for PCA analysis for example RNAseq data

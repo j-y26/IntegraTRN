@@ -683,6 +683,7 @@ combineSncInteractions <- function(predInteract,
 #' # Construct the network
 #' \dontrun{
 #' myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
+#' plotNetwork(myTRNet)
 #' }
 #'
 constructTRN <- function(objMOList,

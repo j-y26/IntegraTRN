@@ -81,6 +81,7 @@ omiCutoffs <- setOmicCutoffs() # use default cutoffs
 # Construct the network
 \dontrun{
 myTRNet <- constructTRN(expMOList, omiCutoffs, targetDirection = "up")
+plotNetwork(myTRNet)
 }
 
 }

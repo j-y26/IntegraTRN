@@ -43,7 +43,7 @@ The motif enrichment analysis can be exceptionally stringent for
 }
 \examples{
 # Use the package-provided example data
-data(expMOList)
+data("expMOList")
 
 # Annotates the peaks in the example data and performs motif enrichment
 # Using human annotations as an example
@@ -68,7 +68,7 @@ expMOList <- annotateATACPeaksMotif(expMOList,
 )
 
 # Example 1: Plot the motif heatmap by default parameters
-# This example should not show up any motif but instead issue an warning
+# This example should not show up any motif but instead issue an error
 # and returns NULL since no motif are found to be differentially
 # enriched at adjusted p value < 0.05
 

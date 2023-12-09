@@ -75,7 +75,7 @@ The package has provided datasets for demonstration purposes. The datasets are
 fully simulated or partially simulated based on real data [@adar2023integrate]. 
 Here is an overview of the basic omics data used in this vignette:
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 data("RNAseq_heart") # RNAseq count matrix
 data("RNAseq_heart_samples") # RNAseq sample information
 data("smallRNAseq_heart") # small RNAseq count matrix
@@ -93,7 +93,7 @@ ATACseq data are separately provided as peak files. The peak files are in the
 BED format, which is a tab-delimited file format for genomic features. The BED
 files can be located in the **`extdata`** folder of the package.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 atacPeak1Path <- system.file("extdata", "peak1.bed", package = "IntegraTRN")
 atacPeak2Path <- system.file("extdata", "peak2.bed", package = "IntegraTRN")
 ```
@@ -160,7 +160,7 @@ myMOList <- MOList(
 With the package's one-step differential analysis function, we can easily
 explore the results of the differential analysis.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 myMOList <- diffOmics(myMOList, program = "edgeR")
 ```
 
@@ -176,7 +176,7 @@ To obtain the **`DETag`** object for a particular omics data, we can simply
 subset the **`MOList`** object using the name of the omics data. For example, to
 retrieve differential analysis result of the RNAseq data:
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 myRNADETag <- myMOList$DERNAseq
 ```
 
@@ -184,7 +184,7 @@ would work just fine. The **`DETag`** class has implemented several methods
 for users to easily extract the results. For example, we can directly export
 the results as a data frame using the **`exportDE`** function.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 exportDE(myRNADETag) %>% head(5)
 ```
 
@@ -198,7 +198,7 @@ what we consider to be the "top" differentially expressed genes. For example,
 we can retrieve the top 20 differentially expressed genes with any fold change, 
 with an adjusted p-value less than 0.05 considered to be significant.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 myRNATOPTag <- TOPTag(myRNADETag,
   pCutoff = 0.05,
   logFCCutoff = 0,
@@ -210,14 +210,14 @@ myRNATOPTag <- TOPTag(myRNADETag,
 Similarly, we can also export the results as a data frame. Furthermore, we can
 see that a ranking based on **`piValue`** is also provided.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 exportDE(myRNATOPTag) %>% head(5)
 ```
 
 In case where we want to obtain a normalized count matrix for visualization,
 such as when plotting a heatmap, we can also do so by a simple function call.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 topRNANormCounts <- exportNormalizedCounts(myRNATOPTag)
 ```
 
@@ -231,7 +231,7 @@ where $padj$ is the adjusted p-value and $logFC$ is the log fold change.
 
 We can then make a heatmap using the **`ComplexHeatmap`** package.
 
-```{r message = FALSE, fig.align='center', fig.width=6, fig.height=6, fig.cap="Figure 1. Heatmap of top 20 differentially expressed genes" }
+```{r message=FALSE, fig.align='center', fig.width=6, fig.height=6, fig.cap="Figure 1. Heatmap of top 20 differentially expressed genes" }
 heatmapMatrix <- topRNANormCounts %>%
   as.matrix() %>%
   t() %>%
@@ -255,7 +255,7 @@ perform ranking while not filtering any genes. This can be done by setting a
 non-selective cutoff. Here, a `topGenes = 1` means that we are selecting all
 genes that satisfy the cutoffs.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 rankedResult <- TOPTag(myRNADETag,
   pCutoff = 1,
   logFCCutoff = 0,
@@ -284,7 +284,7 @@ In the case of a population-based cohort, many attributes could be contributing
 to the biological variability. In our example, we can see that the following
 attributes are available:
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 colnames(RNAseq_heart_samples)
 ```
 
@@ -292,7 +292,7 @@ In this case, in the differential expression analysis, we can adjust for both
 sex and the batch effect. Again, we use the **`edgeR`** package for the
 differential expression analysis.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # Create the edgeR DGEList object
 dgeList <- edgeR::DGEList(
   counts = RNAseq_heart,
@@ -321,7 +321,7 @@ To do so, we need to construct a **`DETag`** object. The core component of the
 **`DETag`** object is a result data frame, as the original output of **`edgeR`**
 or **`DESeq2`**. Additionally is a normalized count matrix.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 # Obtaining the DE results and normalized count
 deResult <- edgeR::topTags(qlf, n = nrow(dgeList)) %>% as.data.frame()
 normCounts <- edgeR::cpm(dgeList) %>% as.matrix()
@@ -337,7 +337,7 @@ myNewRNADETag <- DETag(
 With the **`DETag`** object, we can then integrate the results back into the
 **`MOList`** object. 
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 myMOList$DERNAseq <- myNewRNADETag
 ```
 
@@ -383,7 +383,7 @@ Before we begin, to more properly demonstrate the TRN construction workflow, we
 will downsample the data to reduce the computational time. Here, we randomly
 select 500 genes from each of the omics data.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 set.seed(91711)
 # Count-based data
 RNAseq_heart <- RNAseq_heart[sample(nrow(RNAseq_heart), 500), ]
@@ -400,7 +400,7 @@ set.seed(NULL)
 We will then construct a **`MOList`** object using the downsampled data and
 perform differential analysis on each omics data.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 myMOList <- MOList(
   RNAseq = RNAseq_heart,
   RNAGroupBy = RNAseq_heart_samples$Age,
@@ -413,7 +413,7 @@ myMOList <- MOList(
 )
 ```
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 myMOList <- diffOmics(myMOList)
 ```
 
@@ -431,7 +431,7 @@ When setting the cutoffs for constructing the TRN, there are several cutoffs to
 consider. These include the fold change, the adjusted p-value, the top number of
 genes, and the direction of the change.
 
-```{r message = FALSE}
+```{r message=FALSE}
 setOmicCutoffs(
   rnaAdjPval = 0.05,
   rnaLogFC = 0.1,
@@ -502,7 +502,7 @@ For integrative use of the proteomics and RNAseq data, we need to make sure that
 a correct conversion between the protein IDs and the gene IDs are available. 
 This can be done by providing a data frame that contains the conversion table.
 
-```{r message = FALSE}
+```{r message=FALSE}
 myMOList <- setGene2Protein(myMOList, proteinGeneIDConvert)
 ```
 
@@ -538,7 +538,7 @@ patterns.
 
 With small RNAseq data, we can leverage all these tiny details to the package.
 
-```{r message = FALSE}
+```{r message=FALSE}
 # Annotate the small RNAs
 myMOList <- annotateSmallRNA(myMOList, anno = "human")
 
@@ -576,7 +576,7 @@ With the differential expression results, we can export a list of names of the
 target genes of interest, which are usually the inputs of most database
 searches.
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 geneList <- exportDE(myMOList$DERNAseq) %>% rownames()
 geneList[1:12]
 ```
@@ -594,7 +594,7 @@ Alternatively, with a similar approach, we can also fetch the miRNA-target
 using differentially expressed miRNAs. This can be done by exporting the
 differentially expressed miRNAs and use them as input for the database search.
 
-```{r message = FALSE}
+```{r message=FALSE}
 smallRNAs <- getDESmallRNA(myMOList,
   padj = 0.05,
   log2fc = 0,
@@ -608,7 +608,7 @@ miRNA-target interactions from multiple databases, namely **`miRTarBase`**
 [@huang2020mirtarbase], **`miRecords`** [@xiao2009mirecords], and
 **`TarBase`** [@sethupathy2006tarbase].
 
-```{r message = FALSE, warning=FALSE, eval=FALSE}
+```{r message=FALSE, warning=FALSE, eval=FALSE}
 mir2geneMultiMiR <- multiMiR::get_multimir(
   org = "hsa",
   mirna = rownames(smallRNAs),
@@ -621,7 +621,7 @@ mir2geneMultiMiR <- mir2geneMultiMiR@data
 To avoid unnecessary database query, here we load an example of the results,
 where we randomly selected 500 interactions from the **`multiMiR`** results.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 data("mir2geneMultiMiR")
 ```
 
@@ -629,7 +629,7 @@ Since in the example data we used the `hsa` nomenclature for small RNAs and
 gene symbols for the target genes, we can extract only the information
 relevant to us.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 mir2geneMultiMiR <- mir2geneMultiMiR %>%
   dplyr::select(mature_mirna_id, target_symbol) %>%
   dplyr::rename(
@@ -641,7 +641,7 @@ mir2geneMultiMiR <- mir2geneMultiMiR %>%
 We can then combine the regulatory interactions identified from the target gene
 centric approach and the miRNA centric approach.
 
-```{r message = FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE}
 # Combine the two sets of interactions
 miR2Genes <- as.data.frame(miR2Genes)
 miR2Genes <- rbind(miR2Genes, mir2geneMultiMiR)
@@ -656,7 +656,7 @@ After obtaining a comprehensive list of miRNA-target interactions, we can then
 use the list to construct the TRN. To do so, we need to load the miRNA-target
 interactions into the **`MOList`** object.
 
-```{r message = FALSE}
+```{r message=FALSE}
 myMOList <- loadExtInteractions(myMOList,
   miR2Genes = miR2Genes
 )
@@ -672,7 +672,7 @@ we can visualize the impact of these cutoffs on the TRN construction.
 
 Let us define a less stringent cutoff first:
 
-```{r message = FALSE}
+```{r message=FALSE}
 omiCutoffs <- setOmicCutoffs(
   rnaAdjPval = 0.05,
   rnaLogFC = 0,
@@ -696,14 +696,14 @@ myTRN1 <- constructTRN(myMOList,
 Without protein, the network we obtained is fairly large and complicated to
 interpret.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
+```{r message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
 plotNetwork(myTRN1, interactive = TRUE)
 ```
 
 Alternatively, we can enforce the network to only include genes that show
 consistent expression changes in both the transcriptomic and proteomic level.
 
-```{r message = FALSE}
+```{r message=FALSE}
 omiCutoffs <- setOmicCutoffs(
   rnaAdjPval = 0.05,
   rnaLogFC = 0.1,
@@ -730,7 +730,7 @@ myTRN2 <- constructTRN(myMOList,
 
 Let's see the network.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
+```{r message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
 plotNetwork(myTRN2, interactive = TRUE)
 ```
 
@@ -739,7 +739,7 @@ important miRNA - target gene regulation. Since the biological function of
 miRNA are known, we could infer further biological insights from a 
 miRNA-target gene centric network.
 
-```{r message = FALSE, warning=FALSE, include=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 myTRN3 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
@@ -750,11 +750,18 @@ myTRN3 <- constructTRN(myMOList,
 
 Let's see the network.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
+```{r message=FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
 plotNetwork(myTRN3, interactive = TRUE)
 ```
 
 Interestingly, we can easily identify modules at this level of biological scope.
+
+In the end, we can export the network into a third-party tool for further
+topological analysis or customized network visualization.
+
+```{r message=FALSE, warning=FALSE, eval=FALSE}
+writeTRN(myTRN3, "myTRN3.graphml", format = "graphml") # Cytoscape format
+```
 
 ### Chromatin Accessibility and Transcription Factor Binding
 
@@ -773,7 +780,7 @@ TF - target interactions.
 To do so, we need to load the TF-target interactions into the **`MOList`**
 object.
 
-```{r message = FALSE}
+```{r message=FALSE}
 myMOList <- loadExtInteractions(myMOList,
   tf2Genes = tf2Genes
 )
@@ -805,6 +812,6 @@ select the most relevant interactions to the biological process of interest.
 
 ## Session information
 
-```{r message = FALSE, tidy=TRUE}
+```{r message=FALSE, tidy=TRUE}
 sessionInfo("IntegraTRN")
 ```

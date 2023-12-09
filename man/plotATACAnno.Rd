@@ -22,7 +22,7 @@ This function generates a pie chart for the annotation of
 \examples{
 \dontrun{
 # Use the package-provided example data
-data(expMOList)
+data("expMOList")
 
 # Annotates the peaks in the example data and performs motif enrichment
 # Using human annotations as an example
