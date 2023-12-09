@@ -5,7 +5,20 @@
 \alias{mir2geneMultiMiR}
 \title{Example miRNA - mRNA interactions obtained with miRNA-centric approach}
 \format{
-
+A data frame with 500 rows (interactions) and 10 columns (fields)
+\describe{
+\item{database}{the database where the interaction is found}
+\item{mature_mirna_acc}{the accession number of the mature miRNA}
+\item{mature_mirna_id}{the ID of the mature miRNA}
+\item{target_symbol}{the gene symbol of the target gene}
+\item{target_entrez}{the Entrez ID of the target gene}
+\item{target_ensembl}{the Ensembl ID of the target gene}
+\item{experiment}{the experiment that detected the interaction}
+\item{support_type}{the type of support for the interaction}
+\item{pubmed_id}{the PubMed ID of the publication where the interaction is
+               reported}
+\item{type}{the type of interaction, validated or not}
+}
 }
 \source{
 miRecords, miRTarBase, and TarBase databases
@@ -30,6 +43,8 @@ mir2geneMultiMiR
 
 \insertRef{huang2020mirtarbase}{IntegraTRN}
 
-\insertRef{karagkouni2018diana}{IntegraTRN}
+\insertRef{sethupathy2006tarbase}{IntegraTRN}
+
+\insertRef{ru2014multimir}{IntegraTRN}
 }
 \keyword{datasets}

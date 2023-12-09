@@ -86,11 +86,11 @@ data("RNAseq_heart") # RNAseq count matrix
 data("RNAseq_heart_samples") # RNAseq sample information
 data("smallRNAseq_heart") # small RNAseq count matrix
 data("smallRNAseq_heart_samples") # small RNAseq sample information
-data("protein_heart", package = "IntegraTRN") # Proteomics count matrix
-data("protein_heart_samples", package = "IntegraTRN") # Proteomics sample information
-data("miR2Genes", package = "IntegraTRN") # miRNA-target interactions, externally curated
-data("tf2Genes", package = "IntegraTRN") # TF-target interactions, externally curated
-data("proteinGeneIDConvert", package = "IntegraTRN") # Protein ID conversion table
+data("protein_heart") # Proteomics count matrix
+data("protein_heart_samples") # Proteomics sample information
+data("miR2Genes") # miRNA-target interactions, externally curated
+data("tf2Genes") # TF-target interactions, externally curated
+data("proteinGeneIDConvert") # Protein ID conversion table
 ```
 
 Please use `?<dataset>` to see the details of each dataset.
@@ -108,6 +108,8 @@ Let us now begin different ways for optimizing our analytical workflow.
 
 ## Customizing the differential analysis of omics data
 
+### Key data structures explained
+
 A key component of the package is the data structures it provides. The following
 are a list of the key S4 classes:
 
@@ -124,7 +126,7 @@ are a list of the key S4 classes:
 
 - **`TOPTag`**: A **`TOPTag`** object is a subclass of the **`DETag`** object. 
   Unlike the **`DETag`** object, the **`TOPtag`** object further limits the
-  results to a subset of genes that we are interested in. It this provides an
+  results to a subset of genes that we are interested in. It provides an
   user-friendly interface for filtering and ranking top differentially expressed
   genes/transcripts.
 
@@ -170,7 +172,7 @@ myMOList <- diffOmics(myMOList, program = "edgeR")
 
 In the **`IntegraTRN`** package, several visualization methods are provided to
 explore the results of the differential analysis. These visualization methods
-are highly efficient in generating a overview of the results, allowing users to
+are highly efficient in generating an overview of the results, allowing users to
 quickly identify the key changes that happen during the biological process.
 However, as biologists who generated the data, we may be interested in some
 particular aspects of the results. Therefore, we can further customize our
@@ -212,7 +214,7 @@ myRNATOPTag <- TOPTag(myRNADETag,
 ```
 
 Similarly, we can also export the results as a data frame. Furthermore, we can
-see that a ranking based on piValue is also provided.
+see that a ranking based on **`piValue`** is also provided.
 
 ```{r message = FALSE, tidy=TRUE}
 exportDE(myRNATOPTag) %>% head(5)
@@ -224,6 +226,14 @@ such as when plotting a heatmap, we can also do so by a simple function call.
 ```{r message = FALSE, tidy=TRUE}
 topRNANormCounts <- exportNormalizedCounts(myRNATOPTag)
 ```
+
+The **`piValue`** here ranks the genes based on the adjusted p-value and the 
+fold change, which is a standard ranking for rank-based enrichment analysis. The 
+**`piValue`** is calculated as follows:
+
+$$piValue = -log_{10}(padj) * sign(logFC)$$
+
+where $padj$ is the adjusted p-value and $logFC$ is the log fold change.
 
 We can then make a heatmap using the **`ComplexHeatmap`** package.
 
@@ -360,8 +370,8 @@ workflow.
 ### Overview of multi-omics network construction
 
 In a simplistic way, network construction by integrating multiple
-omics data is a process of intersecting the regulatory interactions that are
-determined to be biologically relevant to the condition of interest. Having more
+omics data is a process of intersecting the regulatory interactions to determine 
+the ones that are biologically relevant to the condition of interest. Having more
 omics data provided, the analytical workflow of the **`IntegraTRN`** package
 could identify the most relevant regulatory interactions with much higher
 confidence. However, the availability of the omics data is not always guaranteed.
@@ -407,6 +417,9 @@ myMOList <- MOList(
   ATACpeak1 = peak1,
   ATACpeak2 = peak2
 )
+```
+
+```{r message = FALSE, warning=FALSE}
 myMOList <- diffOmics(myMOList)
 ```
 
@@ -456,7 +469,8 @@ interesting limitation of proteomics experiments is that protein coverage is
 heavily affected by the sample quality as well as the technology used to 
 perform the experiment. Therefore, during prior exploratory analysis, we may
 fine-tune the cutoffs for the proteomics data to obtain the most relevant
-while minimizing the loss of information due to technical limitations.
+target gene set while minimizing the loss of information due to technical 
+limitations.
 
 For example, when protein coverage is quite high, we could employ a regular 
 cutoff. Here, we limit the network to include only target genes that shows
@@ -478,7 +492,7 @@ have identified our proteins of interest in the proteomics data, we can still
 construct the network using both the RNAseq and proteomics data. However, 
 the low coverage may negatively impact the differential analysis. We can either
 customize the differential analysis to be more sensitive to the proteomics data,
-or we can select genes shows consistent direction of change with the proteins.
+or we can select genes that show consistent direction of change with the proteins.
 
 ```{r}
 setOmicCutoffs(
@@ -570,7 +584,7 @@ searches.
 
 ```{r message = FALSE, tidy=TRUE}
 geneList <- exportDE(myMOList$DERNAseq) %>% rownames()
-geneList[1:10]
+geneList[1:12]
 ```
 
 Several databases are available for fetching miRNA-target interactions. For
@@ -595,8 +609,10 @@ smallRNAs <- getDESmallRNA(myMOList,
 head(smallRNAs, 5)
 ```
 
-As an example, we use the **`multiMiR`** package to fetch the miRNA-target
-interactions from multiple databases.
+As an example, we use the **`multiMiR`** package [@ru2014multimir] to fetch the
+miRNA-target interactions from multiple databases, namely **`miRTarBase`** 
+[@huang2020mirtarbase], **`miRecords`** [@xiao2009mirecords], and
+**`TarBase`** [@sethupathy2006tarbase].
 
 ```{r message = FALSE, warning=FALSE, eval=FALSE}
 mir2geneMultiMiR <- multiMiR::get_multimir(
@@ -675,7 +691,7 @@ omiCutoffs <- setOmicCutoffs(
 
 Let's construct the TRN without considering the protein expression.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 myTRN1 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq"),
@@ -686,8 +702,8 @@ myTRN1 <- constructTRN(myMOList,
 Without protein, the network we obtained is fairly large and complicated to
 interpret.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=5, fig.height=4, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
-plotNetwork(myTRN1)
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 2. TRN constructed with without considering protein expression" }
+plotNetwork(myTRN1, interactive = TRUE)
 ```
 
 Alternatively, we can enforce the network to only include genes that show
@@ -710,7 +726,7 @@ The network we obtained is much more stringent in explaining what are the most
 important regulations that directly explains the phenotypic changes between 
 the biological conditions of interests.
 
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r message=FALSE, warning=FALSE, include=FALSE}
 myTRN2 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
@@ -720,7 +736,7 @@ myTRN2 <- constructTRN(myMOList,
 
 Let's see the network.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 3. TRN constructed with coherent protein expression" }
 plotNetwork(myTRN2, interactive = TRUE)
 ```
 
@@ -729,7 +745,7 @@ important miRNA - target gene regulation. Since the biological function of
 miRNA are known, we could infer further biological insights from a 
 miRNA-target gene centric network.
 
-```{r message = FALSE, warning=FALSE, echo=FALSE}
+```{r message = FALSE, warning=FALSE, include=FALSE}
 myTRN3 <- constructTRN(myMOList,
   omiCutoffs = omiCutoffs,
   useOmics = c("RNAseq", "smallRNAseq", "proteomics"),
@@ -740,7 +756,7 @@ myTRN3 <- constructTRN(myMOList,
 
 Let's see the network.
 
-```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=8, fig.height=6, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
+```{r message = FALSE, warning=FALSE, fig.align='center', fig.width=7, fig.height=5, fig.cap="Figure 4. miRNA-target gene TRN constructed with coherent protein expression" }
 plotNetwork(myTRN3, interactive = TRUE)
 ```
 
@@ -754,10 +770,10 @@ further construct the TRN by selecting the TFs that are found to be
 differentially enriched across the conditions of interest.
 
 ATACseq data is used in conjunction with the TF-target interactions to construct
-the TRN. Similar to the curated miRNA-target interactions, the TF-target
-also face limitations in terms of relevance to the biological process of
-interest. Therefore, the package utilizes the differential accessibility
-analysis with motif enrichment analysis to select the most relevant 
+the TRN. Similar to the curated miRNA-target interactions, curated the TF-target 
+interactions also face limitations in terms of relevance to the biological 
+process of interest. Therefore, the package utilizes the differential 
+accessibility analysis with motif enrichment analysis to select the most relevant 
 TF - target interactions.
 
 To do so, we need to load the TF-target interactions into the **`MOList`**

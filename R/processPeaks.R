@@ -65,6 +65,8 @@ processPeakOverlap <- function(objMOList) {
     return(objMOList)
   }
 
+  cat("Processing peaks...\n")
+
   # Respectively check for peak overlaps within each condition
   peakGR1 <- mergePeaks(peaksCond1)
   peakGR2 <- mergePeaks(peaksCond2)

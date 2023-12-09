@@ -361,6 +361,7 @@
 #' \item{pubmed_id}{the PubMed ID of the publication where the interaction is
 #'                reported}
 #' \item{type}{the type of interaction, validated or not}
+#' }
 #'
 #' @source miRecords, miRTarBase, and TarBase databases
 #'
@@ -369,7 +370,9 @@
 #'
 #' \insertRef{huang2020mirtarbase}{IntegraTRN}
 #'
-#' \insertRef{karagkouni2018diana}{IntegraTRN}
+#' \insertRef{sethupathy2006tarbase}{IntegraTRN}
+#'
+#' \insertRef{ru2014multimir}{IntegraTRN}
 #'
 #' @examples
 #' \dontrun{

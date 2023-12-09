@@ -13,7 +13,7 @@
 ![R
 package](https://img.shields.io/github/r-package/v/j-y26/IntegraTRN?link=https%3A%2F%2Fgithub.com%2Fj-y26%2FIntegraTRN)
 [![Docker
-Image](https://img.shields.io/badge/docker-v0.1.0-8A2BE2?label=Docker%20Image)](https://hub.docker.com/repository/docker/jyang26/integra_trn/general)
+Image](https://img.shields.io/badge/docker-v0.1.0-8A2BE2?label=Docker%20Image)](https://hub.docker.com/repository/docker/kirin26/integra_trn/general)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
@@ -71,7 +71,7 @@ the terminal to setup and run the container:
 ``` bash
 docker run -e PASSWORD=changeit \
   -v ${pwd}:/home/rstudio/projects \
-  -p 8787:8787 jyang26/integra_trn:v0.1.0
+  -p 8787:8787 kirin26/integra_trn:v0.1.0
 ```
 
 In a browser, navigate to [`localhost:8787`](http://localhost:8787) and
@@ -170,6 +170,18 @@ omcis data available. `IntegraTRN` provides functions:
 
 32. ***runIntegraTRN*** for running a shinyApp that integrates the two
     parts into a user-friendly single workflow
+
+<br>
+
+For detailed information on the analysis pipeline, please refer to the
+package vignette
+
+- [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html)
+
+and workflow optimization information, please refer to the package
+vignette
+
+- [`Optimizing workflows for TRN construction`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Optimizing_workflows_for_TRN_construction.html)
 
 <br>
 
@@ -287,11 +299,27 @@ Heart.” *BMC Genomics* 24 (1): 1–18.
 
 </div>
 
+<div id="ref-shinyBS" class="csl-entry">
+
+Bailey, Eric. 2022. *shinyBS: Twitter Bootstrap Components for Shiny*.
+<https://CRAN.R-project.org/package=shinyBS>.
+
+</div>
+
 <div id="ref-chang2020mirnet" class="csl-entry">
 
 Chang, Le, Guangyan Zhou, Othman Soufan, and Jianguo Xia. 2020. “miRNet
 2.0: Network-Based Visual Analytics for miRNA Functional Analysis and
 Systems Biology.” *Nucleic Acids Research* 48 (W1): W244–51.
+
+</div>
+
+<div id="ref-shiny" class="csl-entry">
+
+Chang, Winston, Joe Cheng, JJ Allaire, Carson Sievert, Barret Schloerke,
+Yihui Xie, Jeff Allen, Jonathan McPherson, Alan Dipert, and Barbara
+Borges. 2023. *Shiny: Web Application Framework for r*.
+<https://CRAN.R-project.org/package=shiny>.
 
 </div>
 
@@ -380,6 +408,14 @@ Graphics for Data Analysis.” Taylor & Francis.
 Wickham, Hadley, Romain François, Lionel Henry, Kirill Müller, and Davis
 Vaughan. 2023. *Dplyr: A Grammar of Data Manipulation*.
 <https://CRAN.R-project.org/package=dplyr>.
+
+</div>
+
+<div id="ref-DT" class="csl-entry">
+
+Xie, Yihui, Joe Cheng, and Xianying Tan. 2023. *DT: A Wrapper of the
+JavaScript Library ’DataTables’*.
+<https://CRAN.R-project.org/package=DT>.
 
 </div>
 

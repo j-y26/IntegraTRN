@@ -2,7 +2,7 @@
 output: github_document
 bibliography: '`r system.file("REFERENCES.bib", package="IntegraTRN")`'
 nocite: |
-  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @yu2015chipseeker, @machlab2022monalisa, @R, @styler
+  @huynh2010inferring, @chang2020mirnet, @robinson2010edger, @csardi2006igraph, @villanueva2019ggplot2, @love2014moderated, @lawrence2013software, @adar2023integrate, @dplyr, @stuart2011matchit, @yu2015chipseeker, @machlab2022monalisa, @R, @styler, @shiny, @shinyBS, @DT
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -179,6 +179,17 @@ package, in the order of use subjected to the types of omcis data available.
 
 <br>
 
+For detailed information on the analysis pipeline, please refer to the package
+vignette 
+
+- [`Integrating multi-omics for constructing transcriptional regulatory networks`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Integrating_multi-omics_for_constructing_transcription_regulatory_networks.html)
+
+and workflow optimization information, please refer to the package vignette
+
+- [`Optimizing workflows for TRN construction`](https://htmlpreview.github.io/?https://raw.githubusercontent.com/j-y26/IntegraTRN-Docker/main/doc/Optimizing_workflows_for_TRN_construction.html)
+
+<br>
+
 The package also provides several datasets:
 
 - An RNAseq count matrix: `RNAseq_heart`
@@ -222,7 +233,6 @@ the package.
 An overview of the analysis pipeline is shown below:
 
 ![Overview of the package analysis pipeline (figure created from BioRender.com)](./inst/extdata/Schematics.jpg)
-
 
 ## Contributions
 
