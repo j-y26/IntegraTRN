@@ -29,14 +29,8 @@ library(dplyr)
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 # Since devtools does not install the vignette dependencies, we need to install
 # these Suggested packages manually
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")
-}
 if (!requireNamespace("ComplexHeatmap", quietly = TRUE)) {
   BiocManager::install("ComplexHeatmap")
-}
-if (!requireNamespace("circlize", quietly = TRUE)) {
-  install.packages("circlize")
 }
 if (!requireNamespace("multiMiR", quietly = TRUE)) {
   BiocManager::install("multiMiR")

@@ -29,9 +29,6 @@ library(dplyr)
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 # Since devtools does not install the vignette dependencies, we need to install
 # these Suggested packages manually
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")
-}
 if (!requireNamespace("BSgenome.Hsapiens.UCSC.hg38", quietly = TRUE)) {
   BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 }
@@ -40,15 +37,6 @@ if (!requireNamespace("TxDb.Hsapiens.UCSC.hg38.knownGene", quietly = TRUE)) {
 }
 if (!requireNamespace("org.Hs.eg.db", quietly = TRUE)) {
   BiocManager::install("org.Hs.eg.db")
-}
-if (!requireNamespace("ggpubr", quietly = TRUE)) {
-  install.packages("ggpubr")
-}
-if (!requireNamespace("RColorBrewer", quietly = TRUE)) {
-  install.packages("RColorBrewer")
-}
-if (!requireNamespace("ggrepel", quietly = TRUE)) {
-  install.packages("ggrepel")
 }
 ```
 
@@ -321,23 +309,11 @@ genesToLabel <- exportDE(myRNADETag) %>%
   rownames()
 ```
 
-Then we again plot the volcano plot, with some genes labeled.
-
-We can make use of the **`ggrepel`** package to label the genes on the plot.
+Then we again plot the volcano plot, with some genes labeled. We can make use
+of the **`highlight`** argument to specify the genes to label.
 
 ```{r message = FALSE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 2. Volcano plot of RNAseq data with some genes labelled"}
-rnaVPlot <- plotVolcano(myMOList, omic = "RNAseq", log2FC = 0.1)
-rnaVPlot <- rnaVPlot + ggrepel::geom_label_repel(
-  data = rnaVPlot$data[rownames(rnaVPlot$data) %in% genesToLabel, ],
-  mapping = ggplot2::aes(
-    x = logFC,
-    y = -log10(padj),
-    label = rownames(rnaVPlot$data[rownames(rnaVPlot$data) %in% genesToLabel, ])
-  ),
-  box.padding = 0.5,
-  size = 3
-)
-rnaVPlot
+plotVolcano(myMOList, omic = "RNAseq", log2FC = 0.1, highlight = genesToLabel)
 ```
 
 
@@ -394,17 +370,26 @@ annotated respectively.
 On the other hand, small RNAs are usually a lot more complex and diverse than
 mRNAs. Each type of small RNA has its own function and mechanism of action.
 Therefore, we can also specifically color each type of small RNAs on the
-volcano plot, using a more specialized function. Here, we employ the 
-**`RColorBrewer`** package to help with assigning a color palette. Here, we
-use the **`BuPu`** palette, which is also by default used by the function.
+volcano plot, using a more specialized function. 
+
+By default, the **`plotVolcanoSmallRNA`** function generates a volcano plot 
+with each type of small RNA colored. By default, it utilizes the **`BuPu`** 
+palette defined in the **`RColorBrewer`** package [@RColorBrewer].
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=6, fig.height=4, fig.cap="Figure 4. Volcano plot of small RNAseq data with each type of small RNA coloured"}
-# Use the RColorBrewer package to assign a color palette
-library("RColorBrewer")
-smallRNAColors <- brewer.pal(6, "BuPu")
-
 # Plot Volcano plot of small RNAseq data
 plotVolcanoSmallRNA(myMOList, log2FC = 0, colScheme = smallRNAColors)
+```
+
+Alternatively, we can also specify a color scheme using the **`colScheme`**
+argument.
+
+```{r message = FALSE, tidy=FALSE, eval=FALSE}
+# NOT run, just illustrate the usage of the colScheme argument
+plotVolcanoSmallRNA(myMOList, 
+                    adjP = 0.05,
+                    log2FC = 0, 
+                    colScheme = RColorBrewer::brewer.pal(6, "Set1"))
 ```
 
 Furthermore, although the function of microRNAs (miRNAs) is well studied, the
@@ -433,18 +418,15 @@ the PCA plot for miRNA using the following command:
 pcaPlotList$miRNA
 ```
 
-Or, we can generate a combined PCA plot for all small RNA types by making use
-of the **`ggpubr`** package.
+Or, we can generate a combined PCA plot for all small RNA types.
 
 ```{r message = FALSE, tidy=TRUE, fig.align='center', fig.width=9, fig.height=6, fig.cap="Figure 6. Combined PCA plot of all small RNA types"}
-ggpubr::ggarrange(pcaPlotList$miRNA,
-  pcaPlotList$circRNA,
-  pcaPlotList$piRNA,
-  pcaPlotList$snoRNA,
-  pcaPlotList$snRNA,
-  pcaPlotList$tRNA,
-  ncol = 3, nrow = 2
-)
+pcaPlotList$miRNA +
+  pcaPlotList$circRNA +
+  pcaPlotList$piRNA +
+  pcaPlotList$snoRNA +
+  pcaPlotList$snRNA +
+  pcaPlotList$tRNA
 ```
 
 
